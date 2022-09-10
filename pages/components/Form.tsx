@@ -1,12 +1,14 @@
 import { Box, Fab, TextField } from "@mui/material";
 import NavigationIcon from "@mui/icons-material/Send";
-import { useRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 import { recordListState } from "../constants/atom";
 import { useState } from "react";
 import { format } from "date-fns";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { db } from "./firebase";
 
 const Form = () => {
-  const [recordList, setRecordList] = useRecoilState(recordListState);
+  const setRecordList = useSetRecoilState(recordListState);
   const [inputValue, setInputValue] = useState({
     key: Math.floor(Math.random() * 1000).toString(16),
     value: "",
@@ -19,12 +21,21 @@ const Form = () => {
   const handleAddRecord = () => {
     if (inputValue.value === "") return;
     const { key, value, createdAt, userName, userImage } = inputValue;
+    //データベースへデータ追加処理
+    addDoc(collection(db, "records"), {
+      key,
+      value,
+      createdAt,
+      userName,
+      userImage,
+      timeStamp: serverTimestamp(),
+    });
+    //リストの更新処理
     setRecordList((recordList) => [
       ...recordList,
       { key, value, createdAt, userName, userImage },
     ]);
-    console.log(recordList);
-
+    //textFieldの初期化処理
     setInputValue({
       key: Math.floor(Math.random() * 1000).toString(16),
       value: "",

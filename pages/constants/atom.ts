@@ -9,8 +9,6 @@ export type Record = {
   userImage: string
 };
 
-
-
 const { persistAtom } = recoilPersist({
   key: "recoil-persist",
   storage: typeof window === "undefined" ? undefined : sessionStorage,
