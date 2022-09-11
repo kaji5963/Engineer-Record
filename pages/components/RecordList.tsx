@@ -14,10 +14,12 @@ import { recordListState } from "../constants/atom";
 import { useEffect, useState } from "react";
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import { db } from "./firebase";
-import { red } from "@mui/material/colors";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import ShareIcon from "@mui/icons-material/Share";
+import { blue, red } from "@mui/material/colors";
+// import FavoriteIcon from "@mui/icons-material/Favorite";
+// import ShareIcon from "@mui/icons-material/Share";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import StarIcon from '@mui/icons-material/Star';
 
 const RecordList = () => {
   const [recordList, setRecordList] = useRecoilState(recordListState);
@@ -79,6 +81,7 @@ const RecordList = () => {
             display: "flex",
             flexDirection: "column",
             mx: "auto",
+            boxShadow: 0,
           }}
         >
           {recordList.map((record) => {
@@ -86,8 +89,8 @@ const RecordList = () => {
               <Box
                 key={record.key}
                 sx={{
-                  bgcolor: red[100],
-                  minHeight: 200,
+                  bgcolor: blue[100],
+
                   width: 500,
                   mb: 4,
                   borderRadius: 5,
@@ -96,7 +99,7 @@ const RecordList = () => {
                 <CardHeader
                   avatar={
                     <Avatar
-                      sx={{ bgcolor: red[200] }}
+                      sx={{ bgcolor: blue[200] }}
                       aria-label="recipe"
                     ></Avatar>
                   }
@@ -110,13 +113,14 @@ const RecordList = () => {
                 />
                 <CardContent
                   sx={{
-                    bgcolor: red[50],
+                    bgcolor: blue[50],
                   }}
                 >
-                  <Typography
-                    sx={{ height: 100 }}
+                  <Typography 
+                    sx={{ minHeight: 120, whiteSpace: 'pre-line' }}
                     variant="body2"
                     color="text.secondary"
+                    component="p"
                   >
                     {record.value}
                   </Typography>
@@ -131,11 +135,11 @@ const RecordList = () => {
                   </IconButton>
 
                   <IconButton aria-label="add to favorites">
-                    <FavoriteIcon />
+                    <ThumbUpIcon />
                   </IconButton>
 
                   <IconButton aria-label="share">
-                    <ShareIcon />
+                    <StarIcon />
                   </IconButton>
                 </CardActions>
               </Box>
