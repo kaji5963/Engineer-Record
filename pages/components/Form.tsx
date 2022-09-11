@@ -67,7 +67,7 @@ const Form = () => {
           }
         />
       </Box>
-      <Box sx={{ display: "flex", mt: 4 }} justifyContent="center">
+      <Box sx={{ display: "flex", my: 4 }} justifyContent="center">
         <Fab variant="extended" onClick={handleAddRecord}>
           <NavigationIcon sx={{ mr: 1 }} />
           Record
