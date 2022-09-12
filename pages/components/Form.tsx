@@ -55,7 +55,8 @@ const Form = () => {
         autoComplete="off"
       >
         <TextField
-          style={{ width: 500 }}
+        sx={{ width: 500, mx: "auto"}}
+          style={{  }}
           id="outlined-multiline-static"
           label="学習記録を入力してくだい"
           multiline
@@ -67,7 +68,7 @@ const Form = () => {
           }
         />
       </Box>
-      <Box sx={{ display: "flex", my: 4 }} justifyContent="center">
+      <Box sx={{ display: "flex", my: 4, mx: "auto" }} justifyContent="center">
         <Fab variant="extended" onClick={handleAddRecord}>
           <NavigationIcon sx={{ mr: 1 }} />
           Record

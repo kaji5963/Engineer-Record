@@ -7,23 +7,26 @@ import {
   Typography,
   CardActions,
   IconButton,
+  Stack,
+  Pagination,
 } from "@mui/material";
 import CommentIcon from "@mui/icons-material/Comment";
 import { useRecoilState } from "recoil";
 import { recordListState } from "../constants/atom";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import { db } from "./firebase";
 import { blue, red } from "@mui/material/colors";
 // import FavoriteIcon from "@mui/icons-material/Favorite";
 // import ShareIcon from "@mui/icons-material/Share";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import ThumbUpIcon from '@mui/icons-material/ThumbUp';
-import StarIcon from '@mui/icons-material/Star';
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+import StarIcon from "@mui/icons-material/Star";
 
 const RecordList = () => {
   const [recordList, setRecordList] = useRecoilState(recordListState);
   const [isClient, setIsClient] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   //firebaseからデータを取得しsetTaskで更新しtaskに格納(taskを監視)
   useEffect(() => {
@@ -49,8 +52,28 @@ const RecordList = () => {
     setIsClient(true);
   }, []);
 
+  //ページネーション関数結果をuseMemoでメモ化
+  const paginationList = useMemo(() => {
+    const startNumber = 0 + 9 * (currentPage - 1);
+
+    const endNumber = 10 + 9 * (currentPage - 1);
+    return recordList.slice(startNumber, endNumber);
+  }, [currentPage, recordList]);
+
   return (
     <>
+      <Stack>
+        <Pagination
+          count={100}
+          sx={{ mx: "auto", mb: 4 }}
+          color="primary"
+          variant="outlined"
+          shape="rounded"
+          page={currentPage}
+          onChange={(e, currentPage: number) => setCurrentPage(currentPage)}
+        />
+      </Stack>
+
       {isClient && (
         // <Box sx={{ display: "flex", mt: 4, }}
         // justifyContent="center"
@@ -84,7 +107,7 @@ const RecordList = () => {
             boxShadow: 0,
           }}
         >
-          {recordList.map((record) => {
+          {paginationList.map((record) => {
             return (
               <Box
                 key={record.key}
@@ -116,8 +139,8 @@ const RecordList = () => {
                     bgcolor: blue[50],
                   }}
                 >
-                  <Typography 
-                    sx={{ minHeight: 120, whiteSpace: 'pre-line' }}
+                  <Typography
+                    sx={{ minHeight: 120, whiteSpace: "pre-line" }}
                     variant="body2"
                     color="text.secondary"
                     component="p"
