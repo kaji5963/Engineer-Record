@@ -16,7 +16,7 @@ import { recordListState } from "../constants/atom";
 import { useEffect, useMemo, useState } from "react";
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import { db } from "./firebase";
-import { blue, red } from "@mui/material/colors";
+import { blue } from "@mui/material/colors";
 // import FavoriteIcon from "@mui/icons-material/Favorite";
 // import ShareIcon from "@mui/icons-material/Share";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -75,29 +75,6 @@ const RecordList = () => {
       </Stack>
 
       {isClient && (
-        // <Box sx={{ display: "flex", mt: 4, }}
-        // justifyContent="center"
-        // component="form">
-        //   <List
-        //     sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
-        //   >
-        //     {recordList.map((record) => (
-        //       <ListItem
-        //       sx={{mt: 4, mb:6}}
-        //         key={record.key}
-        //         disableGutters
-        //         secondaryAction={
-        //           <IconButton aria-label="comment">
-        //             <CommentIcon />
-        //           </IconButton>
-        //         }
-        //       >
-        //         <ListItemText primary={record.value} />
-        //       </ListItem>
-        //     ))}
-        //   </List>
-        //   </Box>
-
         <Card
           sx={{
             maxWidth: 500,
