@@ -9,6 +9,13 @@ export type Record = {
   userImage: string
 };
 
+export type User = {
+  email: string | null;
+  uid: string;
+  displayName: string | null;
+  photoURL: string | null
+};
+
 const { persistAtom } = recoilPersist({
   key: "recoil-persist",
   storage: typeof window === "undefined" ? undefined : sessionStorage,
@@ -20,8 +27,8 @@ export const recordListState: RecoilState<Record[]> = atom({
   effects_UNSTABLE: [persistAtom],
 });
 
-// export const recordValue: RecoilState<Record> = atom({
-//   key: "value",
-//   default: "",
-//   effects_UNSTABLE: [persistAtom],
-// });
+export const userItemState: RecoilState<User> = atom({
+  key: "user",
+  default: {},
+  effects_UNSTABLE: [persistAtom],
+});

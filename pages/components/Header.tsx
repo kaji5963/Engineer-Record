@@ -7,10 +7,22 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import ComputerIcon from "@mui/icons-material/Computer";
+import { useRouter } from "next/router";
+import { auth } from "./firebase";
+
+
 
 const navItems = ["Home", "Profile", "Logout"];
 
 const Header = () => {
+  const router = useRouter();
+
+  //ログアウト処理
+  const handleLogout = () => {
+    auth.signOut();
+    router.push("/Signup");
+  };
+
   return (
     <Box sx={{ display: "flex" }}>
       <AppBar component="nav">
@@ -33,11 +45,11 @@ const Header = () => {
             Engineer Record
           </Typography>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
-            {navItems.map((item) => (
-              <Button key={item} sx={{ color: "#fff" }}>
-                {item}
-              </Button>
-            ))}
+            <Button sx={{ color: "#fff" }}>HOME</Button>
+            <Button sx={{ color: "#fff" }}>PROFILE</Button>
+            <Button sx={{ color: "#fff" }} onClick={handleLogout}>
+              LOGOUT
+            </Button>
           </Box>
         </Toolbar>
       </AppBar>

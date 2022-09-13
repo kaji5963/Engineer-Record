@@ -14,7 +14,6 @@
     "@material-ui/lab": "^4.0.0-alpha.61",
     "@mui/icons-material": "^5.10.3",
     "@mui/material": "^5.10.4",
-    "date-fns": "^2.29.2",
     "firebase": "^9.9.4",
     "next": "12.3.0",
     "react": "^18.2.0",

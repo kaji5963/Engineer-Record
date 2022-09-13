@@ -12,23 +12,25 @@ import {
 } from "@mui/material";
 import CommentIcon from "@mui/icons-material/Comment";
 import { useRecoilState } from "recoil";
-import { recordListState } from "../constants/atom";
+import { recordListState, userItemState } from "../constants/atom";
 import { useEffect, useMemo, useState } from "react";
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
-import { db } from "./firebase";
+import { auth, db } from "./firebase";
 import { blue } from "@mui/material/colors";
 // import FavoriteIcon from "@mui/icons-material/Favorite";
 // import ShareIcon from "@mui/icons-material/Share";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import StarIcon from "@mui/icons-material/Star";
+import { onAuthStateChanged } from "firebase/auth";
 
 const RecordList = () => {
   const [recordList, setRecordList] = useRecoilState(recordListState);
+  const [userItem, setUserItem] = useRecoilState(userItemState);
   const [isClient, setIsClient] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
-  //firebaseからデータを取得しsetTaskで更新しtaskに格納(taskを監視)
+  //firebaseからデータを取得、setRecordListで更新しrecordListに格納
   useEffect(() => {
     const recordData = collection(db, "records");
     const q = query(recordData, orderBy("timeStamp", "desc"));
@@ -47,6 +49,16 @@ const RecordList = () => {
     });
   }, []);
 
+  //現在ログインしているuserを取得、setUserItemで更新しuserItemに格納
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const { email, uid, displayName, photoURL} = user
+        setUserItem({...userItem, email, uid, displayName, photoURL})
+      } 
+    });
+  },[])
+  
   //Hydrate Error対策
   useEffect(() => {
     setIsClient(true);
@@ -108,7 +120,7 @@ const RecordList = () => {
                       <MoreVertIcon />
                     </IconButton>
                   }
-                  title="kaji"
+                  title={userItem.displayName}
                   subheader={record.createdAt}
                 />
                 <CardContent

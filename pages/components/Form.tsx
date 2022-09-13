@@ -1,18 +1,33 @@
 import { Box, Fab, TextField } from "@mui/material";
 import NavigationIcon from "@mui/icons-material/Send";
-import { useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { recordListState } from "../constants/atom";
 import { useState } from "react";
-import { format } from "date-fns";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "./firebase";
 
+// Dateをyyyy-mm-dd hh:mm形式にフォーマット
+const changeDateFormat = (date: Date) => {
+  return (
+    date.getFullYear() +
+    "/" +
+    (date.getMonth() + 1) +
+    "/" +
+    date.getDate() +
+    " " + 
+    date.getHours() +
+    ":" +
+    date.getMinutes()
+  );
+};
+
 const Form = () => {
   const setRecordList = useSetRecoilState(recordListState);
+
   const [inputValue, setInputValue] = useState({
     key: Math.floor(Math.random() * 1000).toString(16),
     value: "",
-    createdAt: format(new Date(), "yyyy/MM/dd/hh/mm/ss"),
+    createdAt: changeDateFormat(new Date()),
     userName: "",
     userImage: "",
   });
@@ -39,7 +54,7 @@ const Form = () => {
     setInputValue({
       key: Math.floor(Math.random() * 1000).toString(16),
       value: "",
-      createdAt: format(new Date(), "yyyy/MM/dd/hh/mm/ss"),
+      createdAt: changeDateFormat(new Date()),
       userName: "",
       userImage: "",
     });
