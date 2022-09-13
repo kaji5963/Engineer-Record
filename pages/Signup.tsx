@@ -26,25 +26,31 @@ const SignUp = () => {
   const [userInfo, setUserInfo] = useState({
     email: "",
     password: "",
-    userName: "",
-    photoUrl: "",
+    displayName: "",
+    photoURL: "",
   });
-  const [recordList, setRecordList] = useRecoilState(recordListState);
+  // const [recordList, setRecordList] = useRecoilState(recordListState);
 
   const router = useRouter();
 
   const handleSignUp = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const { email, password, userName, photoUrl } = userInfo;
+    const { email, password, displayName, photoURL } = userInfo;
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
 
         updateProfile(user, {
-          displayName: userName,
-          photoURL: photoUrl,
+          displayName: displayName,
+          photoURL: photoURL,
         });
-        console.log(user);
+
+        setUserInfo({
+          email: "",
+          password: "",
+          displayName: "",
+          photoURL: "",
+        });
 
         // const user = userCredential.user;
         // const userData = {
@@ -115,7 +121,7 @@ const SignUp = () => {
                 label="User Name"
                 autoFocus
                 onChange={(e) =>
-                  setUserInfo({ ...userInfo, userName: e.target.value })
+                  setUserInfo({ ...userInfo, displayName: e.target.value })
                 }
               />
             </Grid>

@@ -1,7 +1,7 @@
 import { Box, Fab, TextField } from "@mui/material";
 import NavigationIcon from "@mui/icons-material/Send";
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { recordListState } from "../constants/atom";
+import { recordListState, userItemState } from "../constants/atom";
 import { useState } from "react";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "./firebase";
@@ -14,7 +14,7 @@ const changeDateFormat = (date: Date) => {
     (date.getMonth() + 1) +
     "/" +
     date.getDate() +
-    " " + 
+    " " +
     date.getHours() +
     ":" +
     date.getMinutes()
@@ -23,40 +23,40 @@ const changeDateFormat = (date: Date) => {
 
 const Form = () => {
   const setRecordList = useSetRecoilState(recordListState);
-
+  const [userItem, setUserItem] = useRecoilState(userItemState);
   const [inputValue, setInputValue] = useState({
-    key: Math.floor(Math.random() * 1000).toString(16),
+    key: Math.floor(Math.random() * 10000).toString(32),
     value: "",
     createdAt: changeDateFormat(new Date()),
-    userName: "",
-    userImage: "",
+    displayName: userItem.displayName,
+    photoURL: userItem.photoURL,
   });
 
   //学習記録を投稿する機能
   const handleAddRecord = () => {
     if (inputValue.value === "") return;
-    const { key, value, createdAt, userName, userImage } = inputValue;
+    const { key, value, createdAt, displayName, photoURL } = inputValue;
     //データベースへデータ追加処理
     addDoc(collection(db, "records"), {
       key,
       value,
       createdAt,
-      userName,
-      userImage,
+      displayName,
+      photoURL,
       timeStamp: serverTimestamp(),
     });
     //リストの更新処理
     setRecordList((recordList) => [
       ...recordList,
-      { key, value, createdAt, userName, userImage },
+      { key, value, createdAt, displayName, photoURL },
     ]);
     //textFieldの初期化処理
     setInputValue({
-      key: Math.floor(Math.random() * 1000).toString(16),
+      key: Math.floor(Math.random() * 10000).toString(32),
       value: "",
       createdAt: changeDateFormat(new Date()),
-      userName: "",
-      userImage: "",
+      displayName: userItem.displayName,
+      photoURL: userItem.photoURL,
     });
   };
 
@@ -70,8 +70,7 @@ const Form = () => {
         autoComplete="off"
       >
         <TextField
-        sx={{ width: 500, mx: "auto"}}
-          style={{  }}
+          sx={{ width: 500, mx: "auto" }}
           id="outlined-multiline-static"
           label="学習記録を入力してくだい"
           multiline

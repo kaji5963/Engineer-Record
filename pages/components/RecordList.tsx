@@ -41,8 +41,8 @@ const RecordList = () => {
           key: doc.key,
           value: doc.value,
           createdAt: doc.createdAt,
-          userName: doc.userName,
-          userImage: doc.userImage,
+          displayName: doc.displayName,
+          photoURL: doc.photoURL,
           ...doc.data(),
         }))
       );
@@ -53,21 +53,20 @@ const RecordList = () => {
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        const { email, uid, displayName, photoURL} = user
-        setUserItem({...userItem, email, uid, displayName, photoURL})
-      } 
+        const { email, uid, displayName, photoURL } = user;
+        setUserItem({ ...userItem, email, uid, displayName, photoURL });
+      }
     });
-  },[])
-  
+  }, []);
+
   //Hydrate Error対策
   useEffect(() => {
-    setIsClient(true);
+    if (typeof window !== 'undefined') setIsClient(true);
   }, []);
 
   //ページネーション関数結果をuseMemoでメモ化
   const paginationList = useMemo(() => {
     const startNumber = 0 + 9 * (currentPage - 1);
-
     const endNumber = 10 + 9 * (currentPage - 1);
     return recordList.slice(startNumber, endNumber);
   }, [currentPage, recordList]);
@@ -113,6 +112,8 @@ const RecordList = () => {
                     <Avatar
                       sx={{ bgcolor: blue[200] }}
                       aria-label="recipe"
+                      // src={record.photoURL}
+                      alt=""
                     ></Avatar>
                   }
                   action={
@@ -120,7 +121,7 @@ const RecordList = () => {
                       <MoreVertIcon />
                     </IconButton>
                   }
-                  title={userItem.displayName}
+                  title={record.displayName}
                   subheader={record.createdAt}
                 />
                 <CardContent

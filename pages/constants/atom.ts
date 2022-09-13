@@ -5,15 +5,15 @@ export type Record = {
   key: string;
   value: string;
   createdAt: string;
-  userName: string
-  userImage: string
+  displayName: string | null;
+  photoURL: string | null ;
 };
 
 export type User = {
   email: string | null;
   uid: string;
   displayName: string | null;
-  photoURL: string | null
+  photoURL: string | null;
 };
 
 const { persistAtom } = recoilPersist({
