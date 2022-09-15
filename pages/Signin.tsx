@@ -11,7 +11,7 @@ import Container from "@mui/material/Container";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import {
-  signInWithEmailAndPassword,
+  signInWithEmailAndPassword, updateProfile,
 } from "firebase/auth";
 import { auth } from "./components/firebase";
 import { useRecoilState } from "recoil";
@@ -25,15 +25,13 @@ const SignIn = () => {
 
   const router = useRouter();
 
-  const handleSignUp = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSignIn = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        // Signed in
-        const user = userCredential.user;
+        // const user = userCredential.user;
+      
         router.push("/Top");
-
-        // ...
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -61,7 +59,7 @@ const SignIn = () => {
         <Box
           component="form"
           noValidate
-          onSubmit={(e) => handleSignUp(e)}
+          onSubmit={(e) => handleSignIn(e)}
           sx={{ mt: 3 }}
         >
           <Grid container spacing={2}>

@@ -17,47 +17,50 @@ import { useRecoilState } from "recoil";
 import { recordListState } from "./constants/atom";
 import { addDoc, collection } from "firebase/firestore";
 import { grey } from "@mui/material/colors";
+import { IconButton } from "@mui/material";
+
+type Info = {
+  email: string;
+  password: string;
+  displayName: string;
+  photoURL: any;
+};
 
 const SignUp = () => {
-  // const [userName, setUserName] = useRecoilState(userNameState);
-  // const [userName, setUserName] = useState("");
-  // const [email, setEmail] = useState("");
-  // const [password, setPassword] = useState("");
-  const [userInfo, setUserInfo] = useState({
+  const [userInfo, setUserInfo] = useState<Info>({
     email: "",
     password: "",
     displayName: "",
-    photoURL: "",
+    photoURL: null,
   });
   // const [recordList, setRecordList] = useRecoilState(recordListState);
 
   const router = useRouter();
 
-  const handleSignUp = (e: React.FormEvent<HTMLFormElement>) => {
+  //SignUp処理、それぞれのデータをfirebaseとuserInfoへ格納
+  const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const { email, password, displayName, photoURL } = userInfo;
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
-
+        //displayName,photoURLを更新し格納
         updateProfile(user, {
           displayName: displayName,
           photoURL: photoURL,
         });
-
+        //userInfoを初期化
         setUserInfo({
           email: "",
           password: "",
           displayName: "",
-          photoURL: "",
+          photoURL: null,
         });
 
         // const user = userCredential.user;
         // const userData = {
-        //   email: email,
-        //   password: password,
-        //   username: userName,
-        //   photoUrl: photoUrl,
+        //   displayName: displayName,
+        //   photoURL: photoURL,
         //   uid: user.uid,
         // };
         // console.log(userData);
@@ -72,7 +75,7 @@ const SignUp = () => {
         router.push("/Top");
       })
       .catch((error) => {
-        console.log(error);
+        alert(error);
       });
   };
 
@@ -90,6 +93,7 @@ const SignUp = () => {
         <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
           <LockOutlinedIcon />
         </Avatar>
+
         <Typography component="h1" variant="h5">
           新規登録
         </Typography>
@@ -100,25 +104,41 @@ const SignUp = () => {
           sx={{ mt: 3 }}
         >
           <Grid container spacing={2}>
+            <IconButton
+              sx={{
+                mt: 4,
+                bgcolor: grey[200],
+                mx: "auto",
+                mb: 2,
+                cursor: "pointer",
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <label>
+                <PersonAddIcon
+                  sx={{
+                    cursor: "pointer",
+                  }}
+                  fontSize="large"
+                />
+                <input
+                  type="file"
+                  onChange={(e) =>
+                    setUserInfo({ ...userInfo, photoURL: e.target.files![0] })
+                  }
+                  style={{ display: "none" }}
+                />
+              </label>
+            </IconButton>
             <Grid item xs={12}>
-              <Avatar
-                sx={{
-                  m: 1,
-                  bgcolor: grey[500],
-                  mx: "auto",
-                  mb: 2,
-                  cursor: "pointer",
-                }}
-              >
-                <PersonAddIcon />
-              </Avatar>
               <TextField
                 autoComplete="given-name"
-                name="userName"
+                name="displayName"
                 required
                 fullWidth
-                id="userName"
-                label="User Name"
+                id="displayName"
+                label="Display Name"
                 autoFocus
                 onChange={(e) =>
                   setUserInfo({ ...userInfo, displayName: e.target.value })

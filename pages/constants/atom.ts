@@ -5,12 +5,12 @@ export type Record = {
   key: string;
   value: string;
   createdAt: string;
-  displayName: string | null;
-  photoURL: string | null ;
+  // displayName: string | null;
+  // photoURL: string | null ;
 };
 
 export type User = {
-  email: string | null;
+  // email: string | null;
   uid: string;
   displayName: string | null;
   photoURL: string | null;

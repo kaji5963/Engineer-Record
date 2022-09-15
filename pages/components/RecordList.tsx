@@ -35,15 +35,15 @@ const RecordList = () => {
     const recordData = collection(db, "records");
     const q = query(recordData, orderBy("timeStamp", "desc"));
     onSnapshot(q, (querySnapshot) => {
+      
       setRecordList(
-        querySnapshot.docs.map((doc: any) => ({
+        querySnapshot.docs.map((doc) => ({
           id: doc.id,
-          key: doc.key,
-          value: doc.value,
-          createdAt: doc.createdAt,
-          displayName: doc.displayName,
-          photoURL: doc.photoURL,
-          ...doc.data(),
+          key: doc.data().key,
+          value: doc.data().value,
+          createdAt: doc.data().createdAt,
+          displayName: doc.data().displayName,
+          photoURL: doc.data().photoURL,
         }))
       );
     });
@@ -53,11 +53,13 @@ const RecordList = () => {
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        const { email, uid, displayName, photoURL } = user;
-        setUserItem({ ...userItem, email, uid, displayName, photoURL });
+        const { uid, displayName, photoURL } = user;
+        // const { email, uid, displayName, photoURL } = user;
+        setUserItem({ ...userItem, uid, displayName, photoURL });
+        // setUserItem({ ...userItem, email, uid, displayName, photoURL });
       }
     });
-  }, []);
+  }, [userItem.uid]);
 
   //Hydrate Error対策
   useEffect(() => {
@@ -121,7 +123,7 @@ const RecordList = () => {
                       <MoreVertIcon />
                     </IconButton>
                   }
-                  title={record.displayName}
+                  title={userItem.displayName}
                   subheader={record.createdAt}
                 />
                 <CardContent
