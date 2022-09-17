@@ -45,8 +45,8 @@ const Header = () => {
             Engineer Record
           </Typography>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
-            <Button sx={{ color: "#fff" }}>HOME</Button>
-            <Button sx={{ color: "#fff" }}>PROFILE</Button>
+            <Button sx={{ color: "#fff" }} onClick={() => router.push("/Top")}>TOP</Button>
+            <Button sx={{ color: "#fff" }} onClick={() => router.push("/Profile")}>PROFILE</Button>
             <Button sx={{ color: "#fff" }} onClick={handleLogout}>
               LOGOUT
             </Button>

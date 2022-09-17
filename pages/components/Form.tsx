@@ -28,15 +28,15 @@ const Form = () => {
     key: Math.floor(Math.random() * 10000).toString(32),
     value: "",
     createdAt: changeDateFormat(new Date()),
-    // displayName: userItem.displayName,
-    // photoURL: userItem.photoURL,
+    displayName: userItem.displayName,
+    photoURL: userItem.photoURL,
   });
 
   //学習記録を投稿する機能
   const handleAddRecord = () => {
     if (inputValue.value === "") return;
-    // const { key, value, createdAt, displayName, photoURL } = inputValue;
-    const { key, value, createdAt } = inputValue;
+    const { key, value, createdAt, displayName, photoURL } = inputValue;
+    // const { key, value, createdAt } = inputValue;
     //データベースへデータ追加処理
     addDoc(collection(db, "records"), {
       key,
@@ -49,16 +49,16 @@ const Form = () => {
     //リストの更新処理
     setRecordList((recordList) => [
       ...recordList,
-      { key, value, createdAt },
-      // { key, value, createdAt, displayName, photoURL },
+      // { key, value, createdAt },
+      { key, value, createdAt, displayName, photoURL },
     ]);
     //textFieldの初期化処理
     setInputValue({
       key: Math.floor(Math.random() * 10000).toString(32),
       value: "",
       createdAt: changeDateFormat(new Date()),
-      // displayName: userItem.displayName,
-      // photoURL: userItem.photoURL,
+      displayName: userItem.displayName,
+      photoURL: userItem.photoURL,
     });
   };
 

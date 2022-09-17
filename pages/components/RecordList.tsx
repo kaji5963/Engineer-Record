@@ -10,32 +10,38 @@ import {
   Stack,
   Pagination,
 } from "@mui/material";
-import CommentIcon from "@mui/icons-material/Comment";
 import { useRecoilState } from "recoil";
-import { recordListState, userItemState } from "../constants/atom";
+import {
+  commentItemState,
+  Record,
+  recordListState,
+  userItemState,
+} from "../constants/atom";
 import { useEffect, useMemo, useState } from "react";
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import { auth, db } from "./firebase";
 import { blue } from "@mui/material/colors";
 // import FavoriteIcon from "@mui/icons-material/Favorite";
 // import ShareIcon from "@mui/icons-material/Share";
+import CommentIcon from "@mui/icons-material/Comment";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import StarIcon from "@mui/icons-material/Star";
 import { onAuthStateChanged } from "firebase/auth";
+import { useRouter } from "next/router";
 
 const RecordList = () => {
   const [recordList, setRecordList] = useRecoilState(recordListState);
   const [userItem, setUserItem] = useRecoilState(userItemState);
+  const [comment, setComment] = useRecoilState(commentItemState);
   const [isClient, setIsClient] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-
+  const router = useRouter();
   //firebaseからデータを取得、setRecordListで更新しrecordListに格納
   useEffect(() => {
     const recordData = collection(db, "records");
     const q = query(recordData, orderBy("timeStamp", "desc"));
     onSnapshot(q, (querySnapshot) => {
-      
       setRecordList(
         querySnapshot.docs.map((doc) => ({
           id: doc.id,
@@ -53,17 +59,15 @@ const RecordList = () => {
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        const { uid, displayName, photoURL } = user;
-        // const { email, uid, displayName, photoURL } = user;
-        setUserItem({ ...userItem, uid, displayName, photoURL });
-        // setUserItem({ ...userItem, email, uid, displayName, photoURL });
+        const { email, uid, displayName, photoURL } = user;
+        setUserItem({ ...userItem, email, uid, displayName, photoURL });
       }
     });
-  }, [userItem.uid]);
+  }, []);
 
   //Hydrate Error対策
   useEffect(() => {
-    if (typeof window !== 'undefined') setIsClient(true);
+    if (typeof window !== "undefined") setIsClient(true);
   }, []);
 
   //ページネーション関数結果をuseMemoでメモ化
@@ -72,6 +76,15 @@ const RecordList = () => {
     const endNumber = 10 + 9 * (currentPage - 1);
     return recordList.slice(startNumber, endNumber);
   }, [currentPage, recordList]);
+
+  const handleComment = (key: string) => {
+    const findComment = recordList.find((recordList) => recordList.key === key);
+    setComment({ ...comment, ...findComment });
+
+    // const [{key, value, createdAt}] = recordList
+    // setComment({...comment, key, value, createdAt })
+    router.push("/Comment");
+  };
 
   return (
     <>
@@ -113,7 +126,6 @@ const RecordList = () => {
                   avatar={
                     <Avatar
                       sx={{ bgcolor: blue[200] }}
-                      aria-label="recipe"
                       // src={record.photoURL}
                       alt=""
                     ></Avatar>
@@ -132,7 +144,7 @@ const RecordList = () => {
                   }}
                 >
                   <Typography
-                    sx={{ minHeight: 120, whiteSpace: "pre-line" }}
+                    sx={{ minHeight: 100, whiteSpace: "pre-line" }}
                     variant="body2"
                     color="text.secondary"
                     component="p"
@@ -145,7 +157,11 @@ const RecordList = () => {
                   sx={{ display: "flex", justifyContent: "space-around" }}
                   disableSpacing
                 >
-                  <IconButton aria-label="comment">
+                  <IconButton
+                    aria-label="comment"
+                    onClick={() => handleComment(record.key)}
+                    // onClick={() => router.push("/Comment")}
+                  >
                     <CommentIcon />
                   </IconButton>
 

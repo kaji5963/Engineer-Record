@@ -5,15 +5,24 @@ export type Record = {
   key: string;
   value: string;
   createdAt: string;
-  // displayName: string | null;
-  // photoURL: string | null ;
+  displayName: string | null;
+  photoURL: string | null ;
 };
 
 export type User = {
-  // email: string | null;
-  uid: string;
+  email: string | null;
+  uid: string | null;
   displayName: string | null;
+  // photoURL: any;
   photoURL: string | null;
+};
+
+export type Comment = {
+  key: string;
+  value: string;
+  createdAt: string;
+  displayName: string | null;
+  photoURL: string | null ;
 };
 
 const { persistAtom } = recoilPersist({
@@ -28,7 +37,13 @@ export const recordListState: RecoilState<Record[]> = atom({
 });
 
 export const userItemState: RecoilState<User> = atom({
-  key: "user",
+  key: "userInformation",
+  default: {},
+  effects_UNSTABLE: [persistAtom],
+});
+
+export const commentItemState: RecoilState<Comment> = atom({
+  key: "comment",
   default: {},
   effects_UNSTABLE: [persistAtom],
 });
