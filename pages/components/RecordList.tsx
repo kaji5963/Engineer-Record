@@ -13,7 +13,6 @@ import {
 import { useRecoilState } from "recoil";
 import {
   commentItemState,
-  Record,
   recordListState,
   userItemState,
 } from "../constants/atom";
@@ -33,10 +32,11 @@ import { useRouter } from "next/router";
 const RecordList = () => {
   const [recordList, setRecordList] = useRecoilState(recordListState);
   const [userItem, setUserItem] = useRecoilState(userItemState);
-  const [comment, setComment] = useRecoilState(commentItemState);
+  const [commentItem, setCommentItem] = useRecoilState(commentItemState);
   const [isClient, setIsClient] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const router = useRouter();
+
   //firebaseからデータを取得、setRecordListで更新しrecordListに格納
   useEffect(() => {
     const recordData = collection(db, "records");
@@ -44,6 +44,7 @@ const RecordList = () => {
     onSnapshot(q, (querySnapshot) => {
       setRecordList(
         querySnapshot.docs.map((doc) => ({
+          ...doc.data(),
           id: doc.id,
           key: doc.data().key,
           value: doc.data().value,
@@ -51,9 +52,9 @@ const RecordList = () => {
           displayName: doc.data().displayName,
           photoURL: doc.data().photoURL,
         }))
-      );
-    });
-  }, []);
+        );
+      });
+    }, []);
 
   //現在ログインしているuserを取得、setUserItemで更新しuserItemに格納
   useEffect(() => {
@@ -79,8 +80,9 @@ const RecordList = () => {
 
   const handleComment = (key: string) => {
     const findComment = recordList.find((recordList) => recordList.key === key);
-    setComment({ ...comment, ...findComment });
+    setCommentItem({ ...commentItem, ...findComment });
 
+    
     // const [{key, value, createdAt}] = recordList
     // setComment({...comment, key, value, createdAt })
     router.push("/Comment");
@@ -135,7 +137,7 @@ const RecordList = () => {
                       <MoreVertIcon />
                     </IconButton>
                   }
-                  title={userItem.displayName}
+                  title={record.displayName}
                   subheader={record.createdAt}
                 />
                 <CardContent

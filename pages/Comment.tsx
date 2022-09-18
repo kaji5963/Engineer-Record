@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import { blue, red } from "@mui/material/colors";
 import Head from "next/head";
+import ReplyIcon from "@mui/icons-material/Reply";
 import CommentIcon from "@mui/icons-material/Comment";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
@@ -27,27 +28,124 @@ import {
   commentItemState,
   recordListState,
   userItemState,
+  commentListState,
 } from "./constants/atom";
 import { useEffect, useState } from "react";
+import { changeDateFormat } from "./components/Form";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  orderBy,
+  query,
+  serverTimestamp,
+  setDoc,
+} from "firebase/firestore";
+import { auth, db } from "./components/firebase";
 
 const Comment = () => {
+  const { v4: uuidv4 } = require("uuid");
   const [recordList, setRecordList] = useRecoilState(recordListState);
   const [userItem, setUserItem] = useRecoilState(userItemState);
-  const [comment, setComment] = useRecoilState(commentItemState);
+  const [commentItem, setCommentItem] = useRecoilState(commentItemState);
+  const [commentList, setCommentList] = useRecoilState(commentListState);
   const [isClient, setIsClient] = useState(false);
-
+  const [comment, setComment] = useState({
+    id: "",
+    key: uuidv4(),
+    value: "",
+    createdAt: changeDateFormat(new Date()),
+  });
   const router = useRouter();
+  // console.log(comment);
 
   //Hydrate Error対策
   useEffect(() => {
     if (typeof window !== "undefined") setIsClient(true);
   }, []);
 
+  //commentListの取得、commentListの更新処理
+  useEffect(() => {
+    if(comment) {
+      const commentDocRef = collection(db, "records", commentItem.id, "comment");
+      const q = query(commentDocRef, orderBy("timeStamp", "desc"));
+      onSnapshot(
+        q,
+        (snapshot) =>
+          setCommentList(
+            snapshot.docs.map((doc) => ({
+              ...doc.data(),
+              id: doc.id,
+              key: doc.data().key,
+              value: doc.data().value,
+              createdAt: doc.data().createdAt,
+            }))
+          ),
+        (error) => {
+          alert(error.message);
+        }
+      );
+    } 
+  }, []);
+
+  //comment送信処理
+  const handleCommentSubmit = () => {
+    if (comment.value === "") return;
+    const { id, key, value, createdAt } = comment;
+    //firebaseのサブコレクションに追加処理
+    const commentDocRef = collection(db, "records", commentItem.id, "comment");
+    setDoc(doc(commentDocRef), {
+      id,
+      key,
+      value,
+      createdAt,
+      timeStamp: serverTimestamp(),
+    });
+    //commentListの取得、commentListの更新処理
+    // const q = query(commentDocRef, orderBy("timeStamp", "desc"));
+    // onSnapshot(
+    //   q,
+    //   (snapshot) =>
+    //     setCommentList(
+    //       snapshot.docs.map((doc) => ({
+    //         ...doc.data(),
+    //         id: doc.id,
+    //         key: doc.data().key,
+    //         value: doc.data().value,
+    //         createdAt: doc.data().createdAt,
+    //       }))
+    //     ),
+    //   (error) => {
+    //     alert(error.message);
+    //   }
+    // );
+    // setCommentList([...commentList, { id, key, value, createdAt }]);
+
+    //comment初期化
+    setComment({
+      id: "",
+      key: uuidv4(),
+      value: "",
+      createdAt: changeDateFormat(new Date()),
+    });
+  };
+
+  //comment削除処理 サブドキュメントの削除をしたいができないため一旦保留
+  // const handleCommentDelete = (key: string) => {
+  //   const commentDelete = commentList.filter(
+  //     (commentList) => commentList.key !== key
+  //   );
+  //   setCommentList(commentDelete);
+  // };
+
   return (
     <Layout>
       <Head>
         <title>Engineer Record Comment</title>
       </Head>
+
       {isClient && (
         <Card
           sx={{
@@ -63,7 +161,7 @@ const Comment = () => {
               bgcolor: blue[100],
 
               width: 500,
-              mb: 4,
+              mb: 1,
               borderRadius: 5,
             }}
           >
@@ -76,13 +174,8 @@ const Comment = () => {
                   alt=""
                 ></Avatar>
               }
-              action={
-                <IconButton aria-label="settings">
-                  <MoreVertIcon />
-                </IconButton>
-              }
               title={userItem.displayName}
-              subheader={comment.createdAt}
+              subheader={commentItem.createdAt}
             />
             <CardContent
               sx={{
@@ -95,7 +188,7 @@ const Comment = () => {
                 color="text.secondary"
                 component="p"
               >
-                {comment.value}
+                {commentItem.value}
               </Typography>
             </CardContent>
 
@@ -118,15 +211,14 @@ const Comment = () => {
           </Box>
         </Card>
       )}
-
       {/* --------------------------------------- */}
-
-      <Button
-        sx={{ mb: 6, display: "flex", mx: "auto" }}
-        onClick={() => router.back()}
-      >
-        戻る
-      </Button>
+      <IconButton
+              sx={{ mb: 4, display: "flex", mx: "auto" }}
+              color="primary"
+              onClick={() => router.push("/Top")}
+            >
+              <ReplyIcon fontSize="large" />
+            </IconButton>
       <Box
         sx={{
           mt: 2,
@@ -136,7 +228,12 @@ const Comment = () => {
           mx: "auto",
         }}
       >
-        <TextField sx={{ width: "500px" }} label="New Comment" />
+        <TextField
+          sx={{ width: "500px" }}
+          label="New Comment"
+          value={comment.value}
+          onChange={(e) => setComment({ ...comment, value: e.target.value })}
+        />
       </Box>
       <Box
         sx={{
@@ -146,80 +243,83 @@ const Comment = () => {
           mx: "auto",
         }}
       >
-        <Fab variant="extended">
+        <Fab variant="extended" onClick={handleCommentSubmit}>
           <NavigationIcon />
           Comment
         </Fab>
       </Box>
 
-      {/* <Box sx={{ display: "flex", justifyContent: "center" }}>
-        <Typography sx={{ mr: 10 }} variant="h5">
-          text
-        </Typography>
-        <Typography variant="h6">text</Typography>
-      </Box> */}
-
-      <Card
-        sx={{
-          maxWidth: 500,
-          display: "flex",
-          flexDirection: "column",
-          mx: "auto",
-          boxShadow: 0,
-        }}
-      >
-        <Box
+      {isClient && (
+        <Card
           sx={{
-            bgcolor: red[100],
-
-            width: 500,
-            mb: 4,
-            borderRadius: 5,
+            maxWidth: 500,
+            display: "flex",
+            flexDirection: "column",
+            mx: "auto",
+            boxShadow: 0,
           }}
         >
-          <CardHeader
-            avatar={
-              <Avatar
-                sx={{ bgcolor: red[200] }}
-                aria-label="recipe"
-                // src={comment.photoURL}
-                alt=""
-              ></Avatar>
-            }
-            // title={userItem.displayName}
-            // subheader={comment.createdAt}
-          />
-          <CardContent
-            sx={{
-              bgcolor: red[50],
-            }}
-          >
-            <Typography
-              sx={{ minHeight: 80, whiteSpace: "pre-line" }}
-              variant="body2"
-              color="text.secondary"
-              component="p"
-            >
-              {/* {comment.value} */}
-            </Typography>
-          </CardContent>
+          {commentList.map((comment) => {
+            return (
+              <Box
+                key={comment.key}
+                sx={{
+                  bgcolor: red[100],
 
-          <CardActions
-            sx={{ display: "flex", justifyContent: "space-around" }}
-            disableSpacing
-          >
-            <IconButton>
-              <EditIcon />
-            </IconButton>
+                  width: 500,
+                  mb: 4,
+                  borderRadius: 5,
+                }}
+              >
+                <CardHeader
+                  avatar={
+                    <Avatar
+                      sx={{ ml: 2, width: 24, height: 24, bgcolor: red[200] }}
+                      aria-label="recipe"
+                      // src={comment.photoURL}
+                      alt=""
+                    ></Avatar>
+                  }
+                  title={userItem.displayName}
+                  subheader={comment.createdAt}
+                />
+                <CardContent
+                  sx={{
+                    bgcolor: red[50],
+                  }}
+                >
+                  <Typography
+                    sx={{ minHeight: 50, whiteSpace: "pre-line" }}
+                    variant="body2"
+                    color="text.secondary"
+                    component="p"
+                  >
+                    {comment.value}
+                  </Typography>
+                </CardContent>
 
-            <IconButton>
-              <DeleteIcon />
-            </IconButton>
-          </CardActions>
-        </Box>
-      </Card>
+                <CardActions
+                  sx={{ display: "flex", justifyContent: "space-around" }}
+                  disableSpacing
+                >
+                  <IconButton>
+                    <EditIcon />
+                  </IconButton>
+
+                  <IconButton 
+                  // onClick={() => handleCommentDelete(comment.key)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </CardActions>
+              </Box>
+            );
+          })}
+        </Card>
+      )}
     </Layout>
   );
 };
+
 
 export default Comment;

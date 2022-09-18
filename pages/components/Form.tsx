@@ -4,10 +4,11 @@ import { useRecoilState, useSetRecoilState } from "recoil";
 import { recordListState, userItemState } from "../constants/atom";
 import { useState } from "react";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { db } from "./firebase";
+import { auth, db } from "./firebase";
+import { onAuthStateChanged } from "firebase/auth";
 
 // Dateをyyyy-mm-dd hh:mm形式にフォーマット
-const changeDateFormat = (date: Date) => {
+export const changeDateFormat = (date: Date) => {
   return (
     date.getFullYear() +
     "/" +
@@ -22,10 +23,12 @@ const changeDateFormat = (date: Date) => {
 };
 
 const Form = () => {
+  const { v4: uuidv4 } = require("uuid");
   const setRecordList = useSetRecoilState(recordListState);
   const [userItem, setUserItem] = useRecoilState(userItemState);
   const [inputValue, setInputValue] = useState({
-    key: Math.floor(Math.random() * 10000).toString(32),
+    id: "",
+    key: uuidv4(),
     value: "",
     createdAt: changeDateFormat(new Date()),
     displayName: userItem.displayName,
@@ -35,26 +38,27 @@ const Form = () => {
   //学習記録を投稿する機能
   const handleAddRecord = () => {
     if (inputValue.value === "") return;
-    const { key, value, createdAt, displayName, photoURL } = inputValue;
+    const { id ,key, value, createdAt, displayName, photoURL } = inputValue;
     // const { key, value, createdAt } = inputValue;
     //データベースへデータ追加処理
     addDoc(collection(db, "records"), {
       key,
       value,
       createdAt,
-      // displayName,
-      // photoURL,
+      displayName,
+      photoURL,
       timeStamp: serverTimestamp(),
     });
     //リストの更新処理
     setRecordList((recordList) => [
       ...recordList,
       // { key, value, createdAt },
-      { key, value, createdAt, displayName, photoURL },
+      { id, key, value, createdAt, displayName, photoURL },
     ]);
     //textFieldの初期化処理
     setInputValue({
-      key: Math.floor(Math.random() * 10000).toString(32),
+      id: "",
+      key: uuidv4(),
       value: "",
       createdAt: changeDateFormat(new Date()),
       displayName: userItem.displayName,

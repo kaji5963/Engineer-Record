@@ -2,6 +2,7 @@ import { atom, RecoilState } from "recoil";
 import { recoilPersist } from "recoil-persist";
 
 export type Record = {
+  id: string
   key: string;
   value: string;
   createdAt: string;
@@ -17,12 +18,21 @@ export type User = {
   photoURL: string | null;
 };
 
-export type Comment = {
+export type CommentItem = {
+  id: string
   key: string;
   value: string;
   createdAt: string;
   displayName: string | null;
   photoURL: string | null ;
+};
+
+type commentList = {
+  id: string
+
+  key: string;
+  value: string;
+  createdAt: string;
 };
 
 const { persistAtom } = recoilPersist({
@@ -42,8 +52,14 @@ export const userItemState: RecoilState<User> = atom({
   effects_UNSTABLE: [persistAtom],
 });
 
-export const commentItemState: RecoilState<Comment> = atom({
-  key: "comment",
+export const commentItemState: RecoilState<CommentItem> = atom({
+  key: "commentItem",
   default: {},
+  effects_UNSTABLE: [persistAtom],
+});
+
+export const commentListState: RecoilState<commentList[]> = atom({
+  key: "commentList",
+  default: [],
   effects_UNSTABLE: [persistAtom],
 });
