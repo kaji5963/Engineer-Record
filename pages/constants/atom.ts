@@ -19,13 +19,14 @@ export type User = {
   photoURL: string | null;
 };
 
-export type CommentItem = {
+export type RecordItem = {
   id: string
   key: string;
   value: string;
   createdAt: string;
   displayName: string | null;
   photoURL: string | null ;
+  saved: boolean
 };
 
 export type commentList = {
@@ -62,7 +63,7 @@ export const userItemState: RecoilState<User> = atom({
   effects_UNSTABLE: [persistAtom],
 });
 
-export const commentItemState: RecoilState<CommentItem> = atom({
+export const recordItemState: RecoilState<RecordItem> = atom({
   key: "commentItem",
   default: {},
   effects_UNSTABLE: [persistAtom],

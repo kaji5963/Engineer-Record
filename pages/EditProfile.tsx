@@ -42,7 +42,7 @@ const EditProfile = () => {
   return (
     <Layout>
       <Head>
-        <title>Engineer Record Edit</title>
+        <title>Engineer Record EditProfile</title>
       </Head>
       <form
         onSubmit={(e) =>
@@ -115,7 +115,7 @@ const EditProfile = () => {
           <Box sx={{ textAlign: "center" }}>
             <Tooltip title="Complete" placement="bottom-start" arrow>
               <IconButton
-                sx={{ mr: 2 }}
+                sx={{ mr: 3 }}
                 color="primary"
                 type="submit"
                 onClick={() => router.push("/Top")}
@@ -126,7 +126,7 @@ const EditProfile = () => {
 
             <Tooltip title="Back" placement="bottom-start" arrow>
               <IconButton
-                sx={{ ml: 2 }}
+                sx={{ ml: 3 }}
                 color="primary"
                 onClick={() => router.push("/Profile")}
               >

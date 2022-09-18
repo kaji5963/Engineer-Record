@@ -28,7 +28,7 @@ import { useRouter } from "next/router";
 import Layout from "./components/Layout";
 import { useRecoilState } from "recoil";
 import {
-  commentItemState,
+  recordItemState,
   recordListState,
   userItemState,
   commentListState,
@@ -52,7 +52,7 @@ const Comment = () => {
   const { v4: uuidv4 } = require("uuid");
   const [recordList, setRecordList] = useRecoilState(recordListState);
   const [userItem, setUserItem] = useRecoilState(userItemState);
-  const [commentItem, setCommentItem] = useRecoilState(commentItemState);
+  const [commentItem, setCommentItem] = useRecoilState(recordItemState);
   const [commentList, setCommentList] = useRecoilState(commentListState);
   const [isClient, setIsClient] = useState(false);
   const [comment, setComment] = useState({

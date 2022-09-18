@@ -14,7 +14,7 @@ import {
 import { useRecoilState } from "recoil";
 import {
   bookmarkState,
-  commentItemState,
+  recordItemState,
   commentListState,
   Record,
   recordListState,
@@ -48,7 +48,7 @@ import { useRouter } from "next/router";
 const RecordList = () => {
   const [recordList, setRecordList] = useRecoilState(recordListState);
   const [userItem, setUserItem] = useRecoilState(userItemState);
-  const [commentItem, setCommentItem] = useRecoilState(commentItemState);
+  const [recordItem, setRecordItem] = useRecoilState(recordItemState);
   // const [commentList, setCommentList] = useRecoilState(commentListState);
   const [isClient, setIsClient] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -122,7 +122,7 @@ const RecordList = () => {
   //特定のコメントボタン押すと、そのデータをコメントページに渡す
   const handleComment = (key: string) => {
     const findComment = recordList.find((recordList) => recordList.key === key);
-    setCommentItem({ ...commentItem, ...findComment });
+    setRecordItem({ ...recordItem, ...findComment });
 
     // const [{key, value, createdAt}] = recordList
     // setComment({...comment, key, value, createdAt })
@@ -149,6 +149,14 @@ const RecordList = () => {
   ) => {
     setSaved(false);
   };
+
+  //Record編集処理
+  const handleEditRecord =(key: string) => {
+    const findEditRecord = recordList.find((recordList) => recordList.key === key)
+    setRecordItem({...recordItem, ...findEditRecord})
+    router.push("/EditRecord")
+    console.log(findEditRecord);
+  }
 
   //Record削除処理
   const handleDeleteRecord = (id: string) => {
@@ -211,7 +219,7 @@ const RecordList = () => {
                   action={
                     <>
                       <Tooltip title="Edit" placement="bottom-start" arrow>
-                        <IconButton sx={{ mr: 2 }}>
+                        <IconButton sx={{ mr: 2 }} onClick={() => handleEditRecord(record.key)}>
                           <EditIcon />
                         </IconButton>
                       </Tooltip>
