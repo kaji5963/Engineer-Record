@@ -1,4 +1,4 @@
-import { Box, IconButton, TextField, Typography } from "@mui/material";
+import { Box, IconButton, TextField, Tooltip, Typography } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import ReplyIcon from "@mui/icons-material/Reply";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
@@ -15,7 +15,7 @@ const Profile = () => {
   const [isClient, setIsClient] = useState(false);
 
   const router = useRouter();
-  
+
   //Hydrate Error対策
   useEffect(() => {
     if (typeof window !== "undefined") setIsClient(true);
@@ -27,7 +27,15 @@ const Profile = () => {
         <title>Engineer Record Profile</title>
       </Head>
       {isClient && (
-        <Box sx={{ bgcolor: grey[100], width: "50%", mx: "auto", p: 4, borderRadius: 5 }}>
+        <Box
+          sx={{
+            bgcolor: grey[100],
+            width: "50%",
+            mx: "auto",
+            p: 4,
+            borderRadius: 5,
+          }}
+        >
           <Typography sx={{ textAlign: "center" }} variant="h4" gutterBottom>
             Your Profile
           </Typography>
@@ -62,22 +70,25 @@ const Profile = () => {
             {`Email Address : ${userItem.email}`}
           </Typography>
           <Box sx={{ textAlign: "center" }}>
-            <IconButton
-              sx={{ mr: 2 }}
-              color="primary"
-              onClick={() => router.push("/Edit")}
+            <Tooltip title="Edit" placement="bottom-start" arrow>
+              <IconButton
+                sx={{ mr: 2 }}
+                color="primary"
+                onClick={() => router.push("/EditProfile")}
+              >
+                <EditIcon fontSize="large" />
+              </IconButton>
+            </Tooltip>
 
-            >
-              <EditIcon fontSize="large" />
-            </IconButton>
-
-            <IconButton
-              sx={{ ml: 2 }}
-              color="primary"
-              onClick={() => router.push("/Top")}
-            >
-              <ReplyIcon fontSize="large" />
-            </IconButton>
+            <Tooltip title="Back" placement="bottom-start" arrow>
+              <IconButton
+                sx={{ ml: 2 }}
+                color="primary"
+                onClick={() => router.push("/Top")}
+              >
+                <ReplyIcon fontSize="large" />
+              </IconButton>
+            </Tooltip>
           </Box>
         </Box>
       )}

@@ -1,4 +1,10 @@
-import { IconButton, Stack, TextField, Typography } from "@mui/material";
+import {
+  IconButton,
+  Stack,
+  TextField,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import ReplyIcon from "@mui/icons-material/Reply";
 import { grey } from "@mui/material/colors";
 import { Box } from "@mui/system";
@@ -13,7 +19,7 @@ import { FormEvent } from "react";
 import { onAuthStateChanged, updateProfile, User } from "firebase/auth";
 import { auth } from "./components/firebase";
 
-const Edit = () => {
+const EditProfile = () => {
   const [userItem, setUserItem] = useRecoilState(userItemState);
 
   const router = useRouter();
@@ -107,22 +113,26 @@ const Edit = () => {
             />
           </Box>
           <Box sx={{ textAlign: "center" }}>
-            <IconButton
-              sx={{ mr: 2 }}
-              color="primary"
-              type="submit"
-              onClick={() => router.push("/Top")}
-            >
-              <CheckCircleIcon fontSize="large" />
-            </IconButton>
+            <Tooltip title="Complete" placement="bottom-start" arrow>
+              <IconButton
+                sx={{ mr: 2 }}
+                color="primary"
+                type="submit"
+                onClick={() => router.push("/Top")}
+              >
+                <CheckCircleIcon fontSize="large" />
+              </IconButton>
+            </Tooltip>
 
-            <IconButton
-              sx={{ ml: 2 }}
-              color="primary"
-              onClick={() => router.push("/Profile")}
-            >
-              <ReplyIcon fontSize="large" />
-            </IconButton>
+            <Tooltip title="Back" placement="bottom-start" arrow>
+              <IconButton
+                sx={{ ml: 2 }}
+                color="primary"
+                onClick={() => router.push("/Profile")}
+              >
+                <ReplyIcon fontSize="large" />
+              </IconButton>
+            </Tooltip>
           </Box>
         </Box>
       </form>
@@ -130,4 +140,4 @@ const Edit = () => {
   );
 };
 
-export default Edit;
+export default EditProfile;

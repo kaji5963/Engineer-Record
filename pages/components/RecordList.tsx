@@ -9,6 +9,7 @@ import {
   IconButton,
   Stack,
   Pagination,
+  Tooltip,
 } from "@mui/material";
 import { useRecoilState } from "recoil";
 import {
@@ -20,7 +21,14 @@ import {
   userItemState,
 } from "../constants/atom";
 import { MouseEvent, useEffect, useMemo, useState } from "react";
-import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  orderBy,
+  query,
+} from "firebase/firestore";
 import { auth, db } from "./firebase";
 import { blue } from "@mui/material/colors";
 // import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -34,7 +42,7 @@ import BookmarkIcon from "@mui/icons-material/Bookmark";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, updateCurrentUser } from "firebase/auth";
 import { useRouter } from "next/router";
 
 const RecordList = () => {
@@ -142,6 +150,20 @@ const RecordList = () => {
     setSaved(false);
   };
 
+  //Record削除処理
+  const handleDeleteRecord = (id: string) => {
+    const deleteMessage = confirm("削除してもよろしいですか？");
+    if (deleteMessage === true) {
+      deleteDoc(doc(db, "records", id));
+      const deleteRecord = recordList.filter(
+        (recordList) => recordList.id !== id
+      );
+      setRecordList(deleteRecord);
+    } else {
+      return;
+    }
+  };
+
   return (
     <>
       <Stack>
@@ -188,13 +210,20 @@ const RecordList = () => {
                   }
                   action={
                     <>
-                      <IconButton sx={{mr: 2}}>
-                        <EditIcon />
-                      </IconButton>
+                      <Tooltip title="Edit" placement="bottom-start" arrow>
+                        <IconButton sx={{ mr: 2 }}>
+                          <EditIcon />
+                        </IconButton>
+                      </Tooltip>
 
-                      <IconButton sx={{mr: 2}}>
-                        <DeleteIcon />
-                      </IconButton>
+                      <Tooltip title="Delete" placement="bottom-start" arrow>
+                        <IconButton
+                          sx={{ mr: 2 }}
+                          onClick={() => handleDeleteRecord(record.id)}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </Tooltip>
                     </>
                   }
                   title={record.displayName}
@@ -219,26 +248,34 @@ const RecordList = () => {
                   sx={{ display: "flex", justifyContent: "space-around" }}
                   disableSpacing
                 >
-                  <IconButton onClick={() => handleComment(record.key)}>
-                    <ChatBubbleOutlineIcon />
-                  </IconButton>
+                  <Tooltip title="Comment" placement="right-start" arrow>
+                    <IconButton onClick={() => handleComment(record.key)}>
+                      <ChatBubbleOutlineIcon />
+                    </IconButton>
+                  </Tooltip>
 
-                  <IconButton>
-                    <ThumbUpOffAltIcon />
-                  </IconButton>
+                  <Tooltip title="Good" placement="right-start" arrow>
+                    <IconButton>
+                      <ThumbUpOffAltIcon />
+                    </IconButton>
+                  </Tooltip>
 
                   {saved === true ? (
-                    <IconButton onClick={(e) => handleRemoveBookmark(e)}>
-                      <BookmarkIcon />
-                    </IconButton>
+                    <Tooltip title="Bookmark" placement="right-start" arrow>
+                      <IconButton onClick={(e) => handleRemoveBookmark(e)}>
+                        <BookmarkIcon />
+                      </IconButton>
+                    </Tooltip>
                   ) : (
-                    <IconButton
-                      onClick={(e) =>
-                        handleSavedBookmark(e, record.key, record.saved)
-                      }
-                    >
-                      <BookmarkBorderIcon />
-                    </IconButton>
+                    <Tooltip title="Bookmark" placement="right-start" arrow>
+                      <IconButton
+                        onClick={(e) =>
+                          handleSavedBookmark(e, record.key, record.saved)
+                        }
+                      >
+                        <BookmarkBorderIcon />
+                      </IconButton>
+                    </Tooltip>
                   )}
                 </CardActions>
               </Box>

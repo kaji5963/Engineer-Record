@@ -10,6 +10,7 @@ import {
   IconButton,
   TextField,
   Typography,
+  Tooltip
 } from "@mui/material";
 import { blue, red } from "@mui/material/colors";
 import Head from "next/head";
@@ -204,13 +205,19 @@ const Comment = () => {
                 <ChatBubbleOutlineIcon />
               </IconButton>
 
-              <IconButton aria-label="add to favorites">
+              <Tooltip title="Good" placement="right-start" arrow>
+              <IconButton>
                 <ThumbUpOffAltIcon />
               </IconButton>
+              </Tooltip>
 
-              <IconButton aria-label="share">
+              <Tooltip title="Bookmark" placement="right-start" arrow>
+
+              <IconButton>
                 <BookmarkBorderIcon />
               </IconButton>
+              </Tooltip>
+
             </CardActions>
           </Box>
         </Card>
@@ -306,6 +313,7 @@ const Comment = () => {
                   sx={{ display: "flex", justifyContent: "space-around" }}
                   disableSpacing
                 >
+                  
                   <IconButton>
                     <EditIcon />
                   </IconButton>
