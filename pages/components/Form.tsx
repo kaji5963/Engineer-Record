@@ -33,12 +33,13 @@ const Form = () => {
     createdAt: changeDateFormat(new Date()),
     displayName: userItem.displayName,
     photoURL: userItem.photoURL,
+    saved: false
   });
 
   //学習記録を投稿する機能
   const handleAddRecord = () => {
     if (inputValue.value === "") return;
-    const { id ,key, value, createdAt, displayName, photoURL } = inputValue;
+    const { id ,key, value, createdAt, displayName, photoURL, saved } = inputValue;
     // const { key, value, createdAt } = inputValue;
     //データベースへデータ追加処理
     addDoc(collection(db, "records"), {
@@ -47,13 +48,14 @@ const Form = () => {
       createdAt,
       displayName,
       photoURL,
+      saved,
       timeStamp: serverTimestamp(),
     });
     //リストの更新処理
     setRecordList((recordList) => [
       ...recordList,
       // { key, value, createdAt },
-      { id, key, value, createdAt, displayName, photoURL },
+      { id, key, value, createdAt, displayName, photoURL, saved },
     ]);
     //textFieldの初期化処理
     setInputValue({
@@ -63,6 +65,7 @@ const Form = () => {
       createdAt: changeDateFormat(new Date()),
       displayName: userItem.displayName,
       photoURL: userItem.photoURL,
+    saved: false
     });
   };
 

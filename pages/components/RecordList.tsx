@@ -12,20 +12,28 @@ import {
 } from "@mui/material";
 import { useRecoilState } from "recoil";
 import {
+  bookmarkState,
   commentItemState,
+  commentListState,
+  Record,
   recordListState,
   userItemState,
 } from "../constants/atom";
-import { useEffect, useMemo, useState } from "react";
+import { MouseEvent, useEffect, useMemo, useState } from "react";
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import { auth, db } from "./firebase";
 import { blue } from "@mui/material/colors";
 // import FavoriteIcon from "@mui/icons-material/Favorite";
 // import ShareIcon from "@mui/icons-material/Share";
-import CommentIcon from "@mui/icons-material/Comment";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
-import StarIcon from "@mui/icons-material/Star";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import BookmarkIcon from "@mui/icons-material/Bookmark";
+import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
+import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
+import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import { onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/router";
 
@@ -33,8 +41,11 @@ const RecordList = () => {
   const [recordList, setRecordList] = useRecoilState(recordListState);
   const [userItem, setUserItem] = useRecoilState(userItemState);
   const [commentItem, setCommentItem] = useRecoilState(commentItemState);
+  // const [commentList, setCommentList] = useRecoilState(commentListState);
   const [isClient, setIsClient] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [saved, setSaved] = useState(false);
+  const [bookmarkList, setBookmarkList] = useRecoilState(bookmarkState);
   const router = useRouter();
 
   //firebaseからデータを取得、setRecordListで更新しrecordListに格納
@@ -51,10 +62,32 @@ const RecordList = () => {
           createdAt: doc.data().createdAt,
           displayName: doc.data().displayName,
           photoURL: doc.data().photoURL,
+          saved: doc.data().saved,
         }))
-        );
-      });
-    }, []);
+      );
+    });
+  }, []);
+
+  // useEffect(() => {
+  //   const commentDocRef = collection(db, "records", commentItem.id, "comment");
+  //   const q = query(commentDocRef, orderBy("timeStamp", "desc"));
+  //   onSnapshot(
+  //     q,
+  //     (snapshot) =>
+  //       setCommentList(
+  //         snapshot.docs.map((doc) => ({
+  //           ...doc.data(),
+  //           id: doc.id,
+  //           key: doc.data().key,
+  //           value: doc.data().value,
+  //           createdAt: doc.data().createdAt,
+  //         }))
+  //       ),
+  //     (error) => {
+  //       alert(error.message);
+  //     }
+  //   );
+  // }, []);
 
   //現在ログインしているuserを取得、setUserItemで更新しuserItemに格納
   useEffect(() => {
@@ -78,14 +111,35 @@ const RecordList = () => {
     return recordList.slice(startNumber, endNumber);
   }, [currentPage, recordList]);
 
+  //特定のコメントボタン押すと、そのデータをコメントページに渡す
   const handleComment = (key: string) => {
     const findComment = recordList.find((recordList) => recordList.key === key);
     setCommentItem({ ...commentItem, ...findComment });
 
-    
     // const [{key, value, createdAt}] = recordList
     // setComment({...comment, key, value, createdAt })
     router.push("/Comment");
+  };
+
+  //ブックマークする処理    一旦保留
+  const handleSavedBookmark = (
+    e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>,
+    key: string,
+    saved: boolean
+  ) => {
+    // const bookmarkRecord = recordList.find((recordList) => recordList.key === key)
+    // console.log(!bookmarkRecord?.saved);
+    // const {id, key, value, createdAt, displayName, photoURL, saved} = bookmarkRecord
+    // setBookmarkList({...bookmarkList, id, key, value, createdAt, displayName, photoURL, saved });
+    // console.log(bookmarkList);
+    setSaved(true);
+  };
+
+  //ブックマーク外す処理
+  const handleRemoveBookmark = (
+    e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>
+  ) => {
+    setSaved(false);
   };
 
   return (
@@ -127,15 +181,21 @@ const RecordList = () => {
                 <CardHeader
                   avatar={
                     <Avatar
-                      sx={{ bgcolor: blue[200] }}
+                      sx={{ bgcolor: blue[200], fontSize: 20 }}
                       // src={record.photoURL}
                       alt=""
                     ></Avatar>
                   }
                   action={
-                    <IconButton aria-label="settings">
-                      <MoreVertIcon />
-                    </IconButton>
+                    <>
+                      <IconButton sx={{mr: 2}}>
+                        <EditIcon />
+                      </IconButton>
+
+                      <IconButton sx={{mr: 2}}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </>
                   }
                   title={record.displayName}
                   subheader={record.createdAt}
@@ -159,21 +219,27 @@ const RecordList = () => {
                   sx={{ display: "flex", justifyContent: "space-around" }}
                   disableSpacing
                 >
-                  <IconButton
-                    aria-label="comment"
-                    onClick={() => handleComment(record.key)}
-                    // onClick={() => router.push("/Comment")}
-                  >
-                    <CommentIcon />
+                  <IconButton onClick={() => handleComment(record.key)}>
+                    <ChatBubbleOutlineIcon />
                   </IconButton>
 
-                  <IconButton aria-label="add to favorites">
-                    <ThumbUpIcon />
+                  <IconButton>
+                    <ThumbUpOffAltIcon />
                   </IconButton>
 
-                  <IconButton aria-label="share">
-                    <StarIcon />
-                  </IconButton>
+                  {saved === true ? (
+                    <IconButton onClick={(e) => handleRemoveBookmark(e)}>
+                      <BookmarkIcon />
+                    </IconButton>
+                  ) : (
+                    <IconButton
+                      onClick={(e) =>
+                        handleSavedBookmark(e, record.key, record.saved)
+                      }
+                    >
+                      <BookmarkBorderIcon />
+                    </IconButton>
+                  )}
                 </CardActions>
               </Box>
             );

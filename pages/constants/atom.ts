@@ -8,6 +8,7 @@ export type Record = {
   createdAt: string;
   displayName: string | null;
   photoURL: string | null ;
+  saved: boolean
 };
 
 export type User = {
@@ -27,12 +28,21 @@ export type CommentItem = {
   photoURL: string | null ;
 };
 
-type commentList = {
+export type commentList = {
   id: string
-
   key: string;
   value: string;
   createdAt: string;
+};
+
+export type bookmark = {
+  id: string
+  key: string;
+  value: string;
+  createdAt: string;
+  displayName: string | null;
+  photoURL: string | null ;
+  saved: boolean
 };
 
 const { persistAtom } = recoilPersist({
@@ -61,5 +71,11 @@ export const commentItemState: RecoilState<CommentItem> = atom({
 export const commentListState: RecoilState<commentList[]> = atom({
   key: "commentList",
   default: [],
+  effects_UNSTABLE: [persistAtom],
+});
+
+export const bookmarkState: RecoilState<bookmark> = atom({
+  key: "saved",
+  default: {},
   effects_UNSTABLE: [persistAtom],
 });

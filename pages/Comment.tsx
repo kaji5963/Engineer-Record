@@ -14,10 +14,12 @@ import {
 import { blue, red } from "@mui/material/colors";
 import Head from "next/head";
 import ReplyIcon from "@mui/icons-material/Reply";
+import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
+import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
+import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import CommentIcon from "@mui/icons-material/Comment";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
-import StarIcon from "@mui/icons-material/Star";
 import NavigationIcon from "@mui/icons-material/Send";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -53,7 +55,6 @@ const Comment = () => {
   const [commentList, setCommentList] = useRecoilState(commentListState);
   const [isClient, setIsClient] = useState(false);
   const [comment, setComment] = useState({
-    id: "",
     key: uuidv4(),
     value: "",
     createdAt: changeDateFormat(new Date()),
@@ -68,8 +69,13 @@ const Comment = () => {
 
   //commentListの取得、commentListの更新処理
   useEffect(() => {
-    if(comment) {
-      const commentDocRef = collection(db, "records", commentItem.id, "comment");
+    if (comment) {
+      const commentDocRef = collection(
+        db,
+        "records",
+        commentItem.id,
+        "comment"
+      );
       const q = query(commentDocRef, orderBy("timeStamp", "desc"));
       onSnapshot(
         q,
@@ -87,17 +93,16 @@ const Comment = () => {
           alert(error.message);
         }
       );
-    } 
+    }
   }, []);
 
   //comment送信処理
   const handleCommentSubmit = () => {
     if (comment.value === "") return;
-    const { id, key, value, createdAt } = comment;
+    const { key, value, createdAt } = comment;
     //firebaseのサブコレクションに追加処理
     const commentDocRef = collection(db, "records", commentItem.id, "comment");
     setDoc(doc(commentDocRef), {
-      id,
       key,
       value,
       createdAt,
@@ -125,7 +130,6 @@ const Comment = () => {
 
     //comment初期化
     setComment({
-      id: "",
       key: uuidv4(),
       value: "",
       createdAt: changeDateFormat(new Date()),
@@ -197,15 +201,15 @@ const Comment = () => {
               disableSpacing
             >
               <IconButton aria-label="comment" disabled>
-                <CommentIcon />
+                <ChatBubbleOutlineIcon />
               </IconButton>
 
               <IconButton aria-label="add to favorites">
-                <ThumbUpIcon />
+                <ThumbUpOffAltIcon />
               </IconButton>
 
               <IconButton aria-label="share">
-                <StarIcon />
+                <BookmarkBorderIcon />
               </IconButton>
             </CardActions>
           </Box>
@@ -213,12 +217,12 @@ const Comment = () => {
       )}
       {/* --------------------------------------- */}
       <IconButton
-              sx={{ mb: 4, display: "flex", mx: "auto" }}
-              color="primary"
-              onClick={() => router.push("/Top")}
-            >
-              <ReplyIcon fontSize="large" />
-            </IconButton>
+        sx={{ mb: 4, display: "flex", mx: "auto" }}
+        color="primary"
+        onClick={() => router.push("/Top")}
+      >
+        <ReplyIcon fontSize="large" />
+      </IconButton>
       <Box
         sx={{
           mt: 2,
@@ -306,9 +310,7 @@ const Comment = () => {
                     <EditIcon />
                   </IconButton>
 
-                  <IconButton 
-                  // onClick={() => handleCommentDelete(comment.key)}
-                  >
+                  <IconButton>
                     <DeleteIcon />
                   </IconButton>
                 </CardActions>
