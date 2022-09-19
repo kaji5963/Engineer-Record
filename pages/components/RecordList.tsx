@@ -53,7 +53,7 @@ const RecordList = () => {
   const [isClient, setIsClient] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [saved, setSaved] = useState(false);
-  const [bookmarkList, setBookmarkList] = useRecoilState(bookmarkState);
+  const [bookmarkItem, setBookmarkItem] = useRecoilState(bookmarkState);
   const router = useRouter();
 
   //firebaseからデータを取得、setRecordListで更新しrecordListに格納
@@ -132,22 +132,21 @@ const RecordList = () => {
   //ブックマークする処理    一旦保留
   const handleSavedBookmark = (
     e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>,
-    key: string,
-    saved: boolean
+    key: string
   ) => {
-    // const bookmarkRecord = recordList.find((recordList) => recordList.key === key)
-    // console.log(!bookmarkRecord?.saved);
+    const bookmarkRecord = recordList.find((recordList) => recordList.key === key)
     // const {id, key, value, createdAt, displayName, photoURL, saved} = bookmarkRecord
-    // setBookmarkList({...bookmarkList, id, key, value, createdAt, displayName, photoURL, saved });
-    // console.log(bookmarkList);
-    setSaved(true);
+    setBookmarkItem({...bookmarkItem, saved: true });
+    console.log(bookmarkItem);
+    // setSaved(true);
   };
 
   //ブックマーク外す処理
   const handleRemoveBookmark = (
     e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>
   ) => {
-    setSaved(false);
+    setBookmarkItem({...bookmarkItem, saved: false })
+    // setSaved(false);
   };
 
   //Record編集処理
@@ -268,7 +267,7 @@ const RecordList = () => {
                     </IconButton>
                   </Tooltip>
 
-                  {saved === true ? (
+                  {bookmarkItem.saved === true ? (
                     <Tooltip title="Bookmark" placement="right-start" arrow>
                       <IconButton onClick={(e) => handleRemoveBookmark(e)}>
                         <BookmarkIcon />
@@ -278,7 +277,7 @@ const RecordList = () => {
                     <Tooltip title="Bookmark" placement="right-start" arrow>
                       <IconButton
                         onClick={(e) =>
-                          handleSavedBookmark(e, record.key, record.saved)
+                          handleSavedBookmark(e, record.key)
                         }
                       >
                         <BookmarkBorderIcon />
