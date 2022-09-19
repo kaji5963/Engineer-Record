@@ -13,10 +13,9 @@ import {
 } from "@mui/material";
 import { useRecoilState } from "recoil";
 import {
-  bookmarkState,
+  // bookmarkState,
   recordItemState,
   commentListState,
-  Record,
   recordListState,
   userItemState,
 } from "../constants/atom";
@@ -53,7 +52,7 @@ const RecordList = () => {
   const [isClient, setIsClient] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [saved, setSaved] = useState(false);
-  const [bookmarkItem, setBookmarkItem] = useRecoilState(bookmarkState);
+  // const [bookmarkItem, setBookmarkItem] = useRecoilState(bookmarkState);
   const router = useRouter();
 
   //firebaseからデータを取得、setRecordListで更新しrecordListに格納
@@ -129,33 +128,35 @@ const RecordList = () => {
     router.push("/Comment");
   };
 
-  //ブックマークする処理    一旦保留
-  const handleSavedBookmark = (
-    e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>,
-    key: string
-  ) => {
-    const bookmarkRecord = recordList.find((recordList) => recordList.key === key)
-    // const {id, key, value, createdAt, displayName, photoURL, saved} = bookmarkRecord
-    setBookmarkItem({...bookmarkItem, saved: true });
-    console.log(bookmarkItem);
-    // setSaved(true);
+  //ブックマークする処理
+  const handleSavedBookmark = (key: string) => {
+    const bookmarkRecord = recordList.map((recordList) =>
+      recordList.key === key
+        ? { ...recordList, saved: !recordList.saved }
+        : recordList
+    );
+    setRecordList(bookmarkRecord);
   };
 
   //ブックマーク外す処理
-  const handleRemoveBookmark = (
-    e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>
-  ) => {
-    setBookmarkItem({...bookmarkItem, saved: false })
-    // setSaved(false);
+  const handleRemoveBookmark = (key: string) => {
+    const bookmarkRecord = recordList.map((recordList) =>
+      recordList.key === key
+        ? { ...recordList, saved: !recordList.saved }
+        : recordList
+    );
+    setRecordList(bookmarkRecord);
   };
 
   //Record編集処理
-  const handleEditRecord =(key: string) => {
-    const findEditRecord = recordList.find((recordList) => recordList.key === key)
-    setRecordItem({...recordItem, ...findEditRecord})
-    router.push("/EditRecord")
+  const handleEditRecord = (key: string) => {
+    const findEditRecord = recordList.find(
+      (recordList) => recordList.key === key
+    );
+    setRecordItem({ ...recordItem, ...findEditRecord });
+    router.push("/EditRecord");
     console.log(findEditRecord);
-  }
+  };
 
   //Record削除処理
   const handleDeleteRecord = (id: string) => {
@@ -218,7 +219,10 @@ const RecordList = () => {
                   action={
                     <>
                       <Tooltip title="Edit" placement="bottom-start" arrow>
-                        <IconButton sx={{ mr: 2 }} onClick={() => handleEditRecord(record.key)}>
+                        <IconButton
+                          sx={{ mr: 2 }}
+                          onClick={() => handleEditRecord(record.key)}
+                        >
                           <EditIcon />
                         </IconButton>
                       </Tooltip>
@@ -267,18 +271,18 @@ const RecordList = () => {
                     </IconButton>
                   </Tooltip>
 
-                  {bookmarkItem.saved === true ? (
+                  {record.saved === true ? (
                     <Tooltip title="Bookmark" placement="right-start" arrow>
-                      <IconButton onClick={(e) => handleRemoveBookmark(e)}>
+                      <IconButton
+                        onClick={() => handleRemoveBookmark(record.key)}
+                      >
                         <BookmarkIcon />
                       </IconButton>
                     </Tooltip>
                   ) : (
                     <Tooltip title="Bookmark" placement="right-start" arrow>
                       <IconButton
-                        onClick={(e) =>
-                          handleSavedBookmark(e, record.key)
-                        }
+                        onClick={() => handleSavedBookmark(record.key)}
                       >
                         <BookmarkBorderIcon />
                       </IconButton>

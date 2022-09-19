@@ -36,15 +36,15 @@ export type commentList = {
   createdAt: string;
 };
 
-export type bookmark = {
-  id: string
-  key: string;
-  value: string;
-  createdAt: string;
-  displayName: string | null;
-  photoURL: string | null ;
-  saved: boolean
-};
+// export type bookmark = {
+//   id: string
+//   key: string;
+//   value: string;
+//   createdAt: string;
+//   displayName: string | null;
+//   photoURL: string | null ;
+//   saved: boolean
+// };
 
 const { persistAtom } = recoilPersist({
   key: "recoil-persist",
@@ -75,8 +75,8 @@ export const commentListState: RecoilState<commentList[]> = atom({
   effects_UNSTABLE: [persistAtom],
 });
 
-export const bookmarkState: RecoilState<bookmark> = atom({
-  key: "saved",
-  default: {},
-  effects_UNSTABLE: [persistAtom],
-});
+// export const bookmarkState: RecoilState<bookmark> = atom({
+//   key: "saved",
+//   default: {},
+//   effects_UNSTABLE: [persistAtom],
+// });
