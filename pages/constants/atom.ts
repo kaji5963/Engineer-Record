@@ -12,10 +12,8 @@ export type Record = {
 };
 
 export type User = {
-  email: string | null;
-  uid: string | null;
+  uid: string ;
   displayName: string | null;
-  // photoURL: any;
   photoURL: string | null;
 };
 

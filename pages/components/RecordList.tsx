@@ -21,12 +21,14 @@ import {
 } from "../constants/atom";
 import { MouseEvent, useEffect, useMemo, useState } from "react";
 import {
+  addDoc,
   collection,
   deleteDoc,
   doc,
   onSnapshot,
   orderBy,
   query,
+  serverTimestamp,
 } from "firebase/firestore";
 import { auth, db } from "./firebase";
 import { blue } from "@mui/material/colors";
@@ -96,12 +98,12 @@ const RecordList = () => {
   //   );
   // }, []);
 
-  //現在ログインしているuserを取得、setUserItemで更新しuserItemに格納
+  //現在ログインしているuserを取得しuserItemに格納
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        const { email, uid, displayName, photoURL } = user;
-        setUserItem({ ...userItem, email, uid, displayName, photoURL });
+        const { uid, displayName, photoURL } = user;
+        setUserItem({ ...userItem, uid, displayName, photoURL });
       }
     });
   }, []);
@@ -136,6 +138,21 @@ const RecordList = () => {
         : recordList
     );
     setRecordList(bookmarkRecord);
+
+    const findBookmarkRecord = bookmarkRecord.find(
+      (recordList) => recordList.key === key
+    );
+    const { value, createdAt, displayName, photoURL, saved } =
+      findBookmarkRecord!;
+    addDoc(collection(db, "bookmark"), {
+      key,
+      value,
+      createdAt,
+      displayName,
+      photoURL,
+      saved,
+      timeStamp: serverTimestamp(),
+    });
   };
 
   //ブックマーク外す処理
@@ -155,7 +172,6 @@ const RecordList = () => {
     );
     setRecordItem({ ...recordItem, ...findEditRecord });
     router.push("/EditRecord");
-    console.log(findEditRecord);
   };
 
   //Record削除処理
