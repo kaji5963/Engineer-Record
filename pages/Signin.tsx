@@ -1,8 +1,8 @@
+import Head from "next/head";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
@@ -10,31 +10,33 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import {
-  signInWithEmailAndPassword, updateProfile,
-} from "firebase/auth";
+import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "./components/firebase";
 import { useRecoilState } from "recoil";
-import { recordListState } from "./constants/atom";
-import Head from "next/head";
+import { User, userItemState } from "./constants/atom";
 
 const SignIn = () => {
-  // const [userName, setUserName] = useRecoilState(userNameState);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [recordList, setRecordList] = useRecoilState(recordListState);
-
+  const [userItem, setUserItem] = useRecoilState(userItemState);
   const router = useRouter();
 
+  //SignIn処理
   const handleSignIn = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // const user = userCredential.user;
+      .then(() => {
+        //ユーザー情報取得処理しuserItemへ格納
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            const { uid, displayName, photoURL } = user as User;
+            setUserItem({ ...userItem, uid, displayName, photoURL });
+          }
+        });
         router.push("/Top");
       })
       .catch((error) => {
-        alert(error)
+        alert(error.message);
       });
   };
 

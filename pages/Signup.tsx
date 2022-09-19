@@ -1,3 +1,4 @@
+import Head from "next/head";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -11,86 +12,88 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { useRouter } from "next/router";
 import { ChangeEvent, useState } from "react";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+  updateProfile,
+  User,
+} from "firebase/auth";
 import { auth, db, storage } from "./components/firebase";
-import { useRecoilState } from "recoil";
-import { recordListState } from "./constants/atom";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { grey } from "@mui/material/colors";
 import { IconButton } from "@mui/material";
-import Head from "next/head";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { getDownloadURL, ref, uploadBytes, uploadBytesResumable } from "firebase/storage";
+import { userItemState } from "./constants/atom";
+import { useRecoilState } from "recoil";
 
 type Info = {
   email: string;
   password: string;
-  displayName: string;
-  photoURL: File | null;
+  displayName: string | null;
+  photoURL: string;
 };
 
 const SignUp = () => {
+  const [userItem, setUserItem] = useRecoilState(userItemState);
   const [userInfo, setUserInfo] = useState<Info>({
     email: "",
     password: "",
     displayName: "",
-    photoURL: null,
+    photoURL: "",
   });
-  // const [recordList, setRecordList] = useRecoilState(recordListState);
-
   const router = useRouter();
 
-  //SignUp処理、それぞれのデータをfirebaseとuserInfoへ格納
-  const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
+  //SignUp処理、userInfoのデータをfirebaseへ格納
+  const handleSignUp = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const { email, password, displayName, photoURL } = userInfo;
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        const user = userCredential.user;
-        //displayName,photoURLを更新し格納
+        const user = userCredential.user as User;
+        //displayName,photoURLを更新
         updateProfile(user, {
-          displayName: displayName,
-          // photoURL: photoURL,
+          displayName,
+          photoURL,
         });
+        //ユーザー情報取得処理しuserItemへ格納
+        // onAuthStateChanged(auth, (user) => {
+        //   if (user) {
+        //     const { uid, displayName, photoURL } = user as User;
+        //     setUserItem({ ...userItem, uid, displayName, photoURL });
+        //   }
+        // });
         //userInfoを初期化
         setUserInfo({
           email: "",
           password: "",
           displayName: "",
-          photoURL: null,
+          photoURL: "",
         });
-
+        //firebaseにusersコレクション作成
+        addDoc(collection(db, "users"), {
+          displayName,
+          photoURL,
+          timeStamp: serverTimestamp(),
+        });
         router.push("/Top");
       })
       .catch((error) => {
-        alert(error);
+        alert(error.message);
       });
-    }
-    // const user = userCredential.user;
-    // const userData = {
-    //   displayName: displayName,
-    //   photoURL: photoURL,
-    //   uid: user.uid,
-    // };
-    // console.log(userData);
+  };
 
-    // addDoc(collection(db, "users"), userData);
-    // const [{ key, value, createdAt, userImage }] = recordList;
-
-    //     setRecordList((recordList) => [
-    //       ...recordList,
-    //       { key, value, createdAt, userName: userName, userImage },
-    //     ]);
-
-
-    
-  // const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
-  //   const file = e.target.files![0];
-  //   const storageRef = ref(storage, "image/" + file.name);
-  //   uploadBytes(storageRef, file).then((snapshot) => {
-  //     console.log("Uploaded a blob or file!");
-  //   });
-  //   setUserInfo({...userInfo, photoURL: file})
-  // };
+  //ファイル選択後、firebaseにアップロードしfirebaseからダウンロード処理
+  const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files![0];
+    const storageRef = ref(storage, "images/" + file.name);
+    await uploadBytes(storageRef, file).then((snapshot) => {
+      console.log("Uploaded a file!");
+    });
+    await getDownloadURL(storageRef).then((url) => {
+      console.log("Downloaded a file!");
+      setUserInfo({ ...userInfo, photoURL: url });
+    });
+  };
 
   return (
     <>
@@ -107,7 +110,7 @@ const SignUp = () => {
             alignItems: "center",
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+          <Avatar sx={{ m: 2, bgcolor: "secondary.main" }}>
             <LockOutlinedIcon />
           </Avatar>
 
@@ -121,35 +124,66 @@ const SignUp = () => {
             sx={{ mt: 3 }}
           >
             <Grid container spacing={2}>
-              <IconButton
-                sx={{
-                  mt: 4,
-                  bgcolor: grey[200],
-                  mx: "auto",
-                  mb: 2,
-                  cursor: "pointer",
-                  display: "flex",
-                  justifyContent: "center",
-                }}
-              >
-                <label>
-                  <PersonAddIcon
+              {userInfo.photoURL === "" ? (
+                <>
+                  <IconButton
                     sx={{
+                      mt: 4,
+                      bgcolor: grey[200],
+                      mx: "auto",
+                      mb: 2,
                       cursor: "pointer",
+                      display: "flex",
+                      justifyContent: "center",
                     }}
-                    fontSize="large"
-                  />
-                  <input
-                    type="file"
-                    // onChange={handleFileUpload}
-                    onChange={(e) =>
-                      setUserInfo({ ...userInfo, photoURL: e.target.files![0] })
-                    }
-                    style={{ display: "none" }}
-                    accept=".jpg, .jpeg, .png"
-                  />
-                </label>
-              </IconButton>
+                  >
+                    <label>
+                      <PersonAddIcon
+                        sx={{
+                          cursor: "pointer",
+                        }}
+                        fontSize="large"
+                      />
+                      <input
+                        type="file"
+                        onChange={(e) => handleFileUpload(e)}
+                        style={{ display: "none" }}
+                        accept=".jpg, .jpeg, .png"
+                      />
+                    </label>
+                  </IconButton>
+                </>
+              ) : (
+                <>
+                  <IconButton
+                    sx={{
+                      mt: 4,
+                      bgcolor: grey[200],
+                      mx: "auto",
+                      mb: 2,
+                      cursor: "pointer",
+                      display: "flex",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <label>
+                      <Avatar
+                        sx={{
+                          cursor: "pointer",
+                        }}
+                        src={userItem.photoURL}
+                      />
+                      <input
+                        type="file"
+                        onChange={(e) => handleFileUpload(e)}
+                        style={{ display: "none" }}
+                        accept=".jpg, .jpeg, .png"
+                      />
+                    </label>
+                  </IconButton>
+                </>
+              )}
+
               <Grid item xs={12}>
                 <TextField
                   autoComplete="given-name"
@@ -181,10 +215,10 @@ const SignUp = () => {
                 <TextField
                   required
                   fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
                   id="password"
+                  label="Password"
+                  name="password"
+                  type="password"
                   autoComplete="new-password"
                   onChange={(e) =>
                     setUserInfo({ ...userInfo, password: e.target.value })

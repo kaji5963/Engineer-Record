@@ -7,14 +7,14 @@ export type Record = {
   value: string;
   createdAt: string;
   displayName: string | null;
-  photoURL: string | null ;
+  photoURL: string;
   saved: boolean
 };
 
 export type User = {
-  uid: string ;
+  uid: string | null;
   displayName: string | null;
-  photoURL: string | null;
+  photoURL: string;
 };
 
 export type RecordItem = {
@@ -23,7 +23,7 @@ export type RecordItem = {
   value: string;
   createdAt: string;
   displayName: string | null;
-  photoURL: string | null ;
+  photoURL: string;
   saved: boolean
 };
 
@@ -40,7 +40,7 @@ export type commentList = {
 //   value: string;
 //   createdAt: string;
 //   displayName: string | null;
-//   photoURL: string | null ;
+//   photoURL: string ;
 //   saved: boolean
 // };
 

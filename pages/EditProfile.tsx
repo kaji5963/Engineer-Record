@@ -27,7 +27,7 @@ const EditProfile = () => {
   const handleSubmit = (
     e: FormEvent<HTMLFormElement>,
     displayName: string | null,
-    photoURL: string | null
+    photoURL: string 
   ) => {
     e.preventDefault();
 

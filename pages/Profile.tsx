@@ -66,9 +66,9 @@ const Profile = () => {
           <Typography sx={{ textAlign: "center" }} variant="h5" gutterBottom>
             {`Display Name : ${userItem.displayName}`}
           </Typography>
-          <Typography sx={{ textAlign: "center" }} variant="h5" gutterBottom>
+          {/* <Typography sx={{ textAlign: "center" }} variant="h5" gutterBottom>
             {`Email Address : ${userItem.email}`}
-          </Typography>
+          </Typography> */}
           <Box sx={{ textAlign: "center" }}>
             <Tooltip title="Edit" placement="bottom-start" arrow>
               <IconButton

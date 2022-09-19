@@ -18,6 +18,7 @@ import {
   commentListState,
   recordListState,
   userItemState,
+  User,
 } from "../constants/atom";
 import { MouseEvent, useEffect, useMemo, useState } from "react";
 import {
@@ -102,7 +103,7 @@ const RecordList = () => {
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        const { uid, displayName, photoURL } = user;
+        const { uid, displayName, photoURL } = user as User;
         setUserItem({ ...userItem, uid, displayName, photoURL });
       }
     });
@@ -228,8 +229,7 @@ const RecordList = () => {
                   avatar={
                     <Avatar
                       sx={{ bgcolor: blue[200], fontSize: 20 }}
-                      // src={record.photoURL}
-                      alt=""
+                      src={record.photoURL}
                     ></Avatar>
                   }
                   action={
