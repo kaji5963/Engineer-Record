@@ -54,7 +54,7 @@ const RecordList = () => {
   // const [commentList, setCommentList] = useRecoilState(commentListState);
   const [isClient, setIsClient] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [saved, setSaved] = useState(false);
+  // const [saved, setSaved] = useState(false);
   // const [bookmarkItem, setBookmarkItem] = useRecoilState(bookmarkState);
   const router = useRouter();
 

@@ -1,4 +1,5 @@
 import {
+  Avatar,
   IconButton,
   Stack,
   TextField,
@@ -15,19 +16,26 @@ import { useRecoilState } from "recoil";
 import { userItemState } from "./constants/atom";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import { FormEvent } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { onAuthStateChanged, updateProfile, User } from "firebase/auth";
-import { auth } from "./components/firebase";
+import { auth, storage } from "./components/firebase";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 const EditProfile = () => {
   const [userItem, setUserItem] = useRecoilState(userItemState);
+  const [isClient, setIsClient] = useState(false);
 
   const router = useRouter();
+
+  //Hydrate Error対策
+  useEffect(() => {
+    if (typeof window !== "undefined") setIsClient(true);
+  }, []);
 
   const handleSubmit = (
     e: FormEvent<HTMLFormElement>,
     displayName: string | null,
-    photoURL: string 
+    photoURL: string
   ) => {
     e.preventDefault();
 
@@ -39,16 +47,25 @@ const EditProfile = () => {
     router.push("/Top");
   };
 
+  //ファイル選択後、firebaseにアップロードしfirebaseからダウンロード処理
+  const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files![0];
+    const storageRef = ref(storage, "images/" + file.name);
+    await uploadBytes(storageRef, file).then((snapshot) => {
+      console.log("Uploaded a file!");
+    });
+    await getDownloadURL(storageRef).then((url) => {
+      console.log("Downloaded a file!");
+      setUserItem({ ...userItem, photoURL: url });
+    });
+  };
+
   return (
     <Layout>
       <Head>
         <title>Engineer Record EditProfile</title>
       </Head>
-      <form
-        onSubmit={(e) =>
-          handleSubmit(e, userItem.displayName, userItem.photoURL)
-        }
-      >
+      {isClient && (
         <Box
           sx={{
             bgcolor: grey[100],
@@ -60,6 +77,10 @@ const EditProfile = () => {
             flexDirection: "column",
             justifyContent: "center",
           }}
+          component="form"
+          onSubmit={(e) =>
+            handleSubmit(e, userItem.displayName, userItem.photoURL)
+          }
         >
           <Typography sx={{ textAlign: "center" }} variant="h4" gutterBottom>
             Edit Profile
@@ -73,7 +94,7 @@ const EditProfile = () => {
               mb: 2,
             }}
           >
-            <Typography variant="subtitle1">Avatar</Typography>
+            <Typography sx={{mx: "auto"}} variant="subtitle1">Avatar</Typography>
 
             <IconButton
               color="primary"
@@ -84,15 +105,13 @@ const EditProfile = () => {
                 hidden
                 accept="image/*"
                 type="file"
-                // onChange={(e) =>
-                //   setUserItem({ ...userItem, photoURL: e.target.files![0] })
-                // }
+                onChange={(e) => handleFileUpload(e)}
               />
-              <AccountCircleIcon
+              <Avatar
                 sx={{
                   cursor: "pointer",
                 }}
-                fontSize="large"
+                src={userItem.photoURL}
               />
             </IconButton>
           </Stack>
@@ -135,7 +154,7 @@ const EditProfile = () => {
             </Tooltip>
           </Box>
         </Box>
-      </form>
+      )}
     </Layout>
   );
 };

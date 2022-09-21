@@ -16,14 +16,13 @@ import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
   updateProfile,
-  User,
 } from "firebase/auth";
 import { auth, db, storage } from "./components/firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { grey } from "@mui/material/colors";
 import { IconButton } from "@mui/material";
 import { getDownloadURL, ref, uploadBytes, uploadBytesResumable } from "firebase/storage";
-import { userItemState } from "./constants/atom";
+import { User, userItemState } from "./constants/atom";
 import { useRecoilState } from "recoil";
 
 type Info = {
@@ -48,32 +47,32 @@ const SignUp = () => {
     e.preventDefault();
     const { email, password, displayName, photoURL } = userInfo;
     createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user as User;
+      .then(async (userCredential) => {
+        const user = userCredential.user;
         //displayName,photoURLを更新
-        updateProfile(user, {
+        await updateProfile(user, {
           displayName,
           photoURL,
         });
+        //firebaseにusersコレクション作成
+        await addDoc(collection(db, "users"), {
+          displayName,
+          photoURL,
+          timeStamp: serverTimestamp(),
+        });
         //ユーザー情報取得処理しuserItemへ格納
-        // onAuthStateChanged(auth, (user) => {
-        //   if (user) {
-        //     const { uid, displayName, photoURL } = user as User;
-        //     setUserItem({ ...userItem, uid, displayName, photoURL });
-        //   }
-        // });
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            const { uid, displayName, photoURL } = user as User;
+            setUserItem({ ...userItem, uid, displayName, photoURL });
+          }
+        });
         //userInfoを初期化
         setUserInfo({
           email: "",
           password: "",
           displayName: "",
           photoURL: "",
-        });
-        //firebaseにusersコレクション作成
-        addDoc(collection(db, "users"), {
-          displayName,
-          photoURL,
-          timeStamp: serverTimestamp(),
         });
         router.push("/Top");
       })

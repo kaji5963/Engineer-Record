@@ -12,6 +12,7 @@ export type Record = {
 };
 
 export type User = {
+  email: string
   uid: string | null;
   displayName: string | null;
   photoURL: string;
@@ -32,6 +33,8 @@ export type commentList = {
   key: string;
   value: string;
   createdAt: string;
+  displayName: string | null;
+  photoURL: string;
 };
 
 // export type bookmark = {

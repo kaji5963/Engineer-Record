@@ -15,6 +15,7 @@ import {
 import { blue, red } from "@mui/material/colors";
 import Head from "next/head";
 import ReplyIcon from "@mui/icons-material/Reply";
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
@@ -50,7 +51,7 @@ import { auth, db } from "./components/firebase";
 
 const Comment = () => {
   const { v4: uuidv4 } = require("uuid");
-  const [recordList, setRecordList] = useRecoilState(recordListState);
+  // const [recordList, setRecordList] = useRecoilState(recordListState);
   const [userItem, setUserItem] = useRecoilState(userItemState);
   const [commentItem, setCommentItem] = useRecoilState(recordItemState);
   const [commentList, setCommentList] = useRecoilState(commentListState);
@@ -59,9 +60,10 @@ const Comment = () => {
     key: uuidv4(),
     value: "",
     createdAt: changeDateFormat(new Date()),
+    displayName: commentItem.displayName,
+    photoURL: commentItem.photoURL,
   });
   const router = useRouter();
-  // console.log(comment);
 
   //Hydrate Error対策
   useEffect(() => {
@@ -88,6 +90,8 @@ const Comment = () => {
               key: doc.data().key,
               value: doc.data().value,
               createdAt: doc.data().createdAt,
+              displayName: doc.data().displayName,
+              photoURL: doc.data().photoURL,
             }))
           ),
         (error) => {
@@ -100,13 +104,15 @@ const Comment = () => {
   //comment送信処理
   const handleCommentSubmit = () => {
     if (comment.value === "") return;
-    const { key, value, createdAt } = comment;
+    const { key, value, createdAt, displayName, photoURL } = comment;
     //firebaseのサブコレクションに追加処理
     const commentDocRef = collection(db, "records", commentItem.id, "comment");
     setDoc(doc(commentDocRef), {
       key,
       value,
       createdAt,
+      displayName,
+      photoURL,
       timeStamp: serverTimestamp(),
     });
     //commentListの取得、commentListの更新処理
@@ -134,6 +140,8 @@ const Comment = () => {
       key: uuidv4(),
       value: "",
       createdAt: changeDateFormat(new Date()),
+      displayName: commentItem.displayName,
+      photoURL: commentItem.photoURL,
     });
   };
 
@@ -166,7 +174,7 @@ const Comment = () => {
               bgcolor: blue[100],
 
               width: 500,
-              mb: 1,
+              mb: 3,
               borderRadius: 5,
             }}
           >
@@ -174,13 +182,21 @@ const Comment = () => {
               avatar={
                 <Avatar
                   sx={{ bgcolor: blue[200] }}
-                  aria-label="recipe"
-                  // src={comment.photoURL}
-                  alt=""
+                  src={comment.photoURL}
                 ></Avatar>
               }
               title={userItem.displayName}
               subheader={commentItem.createdAt}
+              action={
+                <Tooltip title="Back" placement="bottom-start" arrow>
+                  <IconButton
+                    sx={{ mr: 2 }}
+                    onClick={() => router.push("/Top")}
+                  >
+                    <KeyboardBackspaceIcon fontSize="medium" />
+                  </IconButton>
+                </Tooltip>
+              }
             />
             <CardContent
               sx={{
@@ -206,23 +222,23 @@ const Comment = () => {
               </IconButton>
 
               <Tooltip title="Good" placement="right-start" arrow>
-              <IconButton>
-                <ThumbUpOffAltIcon />
-              </IconButton>
+                <IconButton>
+                  <ThumbUpOffAltIcon />
+                </IconButton>
               </Tooltip>
 
               <Tooltip title="Bookmark" placement="right-start" arrow>
-
-              <IconButton>
-                <BookmarkBorderIcon />
-              </IconButton>
+                <IconButton>
+                  <BookmarkBorderIcon />
+                </IconButton>
               </Tooltip>
-
             </CardActions>
           </Box>
         </Card>
       )}
       {/* --------------------------------------- */}
+
+      {/* <Tooltip title="Back" placement="bottom-start" arrow>
       <IconButton
         sx={{ mb: 4, display: "flex", mx: "auto" }}
         color="primary"
@@ -230,6 +246,8 @@ const Comment = () => {
       >
         <ReplyIcon fontSize="large" />
       </IconButton>
+      </Tooltip> */}
+
       <Box
         sx={{
           mt: 2,
@@ -276,7 +294,6 @@ const Comment = () => {
                 key={comment.key}
                 sx={{
                   bgcolor: red[100],
-
                   width: 500,
                   mb: 4,
                   borderRadius: 5,
@@ -285,10 +302,8 @@ const Comment = () => {
                 <CardHeader
                   avatar={
                     <Avatar
-                      sx={{ ml: 2, width: 24, height: 24, bgcolor: red[200] }}
-                      aria-label="recipe"
-                      // src={comment.photoURL}
-                      alt=""
+                      sx={{ ml: 2, bgcolor: red[200] }}
+                      src={comment.photoURL}
                     ></Avatar>
                   }
                   title={userItem.displayName}
@@ -313,7 +328,6 @@ const Comment = () => {
                   sx={{ display: "flex", justifyContent: "space-around" }}
                   disableSpacing
                 >
-                  
                   <IconButton>
                     <EditIcon />
                   </IconButton>

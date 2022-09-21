@@ -1,4 +1,12 @@
-import { Box, IconButton, TextField, Tooltip, Typography } from "@mui/material";
+import {
+  Avatar,
+  Box,
+  Button,
+  IconButton,
+  TextField,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import ReplyIcon from "@mui/icons-material/Reply";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
@@ -9,6 +17,7 @@ import Layout from "./components/Layout";
 import { useRecoilState } from "recoil";
 import { userItemState } from "./constants/atom";
 import { useEffect, useState } from "react";
+import { auth } from "./components/firebase";
 
 const Profile = () => {
   const [userItem, setUserItem] = useRecoilState(userItemState);
@@ -39,36 +48,39 @@ const Profile = () => {
           <Typography sx={{ textAlign: "center" }} variant="h4" gutterBottom>
             Your Profile
           </Typography>
-
           <Box>
-            <IconButton
+            <Typography
               sx={{
-                bgcolor: grey[200],
                 mx: "auto",
-                mb: 2,
+                mt: 2,
                 cursor: "pointer",
                 display: "flex",
                 justifyContent: "center",
               }}
+              variant="subtitle1"
             >
-              <label>
-                <PersonAddIcon
-                  sx={{
-                    cursor: "pointer",
-                  }}
-                  fontSize="large"
-                />
-                <input type="file" style={{ display: "none" }} />
-              </label>
-            </IconButton>
+              Avatar
+            </Typography>
+            <Avatar
+              sx={{
+                mx: "auto",
+                mt: 1
+              }}
+              src={userItem.photoURL}
+            />
           </Box>
-
-          <Typography sx={{ textAlign: "center" }} variant="h5" gutterBottom>
-            {`Display Name : ${userItem.displayName}`}
+          <Typography sx={{ textAlign: "center", mt: 3 }} variant="subtitle1">
+            Display Name
           </Typography>
-          {/* <Typography sx={{ textAlign: "center" }} variant="h5" gutterBottom>
-            {`Email Address : ${userItem.email}`}
-          </Typography> */}
+          <Typography sx={{ textAlign: "center" }} variant="h5" gutterBottom>
+            {userItem.displayName}
+          </Typography>
+          <Typography sx={{ textAlign: "center", mt: 3 }} variant="subtitle1">
+            Email Address
+          </Typography>
+          <Typography sx={{ textAlign: "center" }} variant="h5" gutterBottom>
+            {userItem.email}
+          </Typography>
           <Box sx={{ textAlign: "center" }}>
             <Tooltip title="Edit" placement="bottom-start" arrow>
               <IconButton
@@ -89,6 +101,10 @@ const Profile = () => {
                 <ReplyIcon fontSize="large" />
               </IconButton>
             </Tooltip>
+
+            {/* <Button variant="contained" color="error" onClick={handleAccountDelete}>
+              アカウント削除
+            </Button> */}
           </Box>
         </Box>
       )}

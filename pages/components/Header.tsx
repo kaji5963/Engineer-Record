@@ -9,17 +9,26 @@ import Button from "@mui/material/Button";
 import ComputerIcon from "@mui/icons-material/Computer";
 import { useRouter } from "next/router";
 import { auth } from "./firebase";
-
-
+import { useRecoilState } from "recoil";
+import { userItemState } from "../constants/atom";
 
 const navItems = ["Home", "Profile", "Logout"];
 
 const Header = () => {
+  const [userItem, setUserItem] = useRecoilState(userItemState);
   const router = useRouter();
 
   //ログアウト処理
   const handleLogout = () => {
     auth.signOut();
+    //初期化必要
+    setUserItem({
+      ...userItem,
+      email: "",
+      uid: "",
+      displayName: "",
+      photoURL: "",
+    });
     router.push("/Signup");
   };
 
@@ -45,8 +54,15 @@ const Header = () => {
             Engineer Record
           </Typography>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
-            <Button sx={{ color: "#fff" }} onClick={() => router.push("/Top")}>TOP</Button>
-            <Button sx={{ color: "#fff" }} onClick={() => router.push("/Profile")}>PROFILE</Button>
+            <Button sx={{ color: "#fff" }} onClick={() => router.push("/Top")}>
+              TOP
+            </Button>
+            <Button
+              sx={{ color: "#fff" }}
+              onClick={() => router.push("/Profile")}
+            >
+              PROFILE
+            </Button>
             <Button sx={{ color: "#fff" }} onClick={handleLogout}>
               LOGOUT
             </Button>
