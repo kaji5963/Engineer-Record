@@ -29,7 +29,7 @@ import { useRouter } from "next/router";
 import Layout from "./components/Layout";
 import { useRecoilState } from "recoil";
 import {
-  recordItemState,
+  commentItemState,
   recordListState,
   userItemState,
   commentListState,
@@ -53,17 +53,18 @@ const Comment = () => {
   const { v4: uuidv4 } = require("uuid");
   // const [recordList, setRecordList] = useRecoilState(recordListState);
   const [userItem, setUserItem] = useRecoilState(userItemState);
-  const [commentItem, setCommentItem] = useRecoilState(recordItemState);
+  const [commentItem, setCommentItem] = useRecoilState(commentItemState);
   const [commentList, setCommentList] = useRecoilState(commentListState);
   const [isClient, setIsClient] = useState(false);
   const [comment, setComment] = useState({
     key: uuidv4(),
     value: "",
     createdAt: changeDateFormat(new Date()),
-    displayName: commentItem.displayName,
-    photoURL: commentItem.photoURL,
+    displayName: userItem.displayName,
+    photoURL: userItem.photoURL,
   });
   const router = useRouter();
+console.log(router.query);
 
   //Hydrate Error対策
   useEffect(() => {
@@ -72,33 +73,29 @@ const Comment = () => {
 
   //commentListの取得、commentListの更新処理
   useEffect(() => {
-    if (comment) {
-      const commentDocRef = collection(
-        db,
-        "records",
-        commentItem.id,
-        "comment"
-      );
-      const q = query(commentDocRef, orderBy("timeStamp", "desc"));
-      onSnapshot(
-        q,
-        (snapshot) =>
-          setCommentList(
-            snapshot.docs.map((doc) => ({
-              ...doc.data(),
-              id: doc.id,
-              key: doc.data().key,
-              value: doc.data().value,
-              createdAt: doc.data().createdAt,
-              displayName: doc.data().displayName,
-              photoURL: doc.data().photoURL,
-            }))
-          ),
-        (error) => {
-          alert(error.message);
-        }
-      );
-    }
+    const q = query(
+      collection(db, "records", commentItem.id, "comments"),
+      orderBy("timeStamp", "desc")
+    );
+    onSnapshot(
+      q,
+      (snapshot) =>
+        setCommentList(
+          snapshot.docs.map((doc) => ({
+            ...doc.data(),
+            uid: userItem.uid,
+            id: doc.id,
+            key: doc.data().key,
+            value: doc.data().value,
+            createdAt: doc.data().createdAt,
+            displayName: doc.data().displayName,
+            photoURL: doc.data().photoURL,
+          }))
+        ),
+      (error) => {
+        alert(error.message);
+      }
+    );
   }, []);
 
   //comment送信処理
@@ -106,8 +103,9 @@ const Comment = () => {
     if (comment.value === "") return;
     const { key, value, createdAt, displayName, photoURL } = comment;
     //firebaseのサブコレクションに追加処理
-    const commentDocRef = collection(db, "records", commentItem.id, "comment");
+    const commentDocRef = collection(db, "records", commentItem.id, "comments");
     setDoc(doc(commentDocRef), {
+      uid: userItem.uid,
       key,
       value,
       createdAt,
@@ -116,41 +114,48 @@ const Comment = () => {
       timeStamp: serverTimestamp(),
     });
     //commentListの取得、commentListの更新処理
-    // const q = query(commentDocRef, orderBy("timeStamp", "desc"));
-    // onSnapshot(
-    //   q,
-    //   (snapshot) =>
-    //     setCommentList(
-    //       snapshot.docs.map((doc) => ({
-    //         ...doc.data(),
-    //         id: doc.id,
-    //         key: doc.data().key,
-    //         value: doc.data().value,
-    //         createdAt: doc.data().createdAt,
-    //       }))
-    //     ),
-    //   (error) => {
-    //     alert(error.message);
-    //   }
-    // );
-    // setCommentList([...commentList, { id, key, value, createdAt }]);
-
+    const q = query(commentDocRef, orderBy("timeStamp", "desc"));
+    onSnapshot(
+      q,
+      (snapshot) =>
+        setCommentList(
+          snapshot.docs.map((doc) => ({
+            ...doc.data(),
+            uid: commentItem.uid,
+            id: doc.id,
+            key: doc.data().key,
+            value: doc.data().value,
+            createdAt: doc.data().createdAt,
+            displayName: doc.data().displayName,
+            photoURL: doc.data().photoURL,
+          }))
+        ),
+      (error) => {
+        alert(error.message);
+      }
+    );
     //comment初期化
     setComment({
       key: uuidv4(),
       value: "",
       createdAt: changeDateFormat(new Date()),
-      displayName: commentItem.displayName,
-      photoURL: commentItem.photoURL,
+      displayName: userItem.displayName,
+      photoURL: userItem.photoURL,
     });
   };
 
   //comment削除処理 サブドキュメントの削除をしたいができないため一旦保留
-  // const handleCommentDelete = (key: string) => {
-  //   const commentDelete = commentList.filter(
-  //     (commentList) => commentList.key !== key
-  //   );
-  //   setCommentList(commentDelete);
+  // const handleDeleteComment = (id: string) => {
+  //   const deleteMessage = confirm("削除してもよろしいですか？");
+  //   if (deleteMessage === true) {
+  //     deleteDoc(doc(db, "comments", id));
+  //     const deleteComment = commentList.filter(
+  //       (commentList) => commentList.id !== id
+  //     );
+  //     setCommentList(deleteComment);
+  //   } else {
+  //     return;
+  //   }
   // };
 
   return (
@@ -182,10 +187,10 @@ const Comment = () => {
               avatar={
                 <Avatar
                   sx={{ bgcolor: blue[200] }}
-                  src={comment.photoURL}
+                  src={commentItem.photoURL}
                 ></Avatar>
               }
-              title={userItem.displayName}
+              title={commentItem.displayName}
               subheader={commentItem.createdAt}
               action={
                 <Tooltip title="Back" placement="bottom-start" arrow>
@@ -306,7 +311,7 @@ const Comment = () => {
                       src={comment.photoURL}
                     ></Avatar>
                   }
-                  title={userItem.displayName}
+                  title={comment.displayName}
                   subheader={comment.createdAt}
                 />
                 <CardContent
@@ -326,7 +331,6 @@ const Comment = () => {
 
                 <CardActions
                   sx={{ display: "flex", justifyContent: "space-around" }}
-                  disableSpacing
                 >
                   <IconButton>
                     <EditIcon />

@@ -14,22 +14,27 @@ import {
 import { useRecoilState } from "recoil";
 import {
   // bookmarkState,
-  recordItemState,
+  commentItemState,
   commentListState,
   recordListState,
   userItemState,
   User,
+  editItemState,
 } from "../constants/atom";
 import { MouseEvent, useEffect, useMemo, useState } from "react";
 import {
   addDoc,
   collection,
+  collectionGroup,
   deleteDoc,
   doc,
+  getDocs,
   onSnapshot,
   orderBy,
   query,
+  QuerySnapshot,
   serverTimestamp,
+  where,
 } from "firebase/firestore";
 import { auth, db } from "./firebase";
 import { blue } from "@mui/material/colors";
@@ -50,7 +55,8 @@ import { useRouter } from "next/router";
 const RecordList = () => {
   const [recordList, setRecordList] = useRecoilState(recordListState);
   const [userItem, setUserItem] = useRecoilState(userItemState);
-  const [recordItem, setRecordItem] = useRecoilState(recordItemState);
+  const [commentItem, setCommentItem] = useRecoilState(commentItemState);
+  const [editItem, setEditItem] = useRecoilState(editItemState);
   // const [commentList, setCommentList] = useRecoilState(commentListState);
   const [isClient, setIsClient] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -58,14 +64,42 @@ const RecordList = () => {
   // const [bookmarkItem, setBookmarkItem] = useRecoilState(bookmarkState);
   const router = useRouter();
 
+    //現在ログインしているuserを取得しuserItemに格納
+  // useEffect(() => {
+  //   onAuthStateChanged(auth, (user) => {
+  //     if (user) {
+  //       const { uid, displayName, photoURL } = user as User;
+  //       setUserItem({ ...userItem, uid, displayName, photoURL });
+  //     }
+  //   });
+  // }, []);
+
   //firebaseからデータを取得、setRecordListで更新しrecordListに格納
   useEffect(() => {
-    const recordData = collection(db, "records");
-    const q = query(recordData, orderBy("timeStamp", "desc"));
+    // const userRef = query(collectionGroup(db, "users"), where("userId", "==", userItem.uid),orderBy("timeStamp", "desc"))
+    // onSnapshot(userRef,(querySnapshot) => {
+    //   setRecordList(
+    //         querySnapshot.docs.map((doc) => ({
+    //           ...doc.data(),
+    //           id: doc.id,
+    //           key: doc.data().key,
+    //           value: doc.data().value,
+    //           createdAt: doc.data().createdAt,
+    //           displayName: doc.data().displayName,
+    //           photoURL: doc.data().photoURL,
+    //           saved: doc.data().saved,
+    //         }))
+    //       );
+    // })
+    // const usersRef = collection(db, "users", userItem.uid, "records");
+    // const usersRef = collection(db, "records");
+    // const q = query(usersRef, orderBy("timeStamp", "desc"));
+    const q = query(collection(db, "records"), orderBy("timeStamp", "desc"));
     onSnapshot(q, (querySnapshot) => {
       setRecordList(
         querySnapshot.docs.map((doc) => ({
           ...doc.data(),
+          uid: userItem.uid,
           id: doc.id,
           key: doc.data().key,
           value: doc.data().value,
@@ -75,37 +109,6 @@ const RecordList = () => {
           saved: doc.data().saved,
         }))
       );
-    });
-  }, []);
-
-  // useEffect(() => {
-  //   const commentDocRef = collection(db, "records", commentItem.id, "comment");
-  //   const q = query(commentDocRef, orderBy("timeStamp", "desc"));
-  //   onSnapshot(
-  //     q,
-  //     (snapshot) =>
-  //       setCommentList(
-  //         snapshot.docs.map((doc) => ({
-  //           ...doc.data(),
-  //           id: doc.id,
-  //           key: doc.data().key,
-  //           value: doc.data().value,
-  //           createdAt: doc.data().createdAt,
-  //         }))
-  //       ),
-  //     (error) => {
-  //       alert(error.message);
-  //     }
-  //   );
-  // }, []);
-
-  //現在ログインしているuserを取得しuserItemに格納
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        const { uid, displayName, photoURL } = user as User;
-        setUserItem({ ...userItem, uid, displayName, photoURL });
-      }
     });
   }, []);
 
@@ -124,8 +127,8 @@ const RecordList = () => {
   //特定のコメントボタン押すと、そのデータをコメントページに渡す
   const handleComment = (key: string) => {
     const findComment = recordList.find((recordList) => recordList.key === key);
-    setRecordItem({ ...recordItem, ...findComment });
-
+    setCommentItem({ ...commentItem, ...findComment });
+    
     // const [{key, value, createdAt}] = recordList
     // setComment({...comment, key, value, createdAt })
     router.push("/Comment");
@@ -145,7 +148,7 @@ const RecordList = () => {
     );
     const { value, createdAt, displayName, photoURL, saved } =
       findBookmarkRecord!;
-    addDoc(collection(db, "bookmark"), {
+    addDoc(collection(db, "records", findBookmarkRecord!.id, "bookmarks"), {
       key,
       value,
       createdAt,
@@ -171,7 +174,7 @@ const RecordList = () => {
     const findEditRecord = recordList.find(
       (recordList) => recordList.key === key
     );
-    setRecordItem({ ...recordItem, ...findEditRecord });
+    setEditItem({ ...editItem, ...findEditRecord });
     router.push("/EditRecord");
   };
 

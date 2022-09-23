@@ -6,14 +6,17 @@ import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import LockOpenIcon from '@mui/icons-material/LockOpen';
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "./components/firebase";
+import { auth, db } from "./components/firebase";
 import { useRecoilState } from "recoil";
 import { User, userItemState } from "./constants/atom";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { blue } from "@mui/material/colors";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -22,7 +25,7 @@ const SignIn = () => {
   const router = useRouter();
 
   //SignIn処理
-  const handleSignIn = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSignIn =  (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     signInWithEmailAndPassword(auth, email, password)
       .then(() => {
@@ -49,14 +52,14 @@ const SignIn = () => {
         <CssBaseline />
         <Box
           sx={{
-            marginTop: 8,
+            marginTop: 15,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-            <LockOutlinedIcon />
+          <Avatar sx={{ m: 1, bgcolor: blue[300] }}>
+            <LockOpenIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
             ログイン
@@ -65,7 +68,7 @@ const SignIn = () => {
             component="form"
             noValidate
             onSubmit={(e) => handleSignIn(e)}
-            sx={{ mt: 3 }}
+            sx={{ mt: 8 }}
           >
             <Grid container spacing={2}>
               <Grid item xs={12}>

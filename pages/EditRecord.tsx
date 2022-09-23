@@ -6,12 +6,12 @@ import Head from "next/head";
 import Layout from "./components/Layout";
 import { useRouter } from "next/router";
 import { useRecoilState } from "recoil";
-import { recordItemState } from "./constants/atom";
+import { editItemState } from "./constants/atom";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "./components/firebase";
 
 const EditRecord = () => {
-  const [editItem, setEditItem] = useRecoilState(recordItemState);
+  const [editItem, setEditItem] = useRecoilState(editItemState);
   const router = useRouter();
 
   //Record編集完了処理

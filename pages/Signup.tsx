@@ -8,6 +8,7 @@ import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { useRouter } from "next/router";
@@ -19,9 +20,14 @@ import {
 } from "firebase/auth";
 import { auth, db, storage } from "./components/firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { grey } from "@mui/material/colors";
-import { IconButton } from "@mui/material";
-import { getDownloadURL, ref, uploadBytes, uploadBytesResumable } from "firebase/storage";
+import { blue, grey } from "@mui/material/colors";
+import { IconButton, Tooltip } from "@mui/material";
+import {
+  getDownloadURL,
+  ref,
+  uploadBytes,
+  uploadBytesResumable,
+} from "firebase/storage";
 import { User, userItemState } from "./constants/atom";
 import { useRecoilState } from "recoil";
 
@@ -54,17 +60,20 @@ const SignUp = () => {
           displayName,
           photoURL,
         });
+
         //firebaseにusersコレクション作成
         await addDoc(collection(db, "users"), {
+          uid: user.uid,
           displayName,
           photoURL,
           timeStamp: serverTimestamp(),
         });
+
         //ユーザー情報取得処理しuserItemへ格納
         onAuthStateChanged(auth, (user) => {
           if (user) {
-            const { uid, displayName, photoURL } = user as User;
-            setUserItem({ ...userItem, uid, displayName, photoURL });
+            const { uid, email, displayName, photoURL } = user as User;
+            setUserItem({ ...userItem, uid, email, displayName, photoURL });
           }
         });
         //userInfoを初期化
@@ -84,6 +93,7 @@ const SignUp = () => {
   //ファイル選択後、firebaseにアップロードしfirebaseからダウンロード処理
   const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files![0];
+    if (!file) return;
     const storageRef = ref(storage, "images/" + file.name);
     await uploadBytes(storageRef, file).then((snapshot) => {
       console.log("Uploaded a file!");
@@ -109,7 +119,7 @@ const SignUp = () => {
             alignItems: "center",
           }}
         >
-          <Avatar sx={{ m: 2, bgcolor: "secondary.main" }}>
+          <Avatar sx={{ m: 2, bgcolor: blue[300] }}>
             <LockOutlinedIcon />
           </Avatar>
 
@@ -123,13 +133,16 @@ const SignUp = () => {
             sx={{ mt: 3 }}
           >
             <Grid container spacing={2}>
+              <Grid sx={{display: "flex", alignItems: "center", mx: "auto"}}>
               {userInfo.photoURL === "" ? (
                 <>
+              <Tooltip title="Avatar Add" placement="top-start" arrow>
+
                   <IconButton
                     sx={{
-                      mt: 4,
                       bgcolor: grey[200],
-                      mx: "auto",
+                      mt: 6,
+                      ml: 10,
                       mb: 2,
                       cursor: "pointer",
                       display: "flex",
@@ -151,14 +164,18 @@ const SignUp = () => {
                       />
                     </label>
                   </IconButton>
+              </Tooltip>
+
                 </>
               ) : (
                 <>
+              <Tooltip title="Avatar Add" placement="top-start" arrow>
+
                   <IconButton
                     sx={{
-                      mt: 4,
                       bgcolor: grey[200],
-                      mx: "auto",
+                      mt: 6,
+                      ml: 10,
                       mb: 2,
                       cursor: "pointer",
                       display: "flex",
@@ -170,7 +187,7 @@ const SignUp = () => {
                         sx={{
                           cursor: "pointer",
                         }}
-                        src={userItem.photoURL}
+                        src={userInfo.photoURL}
                       />
                       <input
                         type="file"
@@ -180,9 +197,21 @@ const SignUp = () => {
                       />
                     </label>
                   </IconButton>
+              </Tooltip>
+
                 </>
               )}
+              <Grid>
+              <Tooltip title="Avatar Delete" placement="top-start" arrow>
+                <IconButton sx={{ml: 3, mt: 4}}
+                  onClick={() => setUserInfo({ ...userInfo, photoURL: "" })}
+                >
+                  <HighlightOffIcon />
+                </IconButton>
+              </Tooltip>
+              </Grid>
 
+              </Grid>
               <Grid item xs={12}>
                 <TextField
                   autoComplete="given-name"
