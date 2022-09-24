@@ -3,20 +3,156 @@ import Head from 'next/head'
 import Image from 'next/image'
 import { useRouter } from 'next/router';
 import styles from '../styles/Home.module.css'
-import Layout from "./components/Layout";
+import * as React from "react";
+import AppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
+import MenuIcon from "@mui/icons-material/Menu";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import ComputerIcon from "@mui/icons-material/Computer";
+import { Card, CardActions, CardContent } from "@mui/material";
 
 const Home: NextPage = () => {
   const router = useRouter()
   return (
-    <Layout>
-      <div>
-        <Head>
-          <title>Engineer Record</title>
-        </Head>
-        <h1>Engineer Record</h1>
-        <button onClick={() => router.push("/Signup")}>Mainへ</button>
-      </div>
-    </Layout>
+    <>
+      <Head>
+        <title>Engineer Record</title>
+      </Head>
+      <Box sx={{ bg: "../image/background.jpeg" }}>
+        <Box sx={{ display: "flex" }}>
+          <AppBar component="nav">
+            <Toolbar>
+              <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                edge="start"
+                sx={{ mr: 2, display: { sm: "none" } }}
+              >
+                <MenuIcon />
+              </IconButton>
+              <ComputerIcon
+                sx={{ display: { xs: "none", md: "flex" }, mr: 1 }}
+              />
+
+              <Typography
+                variant="h6"
+                component="div"
+                sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
+              >
+                Engineer Record
+              </Typography>
+              <Box sx={{ display: { xs: "none", sm: "block" } }}>
+                <Button
+                  sx={{ color: "#fff" }}
+                  onClick={() => router.push("/Signup")}
+                >
+                  新規登録
+                </Button>
+                <Button
+                  sx={{ color: "#fff" }}
+                  onClick={() => router.push("/Signin")}
+                >
+                  ログイン
+                </Button>
+                <Button sx={{ color: "#fff" }}>使い方</Button>
+              </Box>
+            </Toolbar>
+          </AppBar>
+          <Toolbar sx={{ mb: 4 }} />
+        </Box>
+
+        <Box
+          sx={{
+            mx: "auto",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            mt: 6,
+          }}
+        >
+          <Typography sx={{ mx: "auto", mb: 3 }} variant="h4">
+            Engineer Recordへようこそ
+          </Typography>
+          <Typography sx={{ mx: "auto", mb: 2 }} variant="h5">
+            学習記録を積み上げませんか？
+          </Typography>
+          <Button
+            type="submit"
+            variant="contained"
+            sx={{ mt: 3, mb: 2, width: 200, mx: "auto" }}
+            onClick={() => router.push("/Signup")}
+          >
+            Get Started
+          </Button>
+        </Box>
+
+        <Box sx={{ display: "flex", justifyContent: 'space-around', mt: 8 }}>
+          <Card variant="outlined" sx={{ width: 280, display: "flex" }}>
+            <CardContent>
+              <Typography
+                sx={{ fontSize: 18 }}
+                color="text.secondary"
+                gutterBottom
+              >
+                こんな方に向いています
+              </Typography>
+              <Typography variant="h5" component="div"></Typography>
+              <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                adjective
+              </Typography>
+              <Typography variant="body2">
+                well meaning and kindly.
+                <br />
+                {'"a benevolent smile"'}
+              </Typography>
+            </CardContent>
+          </Card>
+          <Card variant="outlined" sx={{ width: 280 }}>
+            <CardContent>
+              <Typography
+                sx={{ fontSize: 18 }}
+                color="text.secondary"
+                gutterBottom
+              >
+                こんな方に向いています
+              </Typography>
+              <Typography variant="h5" component="div"></Typography>
+              <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                adjective
+              </Typography>
+              <Typography variant="body2">
+                well meaning and kindly.
+                <br />
+                {'"a benevolent smile"'}
+              </Typography>
+            </CardContent>
+          </Card>
+          <Card variant="outlined" sx={{ width: 280 }}>
+            <CardContent>
+              <Typography
+                sx={{ fontSize: 18 }}
+                color="text.secondary"
+                gutterBottom
+              >
+                こんな方に向いています
+              </Typography>
+              <Typography variant="h5" component="div"></Typography>
+              <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                adjective
+              </Typography>
+              <Typography variant="body2">
+                well meaning and kindly.
+                <br />
+                {'"a benevolent smile"'}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Box>
+      </Box>
+    </>
   );
 }
 
