@@ -26,16 +26,17 @@ import NavigationIcon from "@mui/icons-material/Send";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { useRouter } from "next/router";
-import Layout from "./components/Layout";
+import Layout from "../components/Layout";
 import { useRecoilState } from "recoil";
 import {
   commentItemState,
   recordListState,
   userItemState,
   commentListState,
-} from "./constants/atom";
+  CommentList,
+} from "../constants/atom";
 import { useEffect, useState } from "react";
-import { changeDateFormat } from "./components/Form";
+import { changeDateFormat } from "../components/Form";
 import {
   addDoc,
   collection,
@@ -47,13 +48,14 @@ import {
   serverTimestamp,
   setDoc,
 } from "firebase/firestore";
-import { auth, db } from "./components/firebase";
+import { auth, db } from "../components/firebase";
 
 const Comment = () => {
   const { v4: uuidv4 } = require("uuid");
   // const [recordList, setRecordList] = useRecoilState(recordListState);
   const [userItem, setUserItem] = useRecoilState(userItemState);
   const [commentItem, setCommentItem] = useRecoilState(commentItemState);
+  const [docData, setDocData] = useState({});
   const [commentList, setCommentList] = useRecoilState(commentListState);
   const [isClient, setIsClient] = useState(false);
   const [comment, setComment] = useState({
@@ -106,7 +108,12 @@ const Comment = () => {
   const handleCommentSubmit = () => {
     if (comment.value === "") return;
     const { key, value, createdAt, displayName, photoURL } = comment;
+    const docId = commentList.map((comment) => {
+      return setDocData(comment)
+    })
+    
     //firebaseのサブコレクションに追加処理
+    // const commentDocRef = collection(db, "users", userItem.uid, "records", commentItem.id, "comments" );
     const commentDocRef = collection(db, "comments");
     // const commentDocRef = collection(db, "records", commentItem.id, "comments");
     setDoc(doc(commentDocRef), {
@@ -118,27 +125,27 @@ const Comment = () => {
       photoURL,
       timeStamp: serverTimestamp(),
     });
-    //commentListの取得、commentListの更新処理
-    const q = query(commentDocRef, orderBy("timeStamp", "desc"));
-    onSnapshot(
-      q,
-      (snapshot) =>
-        setCommentList(
-          snapshot.docs.map((doc) => ({
-            ...doc.data(),
-            uid: commentItem.uid,
-            id: doc.id,
-            key: doc.data().key,
-            value: doc.data().value,
-            createdAt: doc.data().createdAt,
-            displayName: doc.data().displayName,
-            photoURL: doc.data().photoURL,
-          }))
-        ),
-      (error) => {
-        alert(error.message);
-      }
-    );
+    // commentListの取得、commentListの更新処理
+    // const q = query(commentDocRef, orderBy("timeStamp", "desc"));
+    // onSnapshot(
+    //   q,
+    //   (snapshot) =>
+    //     setCommentList(
+    //       snapshot.docs.map((doc) => ({
+    //         ...doc.data(),
+    //         uid: userItem.uid,
+    //         id: doc.id,
+    //         key: doc.data().key,
+    //         value: doc.data().value,
+    //         createdAt: doc.data().createdAt,
+    //         displayName: doc.data().displayName,
+    //         photoURL: doc.data().photoURL,
+    //       }))
+    //     ),
+    //   (error) => {
+    //     alert(error.message);
+    //   }
+    // );
     //comment初期化
     setComment({
       key: uuidv4(),

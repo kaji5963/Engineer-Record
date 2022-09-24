@@ -32,8 +32,8 @@ const SignIn = () => {
         //ユーザー情報取得処理しuserItemへ格納
         onAuthStateChanged(auth, (user) => {
           if (user) {
-            const { uid, displayName, photoURL } = user as User;
-            setUserItem({ ...userItem, uid, displayName, photoURL });
+            const { email,uid, displayName, photoURL } = user as User;
+            setUserItem({ ...userItem, email, uid, displayName, photoURL });
           }
         });
         router.push("/Top");

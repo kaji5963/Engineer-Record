@@ -124,7 +124,8 @@ const RecordList = () => {
     const findComment = recordList.find((recordList) => recordList.key === key);
     setCommentItem({ ...commentItem, ...findComment });
     // router.push("/Comment");
-    router.push(`/${id}`);
+    router.push(`/Comments/${id}`);
+    
   };
 
   //ブックマークする処理
