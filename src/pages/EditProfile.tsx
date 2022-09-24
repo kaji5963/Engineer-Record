@@ -10,15 +10,15 @@ import ReplyIcon from "@mui/icons-material/Reply";
 import { grey } from "@mui/material/colors";
 import { Box } from "@mui/system";
 import Head from "next/head";
-import Layout from "./components/Layout";
+import Layout from "../components/Layout";
 import { useRouter } from "next/router";
 import { useRecoilState } from "recoil";
-import { userItemState } from "./constants/atom";
+import { userItemState } from "../constants/atom";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { onAuthStateChanged, updateProfile, User } from "firebase/auth";
-import { auth, storage } from "./components/firebase";
+import { auth, storage } from "../components/firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 const EditProfile = () => {

@@ -13,11 +13,11 @@ import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import { grey } from "@mui/material/colors";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import Layout from "./components/Layout";
+import Layout from "../components/Layout";
 import { useRecoilState } from "recoil";
-import { userItemState } from "./constants/atom";
+import { userItemState } from "../constants/atom";
 import { useEffect, useState } from "react";
-import { auth } from "./components/firebase";
+import { auth } from "../components/firebase";
 
 const Profile = () => {
   const [userItem, setUserItem] = useRecoilState(userItemState);

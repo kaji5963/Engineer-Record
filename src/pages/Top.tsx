@@ -1,10 +1,10 @@
-import Layout from "./components/Layout";
+import Layout from "../components/Layout";
 import Head from "next/head";
-import Form from "./components/Form";
-import RecordList from "./components/RecordList";
+import Form from "../components/Form";
+import RecordList from "../components/RecordList";
 import { Avatar, Typography } from "@mui/material";
 import { useRecoilValue } from "recoil";
-import { userItemState } from "./constants/atom";
+import { userItemState } from "../constants/atom";
 import { Box } from "@mui/system";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import { useEffect, useState } from "react";

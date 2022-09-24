@@ -18,7 +18,7 @@ import {
   onAuthStateChanged,
   updateProfile,
 } from "firebase/auth";
-import { auth, db, storage } from "./components/firebase";
+import { auth, db, storage } from "../components/firebase";
 import {
   addDoc,
   collection,
@@ -35,7 +35,7 @@ import {
   uploadBytes,
   uploadBytesResumable,
 } from "firebase/storage";
-import { User, userItemState } from "./constants/atom";
+import { User, userItemState } from "../constants/atom";
 import { useRecoilState } from "recoil";
 
 type Info = {

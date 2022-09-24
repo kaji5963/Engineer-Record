@@ -26,7 +26,7 @@ import NavigationIcon from "@mui/icons-material/Send";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { useRouter } from "next/router";
-import Layout from "../components/Layout";
+import Layout from "../../components/Layout";
 import { useRecoilState } from "recoil";
 import {
   commentItemState,
@@ -34,9 +34,9 @@ import {
   userItemState,
   commentListState,
   CommentList,
-} from "../constants/atom";
+} from "../../constants/atom";
 import { useEffect, useState } from "react";
-import { changeDateFormat } from "../components/Form";
+import { changeDateFormat } from "../../components/Form";
 import {
   addDoc,
   collection,
@@ -48,7 +48,7 @@ import {
   serverTimestamp,
   setDoc,
 } from "firebase/firestore";
-import { auth, db } from "../components/firebase";
+import { auth, db } from "../../components/firebase";
 
 const Comment = () => {
   const { v4: uuidv4 } = require("uuid");

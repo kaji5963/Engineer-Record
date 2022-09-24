@@ -12,9 +12,9 @@ import Container from "@mui/material/Container";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from "./components/firebase";
+import { auth, db } from "../components/firebase";
 import { useRecoilState } from "recoil";
-import { User, userItemState } from "./constants/atom";
+import { User, userItemState } from "../constants/atom";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { blue } from "@mui/material/colors";
 
