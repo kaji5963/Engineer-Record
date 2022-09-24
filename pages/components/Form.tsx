@@ -1,12 +1,17 @@
 import { Box, Fab, TextField } from "@mui/material";
 import NavigationIcon from "@mui/icons-material/Send";
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { recordListState, userItemState } from "../constants/atom";
+import {
+  recordListState,
+  userItemState,
+} from "../constants/atom";
 import { useState } from "react";
 import {
   addDoc,
   collection,
   doc,
+  getDoc,
+  getDocs,
   onSnapshot,
   orderBy,
   query,
@@ -15,6 +20,8 @@ import {
 } from "firebase/firestore";
 import { auth, db } from "./firebase";
 import { onAuthStateChanged } from "firebase/auth";
+import { domainToASCII } from "url";
+import { DockSharp } from "@mui/icons-material";
 
 // Dateをyyyy-mm-dd hh:mm形式にフォーマット
 export const changeDateFormat = (date: Date) => {
@@ -36,24 +43,24 @@ const Form = () => {
   const setRecordList = useSetRecoilState(recordListState);
   const [userItem, setUserItem] = useRecoilState(userItemState);
   const [inputValue, setInputValue] = useState({
-    id: "",
     key: uuidv4(),
     value: "",
     createdAt: changeDateFormat(new Date()),
     displayName: userItem.displayName,
     photoURL: userItem.photoURL,
-    saved: false
+    saved: false,
   });
 
   //学習記録を投稿する機能
-  const handleAddRecord = () => {
+  const handleAddRecord = async () => {
     if (inputValue.value === "") return;
-    const { id, key, value, createdAt, displayName, photoURL, saved } =
+    const { key, value, createdAt, displayName, photoURL, saved } =
       inputValue;
+    const user = auth.currentUser!;
+
     //firebaseへデータ格納（階層：users-uid-records）
-    // const formDocRef = collection(db, "users", userItem.uid, "records");
-    const formDocRef = collection(db, "records");
-    setDoc(doc(formDocRef), {
+    const formDocRef = collection(db, "users", user.uid, "records");
+    await addDoc(formDocRef, {
       uid: userItem.uid,
       key,
       value,
@@ -63,47 +70,32 @@ const Form = () => {
       saved,
       timeStamp: serverTimestamp(),
     });
-    //firebaseからデータを取得、投稿されたデータをrecordListへ格納
-    const q = query(formDocRef, orderBy("timeStamp", "desc"));
-    onSnapshot(
-      q,
-      (snapshot) =>
-        setRecordList(
-          snapshot.docs.map((doc) => ({
-            ...doc.data(),
-            uid: userItem.uid,
-            id: doc.id, //削除処理などの際に指定するドキュメントid
-            key: doc.data().key,
-            value: doc.data().value,
-            createdAt: doc.data().createdAt,
-            displayName: doc.data().displayName,
-            photoURL: doc.data().photoURL,
-            saved: doc.data().saved,
-          }))
-        ),
-      (error) => {
-        alert(error.message);
-      }
-    );
 
-    //データベースへデータ追加処理
-    // addDoc(collection(db, "records"), {
-    //   key,
-    //   value,
-    //   createdAt,
-    //   displayName,
-    //   photoURL,
-    //   saved,
-    //   timeStamp: serverTimestamp(),
-    // });
-    //リストの更新処理
-    // setRecordList((recordList) => [
-    //   ...recordList,
-    //   { id, key, value, createdAt, displayName, photoURL, saved },
-    // ]);
+    //firebaseからデータを取得、投稿されたデータをrecordListへ格納  〜  これ必要？？？
+    // const q = query(formDocRef, orderBy("timeStamp", "desc"));
+    // onSnapshot(
+    //   q,
+    //   (snapshot) =>
+    //     setRecordList(
+    //       snapshot.docs.map((doc) => ({
+    //         ...doc.data(),
+    //         uid: userItem.uid,
+    //         id: doc.id, //削除処理などの際に指定するドキュメントidを追加
+    //         key: doc.data().key,
+    //         value: doc.data().value,
+    //         createdAt: doc.data().createdAt,
+    //         displayName: doc.data().displayName,
+    //         photoURL: doc.data().photoURL,
+    //         saved: doc.data().saved,
+    //       }))
+    //     ),
+    //   (error) => {
+    //     alert(error.message);
+    //   }
+    // );
+
     //textFieldの初期化処理
     setInputValue({
-      id: "",
       key: uuidv4(),
       value: "",
       createdAt: changeDateFormat(new Date()),
@@ -132,7 +124,6 @@ const Form = () => {
           value={inputValue.value}
           onChange={(e) =>
             setInputValue({ ...inputValue, value: e.target.value })
-            // setInputValue({ ...inputValue, value: e.target.value, displayName: userItem.displayName })
           }
         />
       </Box>

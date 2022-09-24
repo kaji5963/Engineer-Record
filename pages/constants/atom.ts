@@ -67,14 +67,14 @@ const { persistAtom } = recoilPersist({
 });
 //学習記録を保持
 export const recordListState: RecoilState<Record[]> = atom({
-  key: "record",
+  key: "recordList",
   default: [],
   effects_UNSTABLE: [persistAtom],
 });
 
 //ユーザー情報を保持
 export const userItemState: RecoilState<User> = atom({
-  key: "userInformation",
+  key: "user",
   default: {},
   effects_UNSTABLE: [persistAtom],
 });

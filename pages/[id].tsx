@@ -64,7 +64,7 @@ const Comment = () => {
     photoURL: userItem.photoURL,
   });
   const router = useRouter();
-console.log(router.query);
+  const {id} = router.query
 
   //Hydrate Error対策
   useEffect(() => {
@@ -74,9 +74,13 @@ console.log(router.query);
   //commentListの取得、commentListの更新処理
   useEffect(() => {
     const q = query(
-      collection(db, "records", commentItem.id, "comments"),
+      collection(db, "comments"),
       orderBy("timeStamp", "desc")
     );
+    // const q = query(
+    //   collection(db, "records", commentItem.id, "comments"),
+    //   orderBy("timeStamp", "desc")
+    // );
     onSnapshot(
       q,
       (snapshot) =>
@@ -103,7 +107,8 @@ console.log(router.query);
     if (comment.value === "") return;
     const { key, value, createdAt, displayName, photoURL } = comment;
     //firebaseのサブコレクションに追加処理
-    const commentDocRef = collection(db, "records", commentItem.id, "comments");
+    const commentDocRef = collection(db, "comments");
+    // const commentDocRef = collection(db, "records", commentItem.id, "comments");
     setDoc(doc(commentDocRef), {
       uid: userItem.uid,
       key,

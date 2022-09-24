@@ -34,6 +34,7 @@ import {
   query,
   QuerySnapshot,
   serverTimestamp,
+  setDoc,
   where,
 } from "firebase/firestore";
 import { auth, db } from "./firebase";
@@ -61,41 +62,17 @@ const RecordList = () => {
   const [isClient, setIsClient] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   // const [saved, setSaved] = useState(false);
-  // const [bookmarkItem, setBookmarkItem] = useRecoilState(bookmarkState);
+  // const [bookmarkList, setBookmarkList] = useState<{ id: string }[]>([]);
   const router = useRouter();
 
-    //現在ログインしているuserを取得しuserItemに格納
-  // useEffect(() => {
-  //   onAuthStateChanged(auth, (user) => {
-  //     if (user) {
-  //       const { uid, displayName, photoURL } = user as User;
-  //       setUserItem({ ...userItem, uid, displayName, photoURL });
-  //     }
-  //   });
-  // }, []);
-
-  //firebaseからデータを取得、setRecordListで更新しrecordListに格納
+  //firebaseからリアルタイムでデータを取得（firebaseの設定 collectionGroupを手動設定し降順）
   useEffect(() => {
-    // const userRef = query(collectionGroup(db, "users"), where("userId", "==", userItem.uid),orderBy("timeStamp", "desc"))
-    // onSnapshot(userRef,(querySnapshot) => {
-    //   setRecordList(
-    //         querySnapshot.docs.map((doc) => ({
-    //           ...doc.data(),
-    //           id: doc.id,
-    //           key: doc.data().key,
-    //           value: doc.data().value,
-    //           createdAt: doc.data().createdAt,
-    //           displayName: doc.data().displayName,
-    //           photoURL: doc.data().photoURL,
-    //           saved: doc.data().saved,
-    //         }))
-    //       );
-    // })
-    // const usersRef = collection(db, "users", userItem.uid, "records");
-    // const usersRef = collection(db, "records");
-    // const q = query(usersRef, orderBy("timeStamp", "desc"));
-    const q = query(collection(db, "records"), orderBy("timeStamp", "desc"));
-    onSnapshot(q, (querySnapshot) => {
+    const recordsRef = query(
+      collectionGroup(db, "records"),
+      orderBy("timeStamp", "desc")
+    );
+    onSnapshot(recordsRef, (querySnapshot) => {
+      // setRecordListで更新し投稿データをrecordListに格納
       setRecordList(
         querySnapshot.docs.map((doc) => ({
           ...doc.data(),
@@ -112,6 +89,24 @@ const RecordList = () => {
     });
   }, []);
 
+  //firebaseからブックマークしたデータを取得
+  // useEffect(() => {
+  //   const bookmarksRef = query(
+  //     collection(db, "users", userItem.uid, "bookmarks"),
+  //   );
+  //   onSnapshot(bookmarksRef, (querySnapshot) => {
+  //     console.log(querySnapshot.docs.map((doc) => doc.data()));
+
+      // setBookmarkList(
+      //   querySnapshot.docs.map((doc) => ({
+      //     ...doc.data(),
+      //     id: doc.id,
+      //     saved: doc.data().saved,
+      //   }))
+      // );
+  //   });
+  // }, []);
+
   //Hydrate Error対策
   useEffect(() => {
     if (typeof window !== "undefined") setIsClient(true);
@@ -125,13 +120,11 @@ const RecordList = () => {
   }, [currentPage, recordList]);
 
   //特定のコメントボタン押すと、そのデータをコメントページに渡す
-  const handleComment = (key: string) => {
+  const handleComment = (id: string, key: string) => {
     const findComment = recordList.find((recordList) => recordList.key === key);
     setCommentItem({ ...commentItem, ...findComment });
-    
-    // const [{key, value, createdAt}] = recordList
-    // setComment({...comment, key, value, createdAt })
-    router.push("/Comment");
+    // router.push("/Comment");
+    router.push(`/${id}`);
   };
 
   //ブックマークする処理
@@ -146,9 +139,11 @@ const RecordList = () => {
     const findBookmarkRecord = bookmarkRecord.find(
       (recordList) => recordList.key === key
     );
-    const { value, createdAt, displayName, photoURL, saved } =
+    const { uid, value, createdAt, displayName, photoURL, saved } =
       findBookmarkRecord!;
-    addDoc(collection(db, "records", findBookmarkRecord!.id, "bookmarks"), {
+    const bookmarksRef = doc(db, "users", userItem.uid, "bookmarks", key);
+    setDoc(bookmarksRef, {
+      uid,
       key,
       value,
       createdAt,
@@ -167,6 +162,7 @@ const RecordList = () => {
         : recordList
     );
     setRecordList(bookmarkRecord);
+    deleteDoc(doc(db, "users", userItem.uid, "bookmarks", key));
   };
 
   //Record編集処理
@@ -182,7 +178,7 @@ const RecordList = () => {
   const handleDeleteRecord = (id: string) => {
     const deleteMessage = confirm("削除してもよろしいですか？");
     if (deleteMessage === true) {
-      deleteDoc(doc(db, "records", id));
+      deleteDoc(doc(db, "users", userItem.uid, "records", id));
       const deleteRecord = recordList.filter(
         (recordList) => recordList.id !== id
       );
@@ -247,12 +243,15 @@ const RecordList = () => {
                       </Tooltip>
 
                       <Tooltip title="Delete" placement="bottom-start" arrow>
-                        <IconButton
-                          sx={{ mr: 2 }}
-                          onClick={() => handleDeleteRecord(record.id)}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
+                        <span>
+                          <IconButton
+                            sx={{ mr: 2 }}
+                            onClick={() => handleDeleteRecord(record.id)}
+                            disabled={false}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </span>
                       </Tooltip>
                     </>
                   }
@@ -279,7 +278,9 @@ const RecordList = () => {
                   disableSpacing
                 >
                   <Tooltip title="Comment" placement="right-start" arrow>
-                    <IconButton onClick={() => handleComment(record.key)}>
+                    <IconButton
+                      onClick={() => handleComment(record.id, record.key)}
+                    >
                       <ChatBubbleOutlineIcon />
                     </IconButton>
                   </Tooltip>
