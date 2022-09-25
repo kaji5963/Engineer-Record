@@ -160,7 +160,7 @@ const Comment = () => {
       (commentList) => commentList.postId === postId
     );
     setEditItem({ ...editItem, ...findEditRecord });
-    router.push(`/Comments/${id}`);
+    router.push(`/${id}/EditComment`);
   };
 
   //comment削除処理

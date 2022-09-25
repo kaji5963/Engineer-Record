@@ -12,17 +12,16 @@ import { db } from "../../components/firebase";
 
 const EditComment = () => {
   const [editItem, setEditItem] = useRecoilState(editItemState);
-  const [userItem, setUserItem] = useRecoilState(userItemState);
   const router = useRouter();
 
-  //Record編集完了処理
+  //comment編集完了処理
   const handleEditComplete = (id: string) => {
     if (editItem.value === "") return
-    const recordUpdateDoc = doc(db, "users", userItem.uid, "records", id);
-    updateDoc(recordUpdateDoc, {
+    const commentUpdateDoc = doc(db, "comments", id);
+    updateDoc(commentUpdateDoc, {
       value: editItem.value,
     });
-    router.push("/Top");
+    router.back();
   };
 
   return (

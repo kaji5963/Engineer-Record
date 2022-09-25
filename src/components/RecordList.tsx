@@ -124,7 +124,7 @@ const RecordList = () => {
     const findComment = recordList.find((recordList) => recordList.postId === postId);
     setCommentItem({ ...commentItem, ...findComment });
     // router.push("/Comment");
-    router.push(`/Comments/${id}`);
+    router.push(`/${id}/Comment`);
     
   };
 
@@ -172,7 +172,7 @@ const RecordList = () => {
       (recordList) => recordList.postId === postId
     );
     setEditItem({ ...editItem, ...findEditRecord });
-    router.push(`/EditRecords/${id}`);
+    router.push(`/${id}/EditRecord/`);
   };
 
   //Record削除処理
