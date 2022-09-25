@@ -19,10 +19,11 @@ import { userItemState } from "../constants/atom";
 import { useEffect, useState } from "react";
 import { auth } from "../components/firebase";
 
+
+
 const Profile = () => {
   const [userItem, setUserItem] = useRecoilState(userItemState);
   const [isClient, setIsClient] = useState(false);
-
   const router = useRouter();
 
   //Hydrate Error対策
@@ -41,18 +42,17 @@ const Profile = () => {
             bgcolor: grey[100],
             width: "50%",
             mx: "auto",
-            p: 4,
+            p: 5,
             borderRadius: 5,
           }}
         >
-          <Typography sx={{ textAlign: "center" }} variant="h4" gutterBottom>
+          {/* <Typography sx={{ textAlign: "center" }} variant="h4" gutterBottom>
             Your Profile
-          </Typography>
+          </Typography> */}
           <Box>
             <Typography
               sx={{
                 mx: "auto",
-                mt: 2,
                 cursor: "pointer",
                 display: "flex",
                 justifyContent: "center",
@@ -64,7 +64,7 @@ const Profile = () => {
             <Avatar
               sx={{
                 mx: "auto",
-                mt: 1
+                mt: 1,
               }}
               src={userItem.photoURL}
             />
@@ -72,13 +72,23 @@ const Profile = () => {
           <Typography sx={{ textAlign: "center", mt: 3 }} variant="subtitle1">
             Display Name
           </Typography>
-          <Typography sx={{ textAlign: "center" }} variant="h5" gutterBottom>
+          <Typography sx={{ textAlign: "center" }} variant="h6" gutterBottom>
             {userItem.displayName}
+          </Typography>
+          <Typography sx={{ textAlign: "center", mt: 3 }} variant="subtitle1">
+            User ID
+          </Typography>
+          <Typography
+            sx={{ textAlign: "center", fontSize: 14 }}
+            variant="subtitle1"
+            gutterBottom
+          >
+            {userItem.uid}
           </Typography>
           <Typography sx={{ textAlign: "center", mt: 3 }} variant="subtitle1">
             Email Address
           </Typography>
-          <Typography sx={{ textAlign: "center" }} variant="h5" gutterBottom>
+          <Typography sx={{ textAlign: "center" }} variant="h6" gutterBottom>
             {userItem.email}
           </Typography>
           <Box sx={{ textAlign: "center" }}>
@@ -101,10 +111,6 @@ const Profile = () => {
                 <ReplyIcon fontSize="large" />
               </IconButton>
             </Tooltip>
-
-            {/* <Button variant="contained" color="error" onClick={handleAccountDelete}>
-              アカウント削除
-            </Button> */}
           </Box>
         </Box>
       )}

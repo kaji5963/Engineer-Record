@@ -235,20 +235,28 @@ const RecordList = () => {
                   action={
                     <>
                       <Tooltip title="Edit" placement="bottom-start" arrow>
-                        <IconButton
-                          sx={{ mr: 2 }}
-                          onClick={() => handleEditRecord(record.id,record.postId)}
-                        >
-                          <EditIcon />
-                        </IconButton>
+                        <span>
+                          <IconButton
+                            sx={{ mr: 2 }}
+                            onClick={() =>
+                              handleEditRecord(record.id, record.postId)
+                            }
+                            disabled={
+                              userItem.uid === record.uid ? false : true
+                            }
+                          >
+                            <EditIcon />
+                          </IconButton>
+                        </span>
                       </Tooltip>
-
                       <Tooltip title="Delete" placement="bottom-start" arrow>
                         <span>
                           <IconButton
                             sx={{ mr: 2 }}
                             onClick={() => handleDeleteRecord(record.id)}
-                            disabled={false}
+                            disabled={
+                              userItem.uid === record.uid ? false : true
+                            }
                           >
                             <DeleteIcon />
                           </IconButton>
@@ -276,7 +284,6 @@ const RecordList = () => {
 
                 <CardActions
                   sx={{ display: "flex", justifyContent: "space-around" }}
-                  disableSpacing
                 >
                   <Tooltip title="Comment" placement="right-start" arrow>
                     <IconButton

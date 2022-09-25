@@ -34,6 +34,7 @@ import {
   userItemState,
   commentListState,
   CommentList,
+  editItemState,
 } from "../../constants/atom";
 import { useEffect, useState } from "react";
 import { changeDateFormat } from "../../components/Form";
@@ -56,8 +57,8 @@ const Comment = () => {
   // const [recordList, setRecordList] = useRecoilState(recordListState);
   const [userItem, setUserItem] = useRecoilState(userItemState);
   const [commentItem, setCommentItem] = useRecoilState(commentItemState);
-  const [docData, setDocData] = useState({});
   const [commentList, setCommentList] = useRecoilState(commentListState);
+  const [editItem, setEditItem] = useRecoilState(editItemState);
   const [isClient, setIsClient] = useState(false);
   const [comment, setComment] = useState({
     postId: commentItem.postId,
@@ -68,7 +69,6 @@ const Comment = () => {
     photoURL: userItem.photoURL,
   });
   const router = useRouter();
-  // const {id} = router.query
 
   //Hydrate Error対策
   useEffect(() => {
@@ -79,11 +79,9 @@ const Comment = () => {
   useEffect(() => {
     const q = query(
       collection(db, "comments"),
-      where("postId", "==", commentItem.postId),orderBy("timeStamp", "desc"))
-    // const q = query(
-    //   collection(db, "records", commentItem.id, "comments"),
-    //   orderBy("timeStamp", "desc")
-    // );
+      where("postId", "==", commentItem.postId),
+      orderBy("timeStamp", "desc")
+    );
     onSnapshot(
       q,
       (snapshot) =>
@@ -101,8 +99,7 @@ const Comment = () => {
           }))
         ),
       (error) => {
-        // alert(error.message);
-        console.log(error.message);
+        alert(error.message);
       }
     );
   }, []);
@@ -110,7 +107,8 @@ const Comment = () => {
   //comment送信処理
   const handleCommentSubmit = () => {
     if (comment.value === "") return;
-    const { postId, commentId, value, createdAt, displayName, photoURL } = comment;
+    const { postId, commentId, value, createdAt, displayName, photoURL } =
+      comment;
     //firebaseのサブコレクションに追加処理
     const commentDocRef = collection(db, "comments");
     setDoc(doc(commentDocRef), {
@@ -154,6 +152,15 @@ const Comment = () => {
       displayName: userItem.displayName,
       photoURL: userItem.photoURL,
     });
+  };
+
+  //comment編集処理
+  const handleEditRecord = (id: string, postId: string) => {
+    const findEditRecord = commentList.find(
+      (commentList) => commentList.postId === postId
+    );
+    setEditItem({ ...editItem, ...findEditRecord });
+    router.push(`/Comments/${id}`);
   };
 
   //comment削除処理
@@ -334,13 +341,25 @@ const Comment = () => {
                 <CardActions
                   sx={{ display: "flex", justifyContent: "space-around" }}
                 >
-                  <IconButton>
-                    <EditIcon />
-                  </IconButton>
-
-                  <IconButton onClick={() => handleDeleteComment(comment.id)}>
-                    <DeleteIcon />
-                  </IconButton>
+                  <Tooltip title="Edit" placement="right-start" arrow>
+                    <span>
+                      <IconButton onClick={() => handleEditRecord(comment.id, comment.postId)}
+                        disabled={userItem.uid === comment.uid ? false : true}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                    </span>
+                  </Tooltip>
+                  <Tooltip title="Delete" placement="right-start" arrow>
+                    <span>
+                      <IconButton
+                        onClick={() => handleDeleteComment(comment.id)}
+                        disabled={userItem.uid === comment.uid ? false : true}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </span>
+                  </Tooltip>
                 </CardActions>
               </Box>
             );

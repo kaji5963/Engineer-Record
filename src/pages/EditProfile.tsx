@@ -7,6 +7,7 @@ import {
   Typography,
 } from "@mui/material";
 import ReplyIcon from "@mui/icons-material/Reply";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import { grey } from "@mui/material/colors";
 import { Box } from "@mui/system";
 import Head from "next/head";
@@ -32,13 +33,12 @@ const EditProfile = () => {
     if (typeof window !== "undefined") setIsClient(true);
   }, []);
 
-  const handleSubmit = (
+  const handleUpload = (
     e: FormEvent<HTMLFormElement>,
     displayName: string | null,
     photoURL: string
   ) => {
     e.preventDefault();
-
     updateProfile(auth.currentUser as User, {
       displayName,
       photoURL,
@@ -51,13 +51,17 @@ const EditProfile = () => {
   const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files![0];
     const storageRef = ref(storage, "images/" + file.name);
-    await uploadBytes(storageRef, file).then((snapshot) => {
-      console.log("Uploaded a file!");
-    });
-    await getDownloadURL(storageRef).then((url) => {
-      console.log("Downloaded a file!");
-      setUserItem({ ...userItem, photoURL: url });
-    });
+    try {
+      await uploadBytes(storageRef, file).then((snapshot) => {
+        console.log("Uploaded a file!");
+      });
+      await getDownloadURL(storageRef).then((url) => {
+        console.log("Downloaded a file!");
+        setUserItem({ ...userItem, photoURL: url });
+      });
+    } catch {
+      alert("画像の読み込みに失敗しました");
+    }
   };
 
   return (
@@ -79,43 +83,58 @@ const EditProfile = () => {
           }}
           component="form"
           onSubmit={(e) =>
-            handleSubmit(e, userItem.displayName, userItem.photoURL)
+            handleUpload(e, userItem.displayName, userItem.photoURL)
           }
         >
-          <Typography sx={{ textAlign: "center" }} variant="h4" gutterBottom>
+          {/* <Typography sx={{ textAlign: "center" }} variant="h4" gutterBottom>
             Edit Profile
-          </Typography>
-          <Stack
-            sx={{
-              mx: "auto",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              mb: 2,
-            }}
-          >
-            <Typography sx={{mx: "auto"}} variant="subtitle1">Avatar</Typography>
-
-            <IconButton
-              color="primary"
-              aria-label="upload picture"
-              component="label"
+          </Typography> */}
+          <Box sx={{display: "flex", justifyContent: "center", alignContent: "center", width: 100, mx: "auto"}}>
+            <Stack
+              sx={{
+                mx: "auto",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                mb: 2,
+                ml: 9
+              }}
             >
-              <input
-                hidden
-                accept="image/*"
-                type="file"
-                onChange={(e) => handleFileUpload(e)}
-              />
-              <Avatar
-                sx={{
-                  cursor: "pointer",
-                }}
-                src={userItem.photoURL}
-              />
-            </IconButton>
-          </Stack>
+              <Typography sx={{ mx: "auto" }} variant="subtitle1">
+                Avatar
+              </Typography>
 
+              <IconButton
+                color="primary"
+                aria-label="upload picture"
+                component="label"
+              >
+                <input
+                  hidden
+                  accept="image/*"
+                  type="file"
+                  onChange={(e) => handleFileUpload(e)}
+                />
+                <Avatar
+                  sx={{
+                    cursor: "pointer",
+                  }}
+                  src={userItem.photoURL}
+                />
+              </IconButton>
+            </Stack>
+
+            <Box>
+              <Tooltip title="Avatar Delete" placement="top-start" arrow>
+                <IconButton
+                  sx={{ ml: 3, mt: 5 }}
+                  onClick={() => setUserItem({ ...userItem, photoURL: "" })}
+                >
+                  <HighlightOffIcon />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          </Box>
           <Box sx={{ mx: "auto" }}>
             <Typography sx={{ textAlign: "center", mb: 1 }} variant="subtitle1">
               Display Name
