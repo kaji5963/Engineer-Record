@@ -47,6 +47,7 @@ import {
   query,
   serverTimestamp,
   setDoc,
+  where,
 } from "firebase/firestore";
 import { auth, db } from "../../components/firebase";
 
@@ -59,14 +60,15 @@ const Comment = () => {
   const [commentList, setCommentList] = useRecoilState(commentListState);
   const [isClient, setIsClient] = useState(false);
   const [comment, setComment] = useState({
-    key: uuidv4(),
+    postId: commentItem.postId,
+    commentId: uuidv4(),
     value: "",
     createdAt: changeDateFormat(new Date()),
     displayName: userItem.displayName,
     photoURL: userItem.photoURL,
   });
   const router = useRouter();
-  const {id} = router.query
+  // const {id} = router.query
 
   //Hydrate Error対策
   useEffect(() => {
@@ -77,8 +79,7 @@ const Comment = () => {
   useEffect(() => {
     const q = query(
       collection(db, "comments"),
-      orderBy("timeStamp", "desc")
-    );
+      where("postId", "==", commentItem.postId),orderBy("timeStamp", "desc"))
     // const q = query(
     //   collection(db, "records", commentItem.id, "comments"),
     //   orderBy("timeStamp", "desc")
@@ -89,9 +90,10 @@ const Comment = () => {
         setCommentList(
           snapshot.docs.map((doc) => ({
             ...doc.data(),
-            uid: userItem.uid,
             id: doc.id,
-            key: doc.data().key,
+            uid: doc.data().uid,
+            postId: doc.data().postId,
+            commentId: doc.data().commentId,
             value: doc.data().value,
             createdAt: doc.data().createdAt,
             displayName: doc.data().displayName,
@@ -99,7 +101,8 @@ const Comment = () => {
           }))
         ),
       (error) => {
-        alert(error.message);
+        // alert(error.message);
+        console.log(error.message);
       }
     );
   }, []);
@@ -107,18 +110,13 @@ const Comment = () => {
   //comment送信処理
   const handleCommentSubmit = () => {
     if (comment.value === "") return;
-    const { key, value, createdAt, displayName, photoURL } = comment;
-    const docId = commentList.map((comment) => {
-      return setDocData(comment)
-    })
-    
+    const { postId, commentId, value, createdAt, displayName, photoURL } = comment;
     //firebaseのサブコレクションに追加処理
-    // const commentDocRef = collection(db, "users", userItem.uid, "records", commentItem.id, "comments" );
     const commentDocRef = collection(db, "comments");
-    // const commentDocRef = collection(db, "records", commentItem.id, "comments");
     setDoc(doc(commentDocRef), {
       uid: userItem.uid,
-      key,
+      postId, //学習記録の投稿者のpostIdとイコール関係
+      commentId,
       value,
       createdAt,
       displayName,
@@ -133,9 +131,9 @@ const Comment = () => {
     //     setCommentList(
     //       snapshot.docs.map((doc) => ({
     //         ...doc.data(),
-    //         uid: userItem.uid,
     //         id: doc.id,
-    //         key: doc.data().key,
+    //         uid: userItem.uid,
+    //         postId: doc.data().postId,
     //         value: doc.data().value,
     //         createdAt: doc.data().createdAt,
     //         displayName: doc.data().displayName,
@@ -146,9 +144,11 @@ const Comment = () => {
     //     alert(error.message);
     //   }
     // );
+
     //comment初期化
     setComment({
-      key: uuidv4(),
+      postId: commentItem.postId,
+      commentId: uuidv4(),
       value: "",
       createdAt: changeDateFormat(new Date()),
       displayName: userItem.displayName,
@@ -156,19 +156,19 @@ const Comment = () => {
     });
   };
 
-  //comment削除処理 サブドキュメントの削除をしたいができないため一旦保留
-  // const handleDeleteComment = (id: string) => {
-  //   const deleteMessage = confirm("削除してもよろしいですか？");
-  //   if (deleteMessage === true) {
-  //     deleteDoc(doc(db, "comments", id));
-  //     const deleteComment = commentList.filter(
-  //       (commentList) => commentList.id !== id
-  //     );
-  //     setCommentList(deleteComment);
-  //   } else {
-  //     return;
-  //   }
-  // };
+  //comment削除処理
+  const handleDeleteComment = (id: string) => {
+    const deleteMessage = confirm("削除してもよろしいですか？");
+    if (deleteMessage === true) {
+      deleteDoc(doc(db, "comments", id));
+      const deleteRecord = commentList.filter(
+        (commentList) => commentList.id !== id
+      );
+      setCommentList(deleteRecord);
+    } else {
+      return;
+    }
+  };
 
   return (
     <Layout>
@@ -254,17 +254,6 @@ const Comment = () => {
         </Card>
       )}
       {/* --------------------------------------- */}
-
-      {/* <Tooltip title="Back" placement="bottom-start" arrow>
-      <IconButton
-        sx={{ mb: 4, display: "flex", mx: "auto" }}
-        color="primary"
-        onClick={() => router.push("/Top")}
-      >
-        <ReplyIcon fontSize="large" />
-      </IconButton>
-      </Tooltip> */}
-
       <Box
         sx={{
           mt: 2,
@@ -308,7 +297,7 @@ const Comment = () => {
           {commentList.map((comment) => {
             return (
               <Box
-                key={comment.key}
+                key={comment.commentId}
                 sx={{
                   bgcolor: red[100],
                   width: 500,
@@ -348,7 +337,7 @@ const Comment = () => {
                     <EditIcon />
                   </IconButton>
 
-                  <IconButton>
+                  <IconButton onClick={() => handleDeleteComment(comment.id)}>
                     <DeleteIcon />
                   </IconButton>
                 </CardActions>

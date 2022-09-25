@@ -76,9 +76,9 @@ const RecordList = () => {
       setRecordList(
         querySnapshot.docs.map((doc) => ({
           ...doc.data(),
-          uid: userItem.uid,
           id: doc.id,
-          key: doc.data().key,
+          uid: doc.data().uid,
+          postId: doc.data().postId,
           value: doc.data().value,
           createdAt: doc.data().createdAt,
           displayName: doc.data().displayName,
@@ -120,8 +120,8 @@ const RecordList = () => {
   }, [currentPage, recordList]);
 
   //特定のコメントボタン押すと、そのデータをコメントページに渡す
-  const handleComment = (id: string, key: string) => {
-    const findComment = recordList.find((recordList) => recordList.key === key);
+  const handleComment = (id: string, postId: string) => {
+    const findComment = recordList.find((recordList) => recordList.postId === postId);
     setCommentItem({ ...commentItem, ...findComment });
     // router.push("/Comment");
     router.push(`/Comments/${id}`);
@@ -129,23 +129,23 @@ const RecordList = () => {
   };
 
   //ブックマークする処理
-  const handleSavedBookmark = (key: string) => {
+  const handleSavedBookmark = (postId: string) => {
     const bookmarkRecord = recordList.map((recordList) =>
-      recordList.key === key
+      recordList.postId === postId
         ? { ...recordList, saved: !recordList.saved }
         : recordList
     );
     setRecordList(bookmarkRecord);
 
     const findBookmarkRecord = bookmarkRecord.find(
-      (recordList) => recordList.key === key
+      (recordList) => recordList.postId === postId
     );
     const { uid, value, createdAt, displayName, photoURL, saved } =
       findBookmarkRecord!;
-    const bookmarksRef = doc(db, "users", userItem.uid, "bookmarks", key);
+    const bookmarksRef = doc(db, "users", userItem.uid, "bookmarks", postId);
     setDoc(bookmarksRef, {
       uid,
-      key,
+      postId,
       value,
       createdAt,
       displayName,
@@ -156,20 +156,20 @@ const RecordList = () => {
   };
 
   //ブックマーク外す処理
-  const handleRemoveBookmark = (key: string) => {
+  const handleRemoveBookmark = (postId: string) => {
     const bookmarkRecord = recordList.map((recordList) =>
-      recordList.key === key
+      recordList.postId === postId
         ? { ...recordList, saved: !recordList.saved }
         : recordList
     );
     setRecordList(bookmarkRecord);
-    deleteDoc(doc(db, "users", userItem.uid, "bookmarks", key));
+    deleteDoc(doc(db, "users", userItem.uid, "bookmarks", postId));
   };
 
   //Record編集処理
-  const handleEditRecord = (key: string) => {
+  const handleEditRecord = (postId: string) => {
     const findEditRecord = recordList.find(
-      (recordList) => recordList.key === key
+      (recordList) => recordList.postId === postId
     );
     setEditItem({ ...editItem, ...findEditRecord });
     router.push("/EditRecord");
@@ -216,7 +216,7 @@ const RecordList = () => {
           {paginationList.map((record) => {
             return (
               <Box
-                key={record.key}
+                key={record.postId}
                 sx={{
                   bgcolor: blue[100],
 
@@ -237,7 +237,7 @@ const RecordList = () => {
                       <Tooltip title="Edit" placement="bottom-start" arrow>
                         <IconButton
                           sx={{ mr: 2 }}
-                          onClick={() => handleEditRecord(record.key)}
+                          onClick={() => handleEditRecord(record.postId)}
                         >
                           <EditIcon />
                         </IconButton>
@@ -280,7 +280,7 @@ const RecordList = () => {
                 >
                   <Tooltip title="Comment" placement="right-start" arrow>
                     <IconButton
-                      onClick={() => handleComment(record.id, record.key)}
+                      onClick={() => handleComment(record.id, record.postId)}
                     >
                       <ChatBubbleOutlineIcon />
                     </IconButton>
@@ -295,7 +295,7 @@ const RecordList = () => {
                   {record.saved === true ? (
                     <Tooltip title="Bookmark" placement="right-start" arrow>
                       <IconButton
-                        onClick={() => handleRemoveBookmark(record.key)}
+                        onClick={() => handleRemoveBookmark(record.postId)}
                       >
                         <BookmarkIcon />
                       </IconButton>
@@ -303,7 +303,7 @@ const RecordList = () => {
                   ) : (
                     <Tooltip title="Bookmark" placement="right-start" arrow>
                       <IconButton
-                        onClick={() => handleSavedBookmark(record.key)}
+                        onClick={() => handleSavedBookmark(record.postId)}
                       >
                         <BookmarkBorderIcon />
                       </IconButton>

@@ -4,7 +4,7 @@ import { recoilPersist } from "recoil-persist";
 export type Record = {
   uid: string
   id: string
-  key: string;
+  postId: string;
   value: string;
   createdAt: string;
   displayName: string | null;
@@ -22,7 +22,7 @@ export type User = {
 export type CommentItem = {
   uid: string
   id: string
-  key: string;
+  postId: string;
   value: string;
   createdAt: string;
   displayName: string | null;
@@ -33,7 +33,8 @@ export type CommentItem = {
 export type CommentList = {
   uid: string
   id: string
-  key: string;
+  postId: string;
+  commentId: string
   value: string;
   createdAt: string;
   displayName: string | null;
@@ -43,7 +44,7 @@ export type CommentList = {
 export type EditItem = {
   uid: string
   id: string
-  key: string;
+  postId: string;
   value: string;
   createdAt: string;
   displayName: string | null;

@@ -43,7 +43,7 @@ const Form = () => {
   const setRecordList = useSetRecoilState(recordListState);
   const [userItem, setUserItem] = useRecoilState(userItemState);
   const [inputValue, setInputValue] = useState({
-    key: uuidv4(),
+    postId: uuidv4(),
     value: "",
     createdAt: changeDateFormat(new Date()),
     displayName: userItem.displayName,
@@ -54,22 +54,33 @@ const Form = () => {
   //学習記録を投稿する機能
   const handleAddRecord = async () => {
     if (inputValue.value === "") return;
-    const { key, value, createdAt, displayName, photoURL, saved } =
+    const { postId, value, createdAt, displayName, photoURL, saved } =
       inputValue;
     const user = auth.currentUser!;
 
     //firebaseへデータ格納（階層：users-uid-records）
-    const formDocRef = collection(db, "users", user.uid, "records");
-    await addDoc(formDocRef, {
+    const formDocRef = doc(db, "users", user.uid, "records", postId);
+    // const formDocRef = collection(db, "users", user.uid, "records", key);
+    await setDoc(formDocRef,{
       uid: userItem.uid,
-      key,
+      postId,
       value,
       createdAt,
       displayName,
       photoURL,
       saved,
       timeStamp: serverTimestamp(),
-    });
+    })
+    // await addDoc(formDocRef, {
+    //   uid: userItem.uid,
+    //   key,
+    //   value,
+    //   createdAt,
+    //   displayName,
+    //   photoURL,
+    //   saved,
+    //   timeStamp: serverTimestamp(),
+    // });
 
     //firebaseからデータを取得、投稿されたデータをrecordListへ格納  〜  これ必要？？？
     // const q = query(formDocRef, orderBy("timeStamp", "desc"));
@@ -96,7 +107,7 @@ const Form = () => {
 
     //textFieldの初期化処理
     setInputValue({
-      key: uuidv4(),
+      postId: uuidv4(),
       value: "",
       createdAt: changeDateFormat(new Date()),
       displayName: userItem.displayName,
@@ -119,6 +130,7 @@ const Form = () => {
           id="outlined-multiline-static"
           label="学習記録を入力してくだい"
           multiline
+          autoFocus
           rows={5}
           type="text"
           value={inputValue.value}
