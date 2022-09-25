@@ -3,21 +3,22 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { IconButton, TextField, Tooltip, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import Head from "next/head";
-import Layout from "../components/Layout";
+import Layout from "../../components/Layout";
 import { useRouter } from "next/router";
 import { useRecoilState } from "recoil";
-import { editItemState } from "../constants/atom";
+import { editItemState, userItemState } from "../../constants/atom";
 import { doc, updateDoc } from "firebase/firestore";
-import { db } from "../components/firebase";
+import { db } from "../../components/firebase";
 
 const EditRecord = () => {
   const [editItem, setEditItem] = useRecoilState(editItemState);
+  const [userItem, setUserItem] = useRecoilState(userItemState);
   const router = useRouter();
 
   //Record編集完了処理
   const handleEditComplete = (id: string) => {
     if (editItem.value === "") return
-    const recordUpdateDoc = doc(db, "records", id);
+    const recordUpdateDoc = doc(db, "users", userItem.uid, "records", id);
     updateDoc(recordUpdateDoc, {
       value: editItem.value,
     });

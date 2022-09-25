@@ -167,12 +167,12 @@ const RecordList = () => {
   };
 
   //Record編集処理
-  const handleEditRecord = (postId: string) => {
+  const handleEditRecord = (id: string, postId: string) => {
     const findEditRecord = recordList.find(
       (recordList) => recordList.postId === postId
     );
     setEditItem({ ...editItem, ...findEditRecord });
-    router.push("/EditRecord");
+    router.push(`/EditRecords/${id}`);
   };
 
   //Record削除処理
@@ -237,7 +237,7 @@ const RecordList = () => {
                       <Tooltip title="Edit" placement="bottom-start" arrow>
                         <IconButton
                           sx={{ mr: 2 }}
-                          onClick={() => handleEditRecord(record.postId)}
+                          onClick={() => handleEditRecord(record.id,record.postId)}
                         >
                           <EditIcon />
                         </IconButton>

@@ -267,6 +267,7 @@ const Comment = () => {
           sx={{ width: "500px" }}
           label="New Comment"
           value={comment.value}
+          autoFocus
           onChange={(e) => setComment({ ...comment, value: e.target.value })}
         />
       </Box>
