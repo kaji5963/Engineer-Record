@@ -88,20 +88,20 @@ const RecordList = () => {
         // saved: doc.data().postId === bookmarkItem.postId && !doc.data().saved
       }));
       setRecordList(recordsData);
-      })
+      // })
 
 
-    //   const bookmarkRef = query(
-    //     collection(db, "users", userItem.uid, "bookmarks")
-    //   );
-    //   const getBookmark = await getDocs(bookmarkRef);
-    //   getBookmark.forEach((doc) => {
-    //     if (doc.data()) {
-    //       console.log(doc.id, " => ", doc.data().saved);
+      const bookmarkRef = query(
+        collection(db, "users", userItem.uid, "bookmarks")
+      );
+      const getBookmark = await getDocs(bookmarkRef);
+      getBookmark.forEach((doc) => {
+        if (doc.data()) {
+          console.log(doc.id, " => ", doc.data().saved);
           
-    //     }
-    //   });
-    // });
+        }
+      });
+    })
 
 
     // onSnapshot(recordsRef, (querySnapshot) => {
@@ -197,7 +197,8 @@ const RecordList = () => {
       (recordList) => recordList.postId === postId
     );
 
-    setBookmarkItem(findBookmarkRecord!);
+    // setBookmarkList(findBookmarkRecord!);
+    // setBookmarkItem(findBookmarkRecord!);
     const { uid, value, createdAt, displayName, photoURL, saved } =
       findBookmarkRecord!;
     //ブックマークしたデータをfirebaseへ格納

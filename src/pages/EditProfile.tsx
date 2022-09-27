@@ -21,7 +21,7 @@ import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { onAuthStateChanged, updateProfile, User } from "firebase/auth";
 import { auth, db, storage } from "../components/firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { doc, updateDoc } from "firebase/firestore";
+import { collection, doc, query, updateDoc, where } from "firebase/firestore";
 
 const EditProfile = () => {
   const [userItem, setUserItem] = useRecoilState(userItemState);
@@ -33,7 +33,7 @@ const EditProfile = () => {
   useEffect(() => {
     if (typeof window !== "undefined") setIsClient(true);
   }, []);
-  
+
   //全てのdisplayName,photoURLのアップロード処理
   const handleUpload = (
     e: FormEvent<HTMLFormElement>,
@@ -50,9 +50,8 @@ const EditProfile = () => {
     const recordUpdateDoc = doc(db, "users", userItem.uid);
     updateDoc(recordUpdateDoc, {
       displayName: userItem.displayName,
-      photoURL: userItem.photoURL
+      photoURL: userItem.photoURL,
     });
-
     setUserItem({ ...userItem, displayName, photoURL });
     router.push("/Top");
   };
@@ -83,7 +82,7 @@ const EditProfile = () => {
       {isClient && (
         <Box
           sx={{
-            bgcolor: grey[100],
+            bgcolor: grey[300],
             width: "50%",
             height: 320,
             mx: "auto",
@@ -101,42 +100,58 @@ const EditProfile = () => {
           {/* <Typography sx={{ textAlign: "center" }} variant="h4" gutterBottom>
             Edit Profile
           </Typography> */}
-          <Box sx={{display: "flex", justifyContent: "center", alignContent: "center", width: 100, mx: "auto"}}>
-            <Stack
+          <Box>
+            <Box
               sx={{
-                mx: "auto",
                 display: "flex",
-                flexDirection: "column",
                 justifyContent: "center",
-                mb: 2,
-                ml: 9
+                alignContent: "center",
+                width: 100,
+                mx: "auto",
               }}
             >
-              <Typography sx={{ mx: "auto" }} variant="subtitle1">
-                Avatar
-              </Typography>
+              <Box
+                sx={{
+                  bgcolor: "white",
+                  minWidth: 280,
+                  borderRadius: 5,
+                  height: 100,
 
-              <IconButton
-                color="primary"
-                aria-label="upload picture"
-                component="label"
+                  mx: "auto",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  mb: 2,
+                  ml: 9,
+                }}
               >
-                <input
-                  hidden
-                  accept="image/*"
-                  type="file"
-                  onChange={(e) => handleFileUpload(e)}
-                />
-                <Avatar
-                  sx={{
-                    cursor: "pointer",
-                  }}
-                  src={userItem.photoURL}
-                />
-              </IconButton>
-            </Stack>
+                <Typography
+                  sx={{ mx: "auto", fontWeight: "bold" }}
+                  variant="subtitle1"
+                >
+                  Avatar
+                </Typography>
 
-            <Box>
+                <IconButton
+                  color="primary"
+                  aria-label="upload picture"
+                  component="label"
+                >
+                  <input
+                    hidden
+                    accept="image/*"
+                    type="file"
+                    onChange={(e) => handleFileUpload(e)}
+                  />
+                  <Avatar
+                    sx={{
+                      cursor: "pointer",
+                    }}
+                    src={userItem.photoURL}
+                  />
+                </IconButton>
+              </Box>
+
               <Tooltip title="Avatar Delete" placement="top-start" arrow>
                 <IconButton
                   sx={{ ml: 3, mt: 5 }}
@@ -147,14 +162,33 @@ const EditProfile = () => {
               </Tooltip>
             </Box>
           </Box>
-          <Box sx={{ mx: "auto" }}>
-            <Typography sx={{ textAlign: "center", mb: 1 }} variant="subtitle1">
+          <Box
+            sx={{
+              bgcolor: "white",
+              minWidth: 250,
+              mx: "auto",
+              height: 100,
+              p: 3,
+              pt: 3,
+              borderRadius: 5,
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <Typography
+              sx={{ textAlign: "center", mb: 1, fontWeight: "bold" }}
+              variant="subtitle1"
+            >
               Display Name
             </Typography>
 
             <TextField
-              sx={{ textAlign: "center", mb: 3 }}
-              id="filled-hidden-label-small"
+              sx={{
+                textAlign: "center",
+                mb: 3,
+                bgcolor: "white",
+                borderRadius: 3,
+              }}
               value={userItem.displayName}
               size="medium"
               onChange={(e) =>

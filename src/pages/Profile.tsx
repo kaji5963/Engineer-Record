@@ -39,7 +39,7 @@ const Profile = () => {
       {isClient && (
         <Box
           sx={{
-            bgcolor: grey[100],
+            bgcolor: grey[300],
             width: "50%",
             mx: "auto",
             p: 5,
@@ -49,13 +49,24 @@ const Profile = () => {
           {/* <Typography sx={{ textAlign: "center" }} variant="h4" gutterBottom>
             Your Profile
           </Typography> */}
-          <Box>
+          <Box
+            sx={{
+              bgcolor: "white",
+              maxWidth: 220,
+              mx: "auto",
+              height: 100,
+              p: 0.5,
+              pt: 3,
+              borderRadius: 5,
+            }}
+          >
             <Typography
               sx={{
                 mx: "auto",
                 cursor: "pointer",
                 display: "flex",
                 justifyContent: "center",
+                fontWeight: "bold",
               }}
               variant="subtitle1"
             >
@@ -69,13 +80,33 @@ const Profile = () => {
               src={userItem.photoURL}
             />
           </Box>
-          <Typography sx={{ textAlign: "center", mt: 3 }} variant="subtitle1">
-            Display Name
-          </Typography>
-          <Typography sx={{ textAlign: "center" }} variant="h6" gutterBottom>
-            {userItem.displayName}
-          </Typography>
-          <Typography sx={{ textAlign: "center", mt: 3 }} variant="subtitle1">
+          <Box
+            sx={{
+              bgcolor: "white",
+              height: 120,
+              maxWidth: 220,
+              mx: "auto",
+              px: 0.5,
+              pt: 0.1,
+              mt: 3,
+              borderRadius: 5,
+            }}
+          >
+            <Typography
+              sx={{ textAlign: "center", mt: 3, fontWeight: "bold" }}
+              variant="subtitle1"
+            >
+              Display Name
+            </Typography>
+            <Typography
+              sx={{ textAlign: "center", pt: 1 }}
+              variant="h6"
+              gutterBottom
+            >
+              {userItem.displayName}
+            </Typography>
+          </Box>
+          {/* <Typography sx={{ textAlign: "center", mt: 3 }} variant="subtitle1">
             User ID
           </Typography>
           <Typography
@@ -84,14 +115,31 @@ const Profile = () => {
             gutterBottom
           >
             {userItem.uid}
-          </Typography>
-          <Typography sx={{ textAlign: "center", mt: 3 }} variant="subtitle1">
-            Email Address
-          </Typography>
-          <Typography sx={{ textAlign: "center" }} variant="h6" gutterBottom>
-            {userItem.email}
-          </Typography>
-          <Box sx={{ textAlign: "center" }}>
+          </Typography> */}
+          <Box
+            sx={{
+              bgcolor: "white",
+              height: 120,
+              maxWidth: 220,
+              mx: "auto",
+              px: 0.5,
+              pt: 0.1,
+              mt: 3,
+              borderRadius: 5,
+            }}
+          >
+            <Typography
+              sx={{ textAlign: "center", mt: 3, fontWeight: "bold" }}
+              variant="subtitle1"
+            >
+              Email Address
+            </Typography>
+            <Typography sx={{ textAlign: "center" }} variant="h6" gutterBottom>
+              {userItem.email}
+            </Typography>
+          </Box>
+
+          <Box sx={{ textAlign: "center", mt: 3 }}>
             <Tooltip title="Edit" placement="bottom-start" arrow>
               <IconButton
                 sx={{ mr: 2 }}
