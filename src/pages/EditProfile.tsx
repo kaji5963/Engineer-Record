@@ -84,7 +84,7 @@ const EditProfile = () => {
           sx={{
             bgcolor: grey[300],
             width: "50%",
-            height: 320,
+            minHeight: 280,
             mx: "auto",
             p: 4,
             borderRadius: 5,
@@ -97,46 +97,30 @@ const EditProfile = () => {
             handleUpload(e, userItem.displayName, userItem.photoURL)
           }
         >
-          {/* <Typography sx={{ textAlign: "center" }} variant="h4" gutterBottom>
-            Edit Profile
-          </Typography> */}
           <Box>
             <Box
               sx={{
                 display: "flex",
                 justifyContent: "center",
-                alignContent: "center",
-                width: 100,
+                alignItems: "center",
+                bgcolor: "white",
+                maxWidth: 200,
                 mx: "auto",
+                borderRadius: 5,
+                mt: 3,
+                mb: 4,
+                py: 4,
+                pl: 7,
               }}
             >
-              <Box
-                sx={{
-                  bgcolor: "white",
-                  minWidth: 280,
-                  borderRadius: 5,
-                  height: 100,
-
-                  mx: "auto",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  mb: 2,
-                  ml: 9,
-                }}
-              >
-                <Typography
-                  sx={{ mx: "auto", fontWeight: "bold" }}
-                  variant="subtitle1"
-                >
+              <Box>
+                <Typography sx={{ fontWeight: "bold", ml: 0.5 }} variant="subtitle1">
                   Avatar
                 </Typography>
 
-                <IconButton
-                  color="primary"
-                  aria-label="upload picture"
-                  component="label"
-                >
+                <IconButton color="primary">
+                <label>
+
                   <input
                     hidden
                     accept="image/*"
@@ -149,12 +133,14 @@ const EditProfile = () => {
                     }}
                     src={userItem.photoURL}
                   />
+                        </label>
+
                 </IconButton>
               </Box>
 
               <Tooltip title="Avatar Delete" placement="top-start" arrow>
                 <IconButton
-                  sx={{ ml: 3, mt: 5 }}
+                  sx={{ ml: 3, mt: 4 }}
                   onClick={() => setUserItem({ ...userItem, photoURL: "" })}
                 >
                   <HighlightOffIcon />
@@ -165,18 +151,18 @@ const EditProfile = () => {
           <Box
             sx={{
               bgcolor: "white",
-              minWidth: 250,
+              maxWidth: 200,
               mx: "auto",
               height: 100,
-              p: 3,
-              pt: 3,
+              p: 4,
+              pb: 4,
               borderRadius: 5,
               display: "flex",
               flexDirection: "column",
             }}
           >
             <Typography
-              sx={{ textAlign: "center", mb: 1, fontWeight: "bold" }}
+              sx={{ textAlign: "center", mb: 2, fontWeight: "bold" }}
               variant="subtitle1"
             >
               Display Name
@@ -187,7 +173,6 @@ const EditProfile = () => {
                 textAlign: "center",
                 mb: 3,
                 bgcolor: "white",
-                borderRadius: 3,
               }}
               value={userItem.displayName}
               size="medium"
@@ -196,7 +181,7 @@ const EditProfile = () => {
               }
             />
           </Box>
-          <Box sx={{ textAlign: "center" }}>
+          <Box sx={{ textAlign: "center", mt: 4 }}>
             <Tooltip title="Complete" placement="bottom-start" arrow>
               <IconButton
                 sx={{ mr: 3 }}

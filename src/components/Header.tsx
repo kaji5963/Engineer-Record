@@ -11,6 +11,7 @@ import { useRouter } from "next/router";
 import { auth } from "./firebase";
 import { useRecoilState } from "recoil";
 import { userItemState } from "../constants/atom";
+import { grey } from "@mui/material/colors";
 
 const navItems = ["Home", "Profile", "Logout"];
 
@@ -49,21 +50,21 @@ const Header = () => {
           <Typography
             variant="h6"
             component="div"
-            sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
+            sx={{ flexGrow: 1, fontSize: 22, display: { xs: "none", sm: "block" } }}
           >
             Engineer Record
           </Typography>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
-            <Button sx={{ color: "#fff" }} onClick={() => router.push("/Top")}>
+            <Button sx={{ color: "#fff", fontSize: 16, ":hover": {color: grey[400]} }} onClick={() => router.push("/Top")}>
               TOP
             </Button>
             <Button
-              sx={{ color: "#fff" }}
+              sx={{ color: "#fff", fontSize: 16, ":hover": {color: grey[400]} }}
               onClick={() => router.push("/Profile")}
             >
               PROFILE
             </Button>
-            <Button sx={{ color: "#fff" }} onClick={handleLogout}>
+            <Button sx={{ color: "#fff", fontSize: 16, ":hover": {color: grey[400]} }} onClick={handleLogout}>
               LOGOUT
             </Button>
           </Box>

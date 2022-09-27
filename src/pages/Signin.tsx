@@ -17,6 +17,7 @@ import { useRecoilState } from "recoil";
 import { User, userItemState } from "../constants/atom";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { blue } from "@mui/material/colors";
+import Link from "next/link";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -25,14 +26,14 @@ const SignIn = () => {
   const router = useRouter();
 
   //SignIn処理
-  const handleSignIn =  (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSignIn = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     signInWithEmailAndPassword(auth, email, password)
       .then(() => {
         //ユーザー情報取得処理しuserItemへ格納
         onAuthStateChanged(auth, (user) => {
           if (user) {
-            const { email,uid, displayName, photoURL } = user as User;
+            const { email, uid, displayName, photoURL } = user as User;
             setUserItem({ ...userItem, email, uid, displayName, photoURL });
           }
         });
@@ -49,12 +50,11 @@ const SignIn = () => {
         <title>Engineer Record SignUp</title>
       </Head>
 
-      
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
           sx={{
-            marginTop: 15,
+            mt: 18,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -63,7 +63,7 @@ const SignIn = () => {
           <Avatar sx={{ m: 1, bgcolor: blue[300] }}>
             <LockOpenIcon />
           </Avatar>
-          <Typography component="h1" variant="h5">
+          <Typography sx={{ mt: 2 }} component="h1" variant="h5">
             ログイン
           </Typography>
           <Box
@@ -101,10 +101,15 @@ const SignIn = () => {
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 3, mb: 2, fontSize: 18 }}
             >
               ログイン
             </Button>
+            <Grid sx={{ mt: 2, fontSize: 18}} container justifyContent="flex-end">
+                <Link href="/Signup">
+                  新規登録の方はこちら
+                </Link>
+            </Grid>
           </Box>
         </Box>
       </Container>

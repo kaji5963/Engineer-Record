@@ -132,6 +132,7 @@ const Form = () => {
           multiline
           autoFocus
           rows={5}
+          size='medium'
           type="text"
           value={inputValue.value}
           onChange={(e) =>

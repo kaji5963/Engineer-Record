@@ -209,6 +209,8 @@ const Comment = () => {
                   src={commentItem.photoURL}
                 ></Avatar>
               }
+              titleTypographyProps={{fontSize: 16}}
+                  subheaderTypographyProps={{fontSize: 16}}
               title={commentItem.displayName}
               subheader={commentItem.createdAt}
               action={
@@ -228,7 +230,7 @@ const Comment = () => {
               }}
             >
               <Typography
-                sx={{ minHeight: 100, whiteSpace: "pre-line" }}
+                sx={{ minHeight: 100, whiteSpace: "pre-line", fontSize:18 }}
                 variant="body2"
                 color="text.secondary"
                 component="p"
@@ -320,6 +322,8 @@ const Comment = () => {
                       src={comment.photoURL}
                     ></Avatar>
                   }
+                  titleTypographyProps={{fontSize: 16}}
+                  subheaderTypographyProps={{fontSize: 16}}
                   title={comment.displayName}
                   subheader={comment.createdAt}
                 />
@@ -329,7 +333,7 @@ const Comment = () => {
                   }}
                 >
                   <Typography
-                    sx={{ minHeight: 50, whiteSpace: "pre-line" }}
+                    sx={{ minHeight: 50, whiteSpace: "pre-line", fontSize: 16 }}
                     variant="body2"
                     color="text.secondary"
                     component="p"

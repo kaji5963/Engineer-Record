@@ -13,6 +13,7 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import ComputerIcon from "@mui/icons-material/Computer";
 import { Card, CardActions, CardContent } from "@mui/material";
+import { grey } from '@mui/material/colors';
 
 const Home: NextPage = () => {
   const router = useRouter()
@@ -40,24 +41,24 @@ const Home: NextPage = () => {
               <Typography
                 variant="h6"
                 component="div"
-                sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
+                sx={{ flexGrow: 1, fontSize: 22,display: { xs: "none", sm: "block" } }}
               >
                 Engineer Record
               </Typography>
               <Box sx={{ display: { xs: "none", sm: "block" } }}>
                 <Button
-                  sx={{ color: "#fff" }}
+                  sx={{ color: "#fff",fontSize: 16, ":hover": {color: grey[400]} }}
                   onClick={() => router.push("/Signup")}
                 >
                   新規登録
                 </Button>
                 <Button
-                  sx={{ color: "#fff" }}
+                  sx={{ color: "#fff",fontSize: 16, ":hover": {color: grey[400]} }}
                   onClick={() => router.push("/Signin")}
                 >
                   ログイン
                 </Button>
-                <Button sx={{ color: "#fff" }}>使い方</Button>
+                <Button sx={{ color: "#fff",fontSize: 16, ":hover": {color: grey[400]} }}>使い方</Button>
               </Box>
             </Toolbar>
           </AppBar>
@@ -82,7 +83,7 @@ const Home: NextPage = () => {
           <Button
             type="submit"
             variant="contained"
-            sx={{ mt: 3, mb: 2, width: 200, mx: "auto" }}
+            sx={{ mt: 3, mb: 2, width: 200, mx: "auto", fontSize: 18 }}
             onClick={() => router.push("/Signup")}
           >
             Get Started

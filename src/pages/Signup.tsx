@@ -265,16 +265,14 @@ const SignUp = () => {
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 3, mb: 2, fontSize: 18 }}
             >
               新規登録
             </Button>
-            <Grid container justifyContent="flex-end">
-              <Grid item>
-                <Link href="/Signin" variant="body2">
+            <Grid sx={{ mt: 2,fontSize: 18 }} container justifyContent="flex-end">
+                <Link href="/Signin">
                   登録している方はこちら
                 </Link>
-              </Grid>
             </Grid>
           </Box>
         </Box>

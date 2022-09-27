@@ -52,11 +52,11 @@ const Profile = () => {
           <Box
             sx={{
               bgcolor: "white",
-              maxWidth: 220,
+              maxWidth: 240,
               mx: "auto",
               height: 100,
               p: 0.5,
-              pt: 3,
+              pt: 3.5,
               borderRadius: 5,
             }}
           >
@@ -84,11 +84,11 @@ const Profile = () => {
             sx={{
               bgcolor: "white",
               height: 120,
-              maxWidth: 220,
+              maxWidth: 240,
               mx: "auto",
               px: 0.5,
-              pt: 0.1,
-              mt: 3,
+              pt: 1,
+              mt: 4,
               borderRadius: 5,
             }}
           >
@@ -119,12 +119,12 @@ const Profile = () => {
           <Box
             sx={{
               bgcolor: "white",
-              height: 120,
-              maxWidth: 220,
+              height: 130,
+              maxWidth: 240,
               mx: "auto",
               px: 0.5,
-              pt: 0.1,
-              mt: 3,
+              pt: 2,
+              mt: 4,
               borderRadius: 5,
             }}
           >
