@@ -285,13 +285,12 @@ const RecordList = () => {
                   width: 500,
                   mb: 4,
                   borderRadius: 5,
-                  
                 }}
               >
                 <CardHeader
                   avatar={
                     <Avatar
-                      sx={{ bgcolor: blue[200] }}
+                      sx={{ bgcolor: blue[200], fontSize: 20 }}
                       src={record.photoURL}
                     ></Avatar>
                   }
@@ -300,7 +299,7 @@ const RecordList = () => {
                       <Tooltip title="Edit" placement="bottom-start" arrow>
                         <span>
                           <IconButton
-                            sx={{ mr: 2, mt:1 }}
+                            sx={{ mr: 2 }}
                             onClick={() =>
                               handleEditRecord(record.id, record.postId)
                             }
@@ -315,7 +314,7 @@ const RecordList = () => {
                       <Tooltip title="Delete" placement="bottom-start" arrow>
                         <span>
                           <IconButton
-                            sx={{ mr: 2, mt:1 }}
+                            sx={{ mr: 2 }}
                             onClick={() => handleDeleteRecord(record.id)}
                             disabled={
                               userItem.uid === record.uid ? false : true
@@ -327,8 +326,6 @@ const RecordList = () => {
                       </Tooltip>
                     </>
                   }
-                  titleTypographyProps={{fontSize: 16}}
-                  subheaderTypographyProps={{fontSize: 16}}
                   title={record.displayName}
                   subheader={record.createdAt}
                 />
@@ -338,11 +335,7 @@ const RecordList = () => {
                   }}
                 >
                   <Typography
-                    sx={{
-                      minHeight: 100,
-                      whiteSpace: "pre-line",
-                      fontSize: 18,
-                    }}
+                    sx={{ minHeight: 100, whiteSpace: "pre-line" }}
                     variant="body2"
                     color="text.secondary"
                     component="p"

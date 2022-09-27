@@ -83,7 +83,8 @@ const EditProfile = () => {
         <Box
           sx={{
             bgcolor: grey[300],
-            width: "50%",
+            maxWidth: "60%",
+            minWidth: "40%",
             minHeight: 280,
             mx: "auto",
             p: 4,
@@ -114,27 +115,28 @@ const EditProfile = () => {
               }}
             >
               <Box>
-                <Typography sx={{ fontWeight: "bold", ml: 0.5 }} variant="subtitle1">
+                <Typography
+                  sx={{ fontWeight: "bold", ml: 0.5 }}
+                  variant="subtitle1"
+                >
                   Avatar
                 </Typography>
 
                 <IconButton color="primary">
-                <label>
-
-                  <input
-                    hidden
-                    accept="image/*"
-                    type="file"
-                    onChange={(e) => handleFileUpload(e)}
-                  />
-                  <Avatar
-                    sx={{
-                      cursor: "pointer",
-                    }}
-                    src={userItem.photoURL}
-                  />
-                        </label>
-
+                  <label>
+                    <input
+                      hidden
+                      accept="image/*"
+                      type="file"
+                      onChange={(e) => handleFileUpload(e)}
+                    />
+                    <Avatar
+                      sx={{
+                        cursor: "pointer",
+                      }}
+                      src={userItem.photoURL}
+                    />
+                  </label>
                 </IconButton>
               </Box>
 
@@ -184,7 +186,7 @@ const EditProfile = () => {
           <Box sx={{ textAlign: "center", mt: 4 }}>
             <Tooltip title="Complete" placement="bottom-start" arrow>
               <IconButton
-                sx={{ mr: 3 }}
+                sx={{ mr: 4 }}
                 color="primary"
                 type="submit"
                 onClick={() => router.push("/Top")}
@@ -195,7 +197,7 @@ const EditProfile = () => {
 
             <Tooltip title="Back" placement="bottom-start" arrow>
               <IconButton
-                sx={{ ml: 3 }}
+                sx={{ ml: 4 }}
                 color="primary"
                 onClick={() => router.push("/Profile")}
               >

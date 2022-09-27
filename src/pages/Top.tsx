@@ -25,27 +25,27 @@ const Top = () => {
       </Head>
       {isClient && (
         <>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            mb: 2,
-          }}
-        >
-          <Avatar
-            sx={{ m: 1 }}
-            src={userItem.photoURL}
-            suppressHydrationWarning={true}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              mb: 2,
+            }}
           >
-            <PersonAddIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            {userItem.displayName}
-          </Typography>
-        </Box>
-        <Form />
-        <RecordList />
+            <Avatar
+              sx={{ m: 1, mr: 2 }}
+              src={userItem.photoURL}
+              suppressHydrationWarning={true}
+            >
+              <PersonAddIcon />
+            </Avatar>
+            <Typography sx={{ mx: 1 }} component="h1" variant="h5">
+              {userItem.displayName}
+            </Typography>
+          </Box>
+          <Form />
+          <RecordList />
         </>
       )}
     </Layout>

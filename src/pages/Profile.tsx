@@ -40,19 +40,18 @@ const Profile = () => {
         <Box
           sx={{
             bgcolor: grey[300],
-            width: "50%",
+            maxWidth: "60%",
+            minWidth: "40%",
             mx: "auto",
             p: 5,
             borderRadius: 5,
           }}
         >
-          {/* <Typography sx={{ textAlign: "center" }} variant="h4" gutterBottom>
-            Your Profile
-          </Typography> */}
           <Box
             sx={{
               bgcolor: "white",
               maxWidth: 240,
+              minWidth: 200,
               mx: "auto",
               height: 100,
               p: 0.5,
@@ -142,7 +141,7 @@ const Profile = () => {
           <Box sx={{ textAlign: "center", mt: 3 }}>
             <Tooltip title="Edit" placement="bottom-start" arrow>
               <IconButton
-                sx={{ mr: 2 }}
+                sx={{ mr: 4 }}
                 color="primary"
                 onClick={() => router.push("/EditProfile")}
               >
@@ -152,7 +151,7 @@ const Profile = () => {
 
             <Tooltip title="Back" placement="bottom-start" arrow>
               <IconButton
-                sx={{ ml: 2 }}
+                sx={{ ml: 4 }}
                 color="primary"
                 onClick={() => router.push("/Top")}
               >
