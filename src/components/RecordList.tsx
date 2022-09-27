@@ -20,6 +20,8 @@ import {
   userItemState,
   User,
   editItemState,
+  bookmarkItemState,
+  bookmarkListState,
 } from "../constants/atom";
 import { MouseEvent, useEffect, useMemo, useState } from "react";
 import {
@@ -58,34 +60,87 @@ const RecordList = () => {
   const [userItem, setUserItem] = useRecoilState(userItemState);
   const [commentItem, setCommentItem] = useRecoilState(commentItemState);
   const [editItem, setEditItem] = useRecoilState(editItemState);
-  // const [commentList, setCommentList] = useRecoilState(commentListState);
+  const [bookmarkItem, setBookmarkItem] = useRecoilState(bookmarkItemState);
+  const [bookmarkList, setBookmarkList] = useRecoilState(bookmarkListState);
   const [isClient, setIsClient] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  // const [saved, setSaved] = useState(false);
-  // const [bookmarkList, setBookmarkList] = useState<{ id: string }[]>([]);
   const router = useRouter();
 
-  //firebaseからリアルタイムでデータを取得（firebaseの設定 collectionGroupを手動設定し降順）
+  //firebaseからリアルタイムでデータを取得（firebaseの設定 collectionGroupをfirebase側で手動設定し降順）
   useEffect(() => {
     const recordsRef = query(
       collectionGroup(db, "records"),
       orderBy("timeStamp", "desc")
     );
-    onSnapshot(recordsRef, (querySnapshot) => {
+    onSnapshot(recordsRef, async (querySnapshot) => {
       // setRecordListで更新し投稿データをrecordListに格納
-      setRecordList(
-        querySnapshot.docs.map((doc) => ({
-          ...doc.data(),
-          id: doc.id,
-          uid: doc.data().uid,
-          postId: doc.data().postId,
-          value: doc.data().value,
-          createdAt: doc.data().createdAt,
-          displayName: doc.data().displayName,
-          photoURL: doc.data().photoURL,
-          saved: doc.data().saved,
-        }))
-      );
+      const recordsData = querySnapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+        uid: doc.data().uid,
+        postId: doc.data().postId,
+        value: doc.data().value,
+        createdAt: doc.data().createdAt,
+        displayName: doc.data().displayName,
+        photoURL: doc.data().photoURL,
+        saved: doc.data().saved,
+        // saved: doc.data().postId === bookmarkItem.postId ? !doc.data().saved : doc.data().saved
+        // saved: doc.data().postId === bookmarkItem.postId && !doc.data().saved
+      }));
+      setRecordList(recordsData);
+      })
+
+
+    //   const bookmarkRef = query(
+    //     collection(db, "users", userItem.uid, "bookmarks")
+    //   );
+    //   const getBookmark = await getDocs(bookmarkRef);
+    //   getBookmark.forEach((doc) => {
+    //     if (doc.data()) {
+    //       console.log(doc.id, " => ", doc.data().saved);
+          
+    //     }
+    //   });
+    // });
+
+
+    // onSnapshot(recordsRef, (querySnapshot) => {
+    //   // setRecordListで更新し投稿データをrecordListに格納
+    //   setRecordList(
+    //     querySnapshot.docs.map((doc) => ({
+    //       ...doc.data(),
+    //       id: doc.id,
+    //       uid: doc.data().uid,
+    //       postId: doc.data().postId,
+    //       value: doc.data().value,
+    //       createdAt: doc.data().createdAt,
+    //       displayName: doc.data().displayName,
+    //       photoURL: doc.data().photoURL,
+    //       saved: doc.data().saved,
+    //     }))
+    //   );
+    // });
+  }, []);
+
+  useEffect(() => {
+  const bookmarkRef = query(
+    collection(db, "users", userItem.uid, "bookmarks"),
+    where("saved", "==", true)
+  );
+    onSnapshot(bookmarkRef, (querySnapshot) => {
+      const data = querySnapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+        uid: doc.data().uid,
+        postId: doc.data().postId,
+        value: doc.data().value,
+        createdAt: doc.data().createdAt,
+        displayName: doc.data().displayName,
+        photoURL: doc.data().photoURL,
+        saved: doc.data().saved,
+      }));
+      // console.log(data);
+      // setRecordList(data)
     });
   }, []);
 
@@ -97,15 +152,15 @@ const RecordList = () => {
   //   onSnapshot(bookmarksRef, (querySnapshot) => {
   //     console.log(querySnapshot.docs.map((doc) => doc.data()));
 
-      // setBookmarkList(
-      //   querySnapshot.docs.map((doc) => ({
-      //     ...doc.data(),
-      //     id: doc.id,
-      //     saved: doc.data().saved,
-      //   }))
-      // );
+  // setBookmarkList(
+  //   querySnapshot.docs.map((doc) => ({
+  //     ...doc.data(),
+  //     id: doc.id,
+  //     saved: doc.data().saved,
+  //   }))
+  // );
   //   });
-  // }, []);
+  // });
 
   //Hydrate Error対策
   useEffect(() => {
@@ -121,15 +176,16 @@ const RecordList = () => {
 
   //特定のコメントボタン押すと、そのデータをコメントページに渡す
   const handleComment = (id: string, postId: string) => {
-    const findComment = recordList.find((recordList) => recordList.postId === postId);
+    const findComment = recordList.find(
+      (recordList) => recordList.postId === postId
+    );
     setCommentItem({ ...commentItem, ...findComment });
-    // router.push("/Comment");
     router.push(`/${id}/Comment`);
-    
   };
 
   //ブックマークする処理
   const handleSavedBookmark = (postId: string) => {
+    //ブックマークしたもののtrue/falseを反転
     const bookmarkRecord = recordList.map((recordList) =>
       recordList.postId === postId
         ? { ...recordList, saved: !recordList.saved }
@@ -140,8 +196,11 @@ const RecordList = () => {
     const findBookmarkRecord = bookmarkRecord.find(
       (recordList) => recordList.postId === postId
     );
+
+    setBookmarkItem(findBookmarkRecord!);
     const { uid, value, createdAt, displayName, photoURL, saved } =
       findBookmarkRecord!;
+    //ブックマークしたデータをfirebaseへ格納
     const bookmarksRef = doc(db, "users", userItem.uid, "bookmarks", postId);
     setDoc(bookmarksRef, {
       uid,
@@ -157,12 +216,14 @@ const RecordList = () => {
 
   //ブックマーク外す処理
   const handleRemoveBookmark = (postId: string) => {
+    //ブックマークしたもののtrue/falseを反転
     const bookmarkRecord = recordList.map((recordList) =>
       recordList.postId === postId
         ? { ...recordList, saved: !recordList.saved }
         : recordList
     );
     setRecordList(bookmarkRecord);
+    //firebaseのブックマークされたデータを削除
     deleteDoc(doc(db, "users", userItem.uid, "bookmarks", postId));
   };
 

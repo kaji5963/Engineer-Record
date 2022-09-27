@@ -77,13 +77,13 @@ const Comment = () => {
 
   //commentListの取得、commentListの更新処理
   useEffect(() => {
-    const q = query(
+    const commentRef = query(
       collection(db, "comments"),
       where("postId", "==", commentItem.postId),
       orderBy("timeStamp", "desc")
     );
     onSnapshot(
-      q,
+      commentRef,
       (snapshot) =>
         setCommentList(
           snapshot.docs.map((doc) => ({

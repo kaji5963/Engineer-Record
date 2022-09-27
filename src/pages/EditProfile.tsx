@@ -19,8 +19,9 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { onAuthStateChanged, updateProfile, User } from "firebase/auth";
-import { auth, storage } from "../components/firebase";
+import { auth, db, storage } from "../components/firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { doc, updateDoc } from "firebase/firestore";
 
 const EditProfile = () => {
   const [userItem, setUserItem] = useRecoilState(userItemState);
@@ -32,17 +33,26 @@ const EditProfile = () => {
   useEffect(() => {
     if (typeof window !== "undefined") setIsClient(true);
   }, []);
-
+  
+  //全てのdisplayName,photoURLのアップロード処理
   const handleUpload = (
     e: FormEvent<HTMLFormElement>,
     displayName: string | null,
     photoURL: string
   ) => {
     e.preventDefault();
+    //ユーザー情報の更新
     updateProfile(auth.currentUser as User, {
       displayName,
       photoURL,
     });
+    //usersコレクションのドキュメント更新
+    const recordUpdateDoc = doc(db, "users", userItem.uid);
+    updateDoc(recordUpdateDoc, {
+      displayName: userItem.displayName,
+      photoURL: userItem.photoURL
+    });
+
     setUserItem({ ...userItem, displayName, photoURL });
     router.push("/Top");
   };
@@ -50,6 +60,7 @@ const EditProfile = () => {
   //ファイル選択後、firebaseにアップロードしfirebaseからダウンロード処理
   const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files![0];
+    if (!file) return;
     const storageRef = ref(storage, "images/" + file.name);
     try {
       await uploadBytes(storageRef, file).then((snapshot) => {
@@ -74,6 +85,7 @@ const EditProfile = () => {
           sx={{
             bgcolor: grey[100],
             width: "50%",
+            height: 320,
             mx: "auto",
             p: 4,
             borderRadius: 5,

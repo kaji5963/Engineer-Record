@@ -29,7 +29,7 @@ const Header = () => {
       displayName: "",
       photoURL: "",
     });
-    router.push("/Signup");
+    router.push("/");
   };
 
   return (

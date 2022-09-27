@@ -21,7 +21,7 @@ const Home: NextPage = () => {
       <Head>
         <title>Engineer Record</title>
       </Head>
-      <Box sx={{ bg: "../image/background.jpeg" }}>
+      <Box sx={{mx: "auto",display: "flex", flexDirection: "column",justifyContent: "center" }}>
         <Box sx={{ display: "flex" }}>
           <AppBar component="nav">
             <Toolbar>
@@ -89,8 +89,27 @@ const Home: NextPage = () => {
           </Button>
         </Box>
 
-        <Box sx={{ display: "flex", justifyContent: 'space-around', mt: 8 }}>
-          <Card variant="outlined" sx={{ width: 280, display: "flex" }}>
+        {/* <Box sx={{ display: "flex", justifyContent: 'space-around', mt: 8 }}>
+          <Card variant="outlined" sx={{ minWidth: 320, display: "flex" }}>
+            <CardContent>
+              <Typography
+                sx={{ fontSize: 18,mb: 1.5 }}
+                color="text.secondary"
+              >
+                こんな方に向いています
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 1.5 }} >
+              ・プログラミング学習中の方
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 1.5 }} >
+              ・プログラミング学習中の方
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 1.5 }} >
+              ・プログラミング学習中の方
+              </Typography>
+            </CardContent>
+          </Card>
+          <Card variant="outlined" sx={{ minWidth: 320 }}>
             <CardContent>
               <Typography
                 sx={{ fontSize: 18 }}
@@ -110,7 +129,7 @@ const Home: NextPage = () => {
               </Typography>
             </CardContent>
           </Card>
-          <Card variant="outlined" sx={{ width: 280 }}>
+          <Card variant="outlined" sx={{ minWidth: 320 }}>
             <CardContent>
               <Typography
                 sx={{ fontSize: 18 }}
@@ -130,27 +149,7 @@ const Home: NextPage = () => {
               </Typography>
             </CardContent>
           </Card>
-          <Card variant="outlined" sx={{ width: 280 }}>
-            <CardContent>
-              <Typography
-                sx={{ fontSize: 18 }}
-                color="text.secondary"
-                gutterBottom
-              >
-                こんな方に向いています
-              </Typography>
-              <Typography variant="h5" component="div"></Typography>
-              <Typography sx={{ mb: 1.5 }} color="text.secondary">
-                adjective
-              </Typography>
-              <Typography variant="body2">
-                well meaning and kindly.
-                <br />
-                {'"a benevolent smile"'}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Box>
+        </Box> */}
       </Box>
     </>
   );
