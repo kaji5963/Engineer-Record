@@ -10,7 +10,8 @@ import {
   IconButton,
   TextField,
   Typography,
-  Tooltip
+  Tooltip,
+  Toolbar,
 } from "@mui/material";
 import { blue, red } from "@mui/material/colors";
 import Head from "next/head";
@@ -113,7 +114,7 @@ const Comment = () => {
     const commentDocRef = collection(db, "comments");
     setDoc(doc(commentDocRef), {
       uid: userItem.uid,
-      postId, //学習記録の投稿者のpostIdとイコール関係
+      postId, //投稿者のpostIdとイコール関係
       commentId,
       value,
       createdAt,
@@ -121,28 +122,6 @@ const Comment = () => {
       photoURL,
       timeStamp: serverTimestamp(),
     });
-    // commentListの取得、commentListの更新処理
-    // const q = query(commentDocRef, orderBy("timeStamp", "desc"));
-    // onSnapshot(
-    //   q,
-    //   (snapshot) =>
-    //     setCommentList(
-    //       snapshot.docs.map((doc) => ({
-    //         ...doc.data(),
-    //         id: doc.id,
-    //         uid: userItem.uid,
-    //         postId: doc.data().postId,
-    //         value: doc.data().value,
-    //         createdAt: doc.data().createdAt,
-    //         displayName: doc.data().displayName,
-    //         photoURL: doc.data().photoURL,
-    //       }))
-    //     ),
-    //   (error) => {
-    //     alert(error.message);
-    //   }
-    // );
-
     //comment初期化
     setComment({
       postId: commentItem.postId,
@@ -209,20 +188,10 @@ const Comment = () => {
                   src={commentItem.photoURL}
                 ></Avatar>
               }
-              titleTypographyProps={{fontSize: 16}}
-                  subheaderTypographyProps={{fontSize: 16}}
+              titleTypographyProps={{ fontSize: 16 }}
+              subheaderTypographyProps={{ fontSize: 16 }}
               title={commentItem.displayName}
               subheader={commentItem.createdAt}
-              action={
-                <Tooltip title="Back" placement="bottom-start" arrow>
-                  <IconButton
-                    sx={{ mr: 2 }}
-                    onClick={() => router.push("/Top")}
-                  >
-                    <KeyboardBackspaceIcon fontSize="medium" />
-                  </IconButton>
-                </Tooltip>
-              }
             />
             <CardContent
               sx={{
@@ -230,7 +199,7 @@ const Comment = () => {
               }}
             >
               <Typography
-                sx={{ minHeight: 100, whiteSpace: "pre-line", fontSize:18 }}
+                sx={{ minHeight: 100, whiteSpace: "pre-line", fontSize: 18 }}
                 variant="body2"
                 color="text.secondary"
                 component="p"
@@ -238,27 +207,7 @@ const Comment = () => {
                 {commentItem.value}
               </Typography>
             </CardContent>
-
-            <CardActions
-              sx={{ display: "flex", justifyContent: "space-around" }}
-              disableSpacing
-            >
-              <IconButton aria-label="comment" disabled>
-                <ChatBubbleOutlineIcon />
-              </IconButton>
-
-              <Tooltip title="Good" placement="right-start" arrow>
-                <IconButton>
-                  <ThumbUpOffAltIcon />
-                </IconButton>
-              </Tooltip>
-
-              <Tooltip title="Bookmark" placement="right-start" arrow>
-                <IconButton>
-                  <BookmarkBorderIcon />
-                </IconButton>
-              </Tooltip>
-            </CardActions>
+            <Toolbar />
           </Box>
         </Card>
       )}
@@ -305,6 +254,7 @@ const Comment = () => {
           }}
         >
           {commentList.map((comment) => {
+            if (comment.postId !== commentItem.postId) return; //条件式以外のものは表示しない
             return (
               <Box
                 key={comment.commentId}
@@ -322,8 +272,8 @@ const Comment = () => {
                       src={comment.photoURL}
                     ></Avatar>
                   }
-                  titleTypographyProps={{fontSize: 16}}
-                  subheaderTypographyProps={{fontSize: 16}}
+                  titleTypographyProps={{ fontSize: 16 }}
+                  subheaderTypographyProps={{ fontSize: 16 }}
                   title={comment.displayName}
                   subheader={comment.createdAt}
                 />
@@ -333,7 +283,11 @@ const Comment = () => {
                   }}
                 >
                   <Typography
-                    sx={{ minHeight: 50, whiteSpace: "pre-line", fontSize: 16 }}
+                    sx={{
+                      minHeight: 50,
+                      whiteSpace: "pre-line",
+                      fontSize: 16,
+                    }}
                     variant="body2"
                     color="text.secondary"
                     component="p"
@@ -347,7 +301,10 @@ const Comment = () => {
                 >
                   <Tooltip title="Edit" placement="right-start" arrow>
                     <span>
-                      <IconButton onClick={() => handleEditRecord(comment.id, comment.postId)}
+                      <IconButton
+                        onClick={() =>
+                          handleEditRecord(comment.id, comment.postId)
+                        }
                         disabled={userItem.uid === comment.uid ? false : true}
                       >
                         <EditIcon />

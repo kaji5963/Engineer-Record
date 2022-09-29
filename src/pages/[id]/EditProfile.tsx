@@ -11,15 +11,15 @@ import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import { grey } from "@mui/material/colors";
 import { Box } from "@mui/system";
 import Head from "next/head";
-import Layout from "../components/Layout";
+import Layout from "../../components/Layout";
 import { useRouter } from "next/router";
 import { useRecoilState } from "recoil";
-import { userItemState } from "../constants/atom";
+import { userItemState } from "../../constants/atom";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { onAuthStateChanged, updateProfile, User } from "firebase/auth";
-import { auth, db, storage } from "../components/firebase";
+import { auth, db, storage } from "../../components/firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { collection, doc, query, updateDoc, where } from "firebase/firestore";
 
@@ -199,7 +199,7 @@ const EditProfile = () => {
               <IconButton
                 sx={{ ml: 4 }}
                 color="primary"
-                onClick={() => router.push("/Profile")}
+                onClick={() => router.push(`/${userItem.uid}/Profile`)}
               >
                 <ReplyIcon fontSize="large" />
               </IconButton>
