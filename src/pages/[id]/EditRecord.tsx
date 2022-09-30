@@ -15,15 +15,16 @@ const EditRecord = () => {
   const [editItem, setEditItem] = useRecoilState(editItemState);
   const [userItem, setUserItem] = useRecoilState(userItemState);
   const router = useRouter();
+console.log(editItem);
 
   //Record編集完了処理
-  const handleEditComplete = (id: string) => {
+  const handleEditComplete =  (id: string) => {
     if (editItem.value === "") return;
     const recordUpdateDoc = doc(db, "users", userItem.uid, "records", id);
     updateDoc(recordUpdateDoc, {
       value: editItem.value,
     });
-    router.push("/Top");
+    router.back();
   };
 
   return (

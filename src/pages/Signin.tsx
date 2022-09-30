@@ -5,17 +5,15 @@ import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from "../components/firebase";
+import { auth } from "../components/firebase";
 import { useRecoilState } from "recoil";
-import { User, userItemState } from "../constants/atom";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { UserData, userItemState } from "../constants/atom";
 import { blue } from "@mui/material/colors";
 import Link from "next/link";
 
@@ -33,7 +31,7 @@ const SignIn = () => {
         //ユーザー情報取得処理しuserItemへ格納
         onAuthStateChanged(auth, (user) => {
           if (user) {
-            const { email, uid, displayName, photoURL } = user as User;
+            const { email, uid, displayName, photoURL } = user as UserData;
             setUserItem({ ...userItem, email, uid, displayName, photoURL });
           }
         });
@@ -64,7 +62,7 @@ const SignIn = () => {
             <LockOpenIcon />
           </Avatar>
           <Typography sx={{ mt: 2 }} component="h1" variant="h5">
-            ログイン
+            Login
           </Typography>
           <Box
             component="form"

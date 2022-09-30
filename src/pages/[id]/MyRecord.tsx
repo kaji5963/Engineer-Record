@@ -1,16 +1,19 @@
 import {
   collection,
+  collectionGroup,
   deleteDoc,
   doc,
   onSnapshot,
   orderBy,
   query,
+  where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { db } from "../../components/firebase";
 import {
   bookmarkListState,
+  editItemState,
   recordListState,
   userItemState,
 } from "../../constants/atom";
@@ -36,24 +39,26 @@ import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import { onAuthStateChanged, updateCurrentUser } from "firebase/auth";
 import { useRouter } from "next/router";
-import { blue, green } from "@mui/material/colors";
+import { blue, green, orange } from "@mui/material/colors";
 import Layout from "../../components/Layout";
 import Head from "next/head";
 
-const Bookmark = () => {
+const MyRecord = () => {
   const [recordList, setRecordList] = useRecoilState(recordListState);
   const [bookmarkList, setBookmarkList] = useRecoilState(bookmarkListState);
   const [userItem, setUserItem] = useRecoilState(userItemState);
+  const [editItem, setEditItem] = useRecoilState(editItemState);
   const [isClient, setIsClient] = useState(false);
+  const router = useRouter()
 
-  //firebaseのbookmarksからデータ取得
+  //firebaseのrecordsからデータを取得（ログインしているユーザーのみ）
   useEffect(() => {
-    const bookmarkRef = query(
-      collection(db, "users", userItem.uid, "bookmarks"),
+    const myRecordsRef = query(
+      collection(db, "users", userItem.uid, "records"),
       orderBy("timeStamp", "desc")
     );
-    onSnapshot(bookmarkRef, (querySnapshot) => {
-      const bookmarkData = querySnapshot.docs.map((doc) => ({
+    onSnapshot(myRecordsRef, (querySnapshot) => {
+      const myRecordData = querySnapshot.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
         uid: doc.data().uid,
@@ -64,7 +69,7 @@ const Bookmark = () => {
         photoURL: doc.data().photoURL,
         saved: doc.data().saved,
       }));
-      setBookmarkList(bookmarkData);
+      setRecordList(myRecordData);
     });
   }, []);
 
@@ -73,24 +78,35 @@ const Bookmark = () => {
     if (typeof window !== "undefined") setIsClient(true);
   }, []);
 
-  //ブックマーク外す処理
-  const handleRemoveBookmark = (postId: string) => {
-    //ブックマークしたもののtrue/falseを反転
-    const removeBookmarkRecord = bookmarkList.map((bookmarkList) =>
-      bookmarkList.postId === postId
-        ? { ...bookmarkList, saved: !bookmarkList.saved }
-        : bookmarkList
+  //Record編集処理
+  const handleEditMyRecord = (id: string, postId: string) => {
+    const findEditRecord = recordList.find(
+      (recordList) => recordList.postId === postId
     );
-    setRecordList(removeBookmarkRecord);
+    setEditItem({ ...editItem, ...findEditRecord });
+    router.push(`/${id}/EditRecord/`);
+  };
 
-    //firebaseのブックマークされたデータを削除
-    deleteDoc(doc(db, "users", userItem.uid, "bookmarks", postId));
+  //Record削除処理
+  const handleDeleteRecord = (id: string) => {
+    const deleteMessage = confirm(
+      `${userItem.displayName}の学習記録を削除してもよろしいですか？`
+    );
+    if (deleteMessage === true) {
+      deleteDoc(doc(db, "users", userItem.uid, "records", id));
+      const deleteRecord = recordList.filter(
+        (recordList) => recordList.id !== id
+      );
+      setRecordList(deleteRecord);
+    } else {
+      return;
+    }
   };
 
   return (
     <Layout>
       <Head>
-        <title>Engineer Record Bookmark</title>
+        <title>Engineer Record MyRecord</title>
       </Head>
 
       {isClient && (
@@ -103,13 +119,13 @@ const Bookmark = () => {
             boxShadow: 0,
           }}
         >
-          {bookmarkList.map((bookmark) => {
-            if (bookmark.postId !== bookmark.postId) return; //条件式以外のものは表示しない
+          {recordList.map((record) => {
+            if (record.postId !== record.postId) return; //条件式以外のものは表示しない
             return (
               <Box
-                key={bookmark.postId}
+                key={record.postId}
                 sx={{
-                  bgcolor: green[100],
+                  bgcolor: orange[100],
                   maxWidth: 500,
                   mb: 4,
                   borderRadius: 5,
@@ -118,39 +134,50 @@ const Bookmark = () => {
                 <CardHeader
                   avatar={
                     <Avatar
-                      sx={{ bgcolor: green[200], fontSize: 20 }}
-                      src={bookmark.photoURL}
+                      sx={{ bgcolor: orange[200], fontSize: 20 }}
+                      src={record.photoURL}
                     ></Avatar>
-                  }
-                  action={
-                    <Box sx={{ mr: 3, mt: 1 }}>
-                      {bookmark.saved === true ? (
-                        <Tooltip title="Bookmark" placement="right-start" arrow>
-                          <IconButton
-                            onClick={() =>
-                              handleRemoveBookmark(bookmark.postId)
-                            }
-                          >
-                            <BookmarkIcon />
-                          </IconButton>
-                        </Tooltip>
-                      ) : (
-                        <Tooltip title="Bookmark" placement="right-start" arrow>
-                          <IconButton>
-                            <BookmarkBorderIcon />
-                          </IconButton>
-                        </Tooltip>
-                      )}
-                    </Box>
                   }
                   titleTypographyProps={{ fontSize: 16 }}
                   subheaderTypographyProps={{ fontSize: 16 }}
-                  title={bookmark.displayName}
-                  subheader={bookmark.createdAt}
+                  title={record.displayName}
+                  subheader={record.createdAt}
+                  action={
+                    <Box sx={{mt:1}}>
+                      <Tooltip title="Edit" placement="bottom-start" arrow>
+                        <span>
+                          <IconButton
+                            sx={{ mr: 2 }}
+                            onClick={() =>
+                              handleEditMyRecord(record.id, record.postId)
+                            }
+                            disabled={
+                              userItem.uid === record.uid ? false : true
+                            }
+                          >
+                            <EditIcon />
+                          </IconButton>
+                        </span>
+                      </Tooltip>
+                      <Tooltip title="Delete" placement="bottom-start" arrow>
+                        <span>
+                          <IconButton
+                            sx={{ mr: 2 }}
+                            onClick={() => handleDeleteRecord(record.id)}
+                            disabled={
+                              userItem.uid === record.uid ? false : true
+                            }
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </span>
+                      </Tooltip>
+                    </Box>
+                  }
                 />
                 <CardContent
                   sx={{
-                    bgcolor: green[50],
+                    bgcolor: orange[50],
                   }}
                 >
                   <Typography
@@ -159,7 +186,7 @@ const Bookmark = () => {
                     color="text.secondary"
                     component="p"
                   >
-                    {bookmark.value}
+                    {record.value}
                   </Typography>
                 </CardContent>
                 <Toolbar />
@@ -172,4 +199,4 @@ const Bookmark = () => {
   );
 };
 
-export default Bookmark;
+export default MyRecord;

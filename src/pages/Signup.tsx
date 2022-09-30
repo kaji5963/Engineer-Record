@@ -20,10 +20,7 @@ import {
 } from "firebase/auth";
 import { auth, db, storage } from "../components/firebase";
 import {
-  addDoc,
-  collection,
   doc,
-  getDocs,
   serverTimestamp,
   setDoc,
 } from "firebase/firestore";
@@ -33,9 +30,8 @@ import {
   getDownloadURL,
   ref,
   uploadBytes,
-  uploadBytesResumable,
 } from "firebase/storage";
-import { User, userItemState } from "../constants/atom";
+import {  UserData, userItemState } from "../constants/atom";
 import { useRecoilState } from "recoil";
 
 type Info = {
@@ -79,7 +75,7 @@ const SignUp = () => {
         //ユーザー情報取得処理しuserItemへ格納
         onAuthStateChanged(auth, (user) => {
           if (user) {
-            const { uid, email, displayName, photoURL } = user as User;
+            const { uid, email, displayName, photoURL } = user as UserData;
             setUserItem({ ...userItem, uid, email, displayName, photoURL });
           }
         });
@@ -135,7 +131,7 @@ const SignUp = () => {
           </Avatar>
 
           <Typography component="h1" variant="h5">
-            新規登録
+            Sign Up
           </Typography>
           <Box
             component="form"
@@ -150,7 +146,7 @@ const SignUp = () => {
                     <Tooltip title="Avatar Add" placement="top-start" arrow>
                       <IconButton
                         sx={{
-                          bgcolor: grey[200],
+                          bgcolor: grey[300],
                           mt: 6,
                           ml: 10,
                           mb: 2,

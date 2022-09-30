@@ -176,7 +176,7 @@ const Comment = () => {
             sx={{
               bgcolor: blue[100],
 
-              width: 500,
+              maxWidth: 500,
               mb: 3,
               borderRadius: 5,
             }}
@@ -260,7 +260,7 @@ const Comment = () => {
                 key={comment.commentId}
                 sx={{
                   bgcolor: red[100],
-                  width: 500,
+                  maxWidth: 500,
                   mb: 4,
                   borderRadius: 5,
                 }}
@@ -284,9 +284,9 @@ const Comment = () => {
                 >
                   <Typography
                     sx={{
-                      minHeight: 50,
+                      minHeight: 100,
                       whiteSpace: "pre-line",
-                      fontSize: 16,
+                      fontSize: 18,
                     }}
                     variant="body2"
                     color="text.secondary"

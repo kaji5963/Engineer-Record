@@ -7,7 +7,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import ComputerIcon from "@mui/icons-material/Computer";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
-
+import AssignmentIcon from '@mui/icons-material/Assignment';
 import IconButton from "@mui/material/IconButton";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AppBar from "@mui/material/AppBar";
@@ -62,22 +62,27 @@ const Header = (props: Props) => {
 
   const MENU_LIST = [
     {
-      title: "TOP",
+      title: "Top",
       icon: <HomeIcon />,
       href: "/Top",
     },
     {
-      title: "PROFILE",
+      title: "Profile",
       icon: <AssignmentIndIcon />,
       href: `/${userItem.uid}/Profile`,
     },
     {
-      title: 'BOOKMARK',
+      title: "MyRecord",
+      icon: <AssignmentIcon />,
+      href: `/${userItem.uid}/MyRecord`,
+    },
+    {
+      title: 'Bookmark',
       icon: <BookmarkIcon />,
       href: `/${userItem.uid}/Bookmark`,
     },
     {
-      title: "LOGOUT",
+      title: "Logout",
       icon: <LogoutIcon />,
       href: "/",
     },
@@ -119,7 +124,7 @@ const Header = (props: Props) => {
           >
             <ListItemButton sx={{ textAlign: "center" }}>
               <ListItemIcon sx={{ ml: 3 }}>{list.icon}</ListItemIcon>
-              <ListItemText sx={{ mr: 9 }} primary={list.title} />
+              <ListItemText sx={{ mr: 9 , textAlign: "left"}} primary={list.title} />
             </ListItemButton>
           </ListItem>
         ))}
@@ -139,7 +144,7 @@ const Header = (props: Props) => {
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: "none" } }}
+            sx={{ mr: 2, display: { md: "none" } }}
           >
             <MenuIcon />
           </IconButton>
@@ -147,7 +152,7 @@ const Header = (props: Props) => {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Engineer Record
           </Typography>
-          <Box sx={{ display: { xs: "none", sm: "block" } }}>
+          <Box sx={{ display: { xs: "none", sm: "none", md: "block" } }}>
             {/* {MENU_LIST.map((list) => {
               return(
                 <Button
@@ -165,42 +170,57 @@ const Header = (props: Props) => {
             <Button
               sx={{
                 color: "#fff",
-                fontSize: 16,
+                fontSize: 18,
+                textTransform: "none",
                 ":hover": { color: grey[400] },
               }}
               onClick={() => router.push("/Top")}
             >
-              TOP
+              Top
             </Button>
             <Button
               sx={{
                 color: "#fff",
-                fontSize: 16,
+                fontSize: 18,
+                textTransform: "none",
                 ":hover": { color: grey[400] },
               }}
               onClick={() => router.push(`/${userItem.uid}/Profile`)}
             >
-              PROFILE
+              Profile
             </Button>
             <Button
               sx={{
                 color: "#fff",
-                fontSize: 16,
+                fontSize: 18,
+                textTransform: "none",
+                ":hover": { color: grey[400] },
+              }}
+              onClick={() => router.push(`/${userItem.uid}/MyRecord`)}
+            >
+              MyRecord
+            </Button>
+            <Button
+              sx={{
+                color: "#fff",
+                fontSize: 18,
+                textTransform: "none",
                 ":hover": { color: grey[400] },
               }}
               onClick={() => router.push(`/${userItem.uid}/Bookmark`)}
             >
-              BOOKMARK
+              Bookmark
             </Button>
             <Button
               sx={{
                 color: "#fff",
-                fontSize: 16,
+                fontSize: 18,
+                textTransform: "none",
                 ":hover": { color: grey[400] },
               }}
               onClick={handleLogout}
             >
-              LOGOUT
+              Logout
             </Button>
           </Box>
         </Toolbar>
@@ -215,7 +235,7 @@ const Header = (props: Props) => {
             keepMounted: true,
           }}
           sx={{
-            display: { xs: "block", sm: "none" },
+            display: { sm: "block", md: "none" },
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
               width: drawerWidth,

@@ -58,7 +58,6 @@ const RecordList = () => {
   const [recordList, setRecordList] = useRecoilState(recordListState);
   const [userItem, setUserItem] = useRecoilState(userItemState);
   const [commentList, setCommentList] = useRecoilState(commentListState);
-
   const [commentItem, setCommentItem] = useRecoilState(commentItemState);
   const [editItem, setEditItem] = useRecoilState(editItemState);
   const [bookmarkItem, setBookmarkItem] = useRecoilState(bookmarkItemState);
@@ -309,7 +308,7 @@ const RecordList = () => {
                 sx={{
                   bgcolor: blue[100],
 
-                  width: 500,
+                  maxWidth: 500,
                   mb: 4,
                   borderRadius: 5,
                 }}
@@ -322,7 +321,7 @@ const RecordList = () => {
                     ></Avatar>
                   }
                   action={
-                    <>
+                    <Box sx={{ mt: 1 }}>
                       <Tooltip title="Edit" placement="bottom-start" arrow>
                         <span>
                           <IconButton
@@ -351,8 +350,10 @@ const RecordList = () => {
                           </IconButton>
                         </span>
                       </Tooltip>
-                    </>
+                    </Box>
                   }
+                  titleTypographyProps={{ fontSize: 16 }}
+                  subheaderTypographyProps={{ fontSize: 16 }}
                   title={record.displayName}
                   subheader={record.createdAt}
                 />
@@ -362,7 +363,11 @@ const RecordList = () => {
                   }}
                 >
                   <Typography
-                    sx={{ minHeight: 100, whiteSpace: "pre-line" }}
+                    sx={{
+                      minHeight: 100,
+                      whiteSpace: "pre-line",
+                      fontSize: 18,
+                    }}
                     variant="body2"
                     color="text.secondary"
                     component="p"
