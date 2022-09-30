@@ -21,22 +21,13 @@ import {
   Avatar,
   CardContent,
   Typography,
-  CardActions,
   IconButton,
-  Stack,
-  Pagination,
   Tooltip,
   Toolbar,
 } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
-import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
-import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
-import { onAuthStateChanged, updateCurrentUser } from "firebase/auth";
-import { useRouter } from "next/router";
-import { blue, green } from "@mui/material/colors";
+import { green } from "@mui/material/colors";
 import Layout from "../../components/Layout";
 import Head from "next/head";
 
@@ -62,7 +53,7 @@ const Bookmark = () => {
         createdAt: doc.data().createdAt,
         displayName: doc.data().displayName,
         photoURL: doc.data().photoURL,
-        saved: doc.data().saved,
+        saved: !doc.data().saved, //bookmarksのsavedがfalseが入るので反転して表示をtrueに置き換える
       }));
       setBookmarkList(bookmarkData);
     });
@@ -73,17 +64,8 @@ const Bookmark = () => {
     if (typeof window !== "undefined") setIsClient(true);
   }, []);
 
-  //ブックマーク外す処理
+  //ブックマーク外す処理（firebaseのブックマークされたデータを削除）
   const handleRemoveBookmark = (postId: string) => {
-    //ブックマークしたもののtrue/falseを反転
-    const removeBookmarkRecord = bookmarkList.map((bookmark) =>
-    bookmark.postId === postId
-        ? { ...bookmark, saved: !bookmark.saved }
-        : bookmark
-    );
-    setRecordList(removeBookmarkRecord);
-
-    //firebaseのブックマークされたデータを削除
     deleteDoc(doc(db, "users", userItem.uid, "bookmarks", postId));
   };
 
@@ -104,7 +86,7 @@ const Bookmark = () => {
           }}
         >
           {bookmarkList.map((bookmark) => {
-            if (bookmark.postId !== bookmark.postId) return; //条件式以外のものは表示しない
+            // if (bookmark.postId !== bookmark.postId) return; //条件式以外のものは表示しない
             return (
               <Box
                 key={bookmark.postId}
