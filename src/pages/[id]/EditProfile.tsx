@@ -16,6 +16,7 @@ import { useRouter } from "next/router";
 import { useRecoilState } from "recoil";
 import { userItemState } from "../../constants/atom";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import FactCheckIcon from "@mui/icons-material/FactCheck";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { onAuthStateChanged, updateProfile, User } from "firebase/auth";
@@ -83,8 +84,8 @@ const EditProfile = () => {
         <Box
           sx={{
             bgcolor: grey[300],
-            maxWidth: "60%",
-            minWidth: "40%",
+            minWidth: 500,
+            maxWidth: 700,
             minHeight: 280,
             mx: "auto",
             p: 4,
@@ -99,6 +100,13 @@ const EditProfile = () => {
           }
         >
           <Box>
+            <Typography
+              sx={{ textAlign: "center", mb: 4, mt: 2 }}
+              variant="h6"
+              gutterBottom
+            >
+              Profileを編集しますか？
+            </Typography>
             <Box
               sx={{
                 display: "flex",
@@ -191,7 +199,7 @@ const EditProfile = () => {
                 type="submit"
                 onClick={() => router.push("/Top")}
               >
-                <CheckCircleIcon fontSize="large" />
+                <FactCheckIcon fontSize="large" />
               </IconButton>
             </Tooltip>
 

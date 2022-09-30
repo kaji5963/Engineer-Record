@@ -15,14 +15,25 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import Layout from "../../components/Layout";
 import { useRecoilState } from "recoil";
-import { userItemState } from "../../constants/atom";
+import { UserData, userItemState } from "../../constants/atom";
 import { useEffect, useState } from "react";
 import { auth } from "../../components/firebase";
+import { onAuthStateChanged } from "firebase/auth";
 
 const Profile = () => {
   const [userItem, setUserItem] = useRecoilState(userItemState);
   const [isClient, setIsClient] = useState(false);
   const router = useRouter();
+
+  //ユーザー情報を取得
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const { uid, email, displayName, photoURL } = user as UserData;
+        setUserItem({ ...userItem, uid, email, displayName, photoURL });
+      }
+    });
+  }, []);
 
   //Hydrate Error対策
   useEffect(() => {
@@ -38,8 +49,8 @@ const Profile = () => {
         <Box
           sx={{
             bgcolor: grey[300],
-            maxWidth: "60%",
-            minWidth: "40%",
+            minWidth: 500,
+            maxWidth: 700,
             mx: "auto",
             p: 5,
             borderRadius: 5,
@@ -51,6 +62,7 @@ const Profile = () => {
               maxWidth: 240,
               minWidth: 200,
               mx: "auto",
+              mt: 2,
               height: 100,
               p: 0.5,
               pt: 3.5,

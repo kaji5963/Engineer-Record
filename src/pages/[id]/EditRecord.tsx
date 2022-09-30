@@ -1,5 +1,7 @@
 import ReplyIcon from "@mui/icons-material/Reply";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import FactCheckIcon from "@mui/icons-material/FactCheck";
+
 import { IconButton, TextField, Tooltip, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import Head from "next/head";
@@ -15,10 +17,10 @@ const EditRecord = () => {
   const [editItem, setEditItem] = useRecoilState(editItemState);
   const [userItem, setUserItem] = useRecoilState(userItemState);
   const router = useRouter();
-console.log(editItem);
+  // console.log(editItem);
 
   //Record編集完了処理
-  const handleEditComplete =  (id: string) => {
+  const handleEditComplete = (id: string) => {
     if (editItem.value === "") return;
     const recordUpdateDoc = doc(db, "users", userItem.uid, "records", id);
     updateDoc(recordUpdateDoc, {
@@ -37,24 +39,31 @@ console.log(editItem);
           display: "flex",
           mt: 10,
           bgcolor: grey[300],
-          height: 300,
-          minWidth: 400,
+          height: 400,
+          minWidth: 500,
           maxWidth: 700,
           flexDirection: "column",
+          justifyContent: "center",
           mx: "auto",
           textAlign: "center",
           p: 5,
           pb: 2,
           borderRadius: 5,
         }}
-        justifyContent="center"
         component="form"
         noValidate
         autoComplete="off"
       >
+        <Typography
+          sx={{ textAlign: "center", mb: 4 }}
+          variant="h6"
+          gutterBottom
+        >
+          Recordを編集しますか？
+        </Typography>
         <Box>
           <TextField
-            sx={{ minWidth: "80%", maxWidth: "80%", mx: "auto", bgcolor: "white" }}
+            sx={{ minWidth: 500, maxWidth: 700, mx: "auto", bgcolor: "white" }}
             id="outlined-multiline-static"
             multiline
             rows={5}
@@ -70,13 +79,11 @@ console.log(editItem);
             <IconButton
               sx={{ mr: 4 }}
               color="primary"
-              type="submit"
               onClick={() => handleEditComplete(editItem.id)}
             >
-              <CheckCircleIcon fontSize="large" />
+              <FactCheckIcon fontSize="large" />
             </IconButton>
           </Tooltip>
-
           <Tooltip title="Back" placement="bottom-start" arrow>
             <IconButton
               sx={{ ml: 4 }}

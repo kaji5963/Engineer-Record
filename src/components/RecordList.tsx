@@ -167,25 +167,25 @@ const RecordList = () => {
   }, []);
 
   //firebaseからブックマークしたデータを取得
-  // useEffect(() => {
-  // const bookmarkRef = query(
-  //   collection(db, "users", userItem.uid, "bookmarks"),
-  // );
-  //   onSnapshot(bookmarkRef, (querySnapshot) => {
-  //     const bookmarkData = querySnapshot.docs.map((doc) => ({
-  //       ...doc.data(),
-  //       id: doc.id,
-  //       uid: doc.data().uid,
-  //       postId: doc.data().postId,
-  //       value: doc.data().value,
-  //       createdAt: doc.data().createdAt,
-  //       displayName: doc.data().displayName,
-  //       photoURL: doc.data().photoURL,
-  //       saved: doc.data().saved,
-  //     }));
-  //     setBookmarkList(bookmarkData)
-  //   });
-  // }, []);
+  useEffect(() => {
+  const bookmarkRef = query(
+    collection(db, "users", userItem.uid, "bookmarks"),
+  );
+    onSnapshot(bookmarkRef, (querySnapshot) => {
+      const bookmarkData = querySnapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+        uid: doc.data().uid,
+        postId: doc.data().postId,
+        value: doc.data().value,
+        createdAt: doc.data().createdAt,
+        displayName: doc.data().displayName,
+        photoURL: doc.data().photoURL,
+        saved: doc.data().saved,
+      }));
+      setBookmarkList(bookmarkData)
+    });
+  }, []);
 
   //Hydrate Error対策
   useEffect(() => {
@@ -222,7 +222,7 @@ const RecordList = () => {
       (recordList) => recordList.postId === postId
     );
 
-    const { id, uid, value, createdAt, displayName, photoURL, saved } =
+    const { uid, value, createdAt, displayName, photoURL, saved } =
       findBookmarkRecord!;
     //ブックマークしたデータをfirebaseへ格納
     const bookmarksRef = doc(db, "users", userItem.uid, "bookmarks", postId);
