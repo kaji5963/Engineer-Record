@@ -120,7 +120,7 @@ const MyRecord = () => {
           }}
         >
           {recordList.map((record) => {
-            if (record.postId !== record.postId) return; //条件式以外のものは表示しない
+            // if (recordList.postId !== record.postId) return; //条件式以外のものは表示しない
             return (
               <Box
                 key={record.postId}

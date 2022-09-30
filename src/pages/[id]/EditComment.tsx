@@ -46,8 +46,8 @@ const EditComment = () => {
             mt: 10,
             bgcolor: grey[300],
             height: 400,
-            minWidth: 500,
-            maxWidth: 700,
+            minWidth: 400,
+            maxWidth: 600,
             flexDirection: "column",
             justifyContent: "center",
             mx: "auto",
@@ -69,7 +69,7 @@ const EditComment = () => {
           </Typography>
           <Box>
             <TextField
-              sx={{ width: 500, mx: "auto", bgcolor: "white" }}
+              sx={{ minWidth: 400, maxWidth: 500, mx: "auto", bgcolor: "white" }}
               id="outlined-multiline-static"
               multiline
               rows={5}

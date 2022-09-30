@@ -49,8 +49,8 @@ const Profile = () => {
         <Box
           sx={{
             bgcolor: grey[300],
-            minWidth: 500,
-            maxWidth: 700,
+            minWidth: 400,
+            maxWidth: 600,
             mx: "auto",
             p: 5,
             borderRadius: 5,

@@ -78,10 +78,43 @@ const RecordList = () => {
       orderBy("timeStamp", "desc")
     );
 
-    const bookmarkRef = query(
-      collection(db, "users", userItem.uid, "bookmarks"),
-      orderBy("timeStamp", "desc")
-    );
+    onSnapshot(recordsRef, (querySnapshot) => {
+      setRecordList(
+        querySnapshot.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+          uid: doc.data().uid,
+          postId: doc.data().postId,
+          value: doc.data().value,
+          createdAt: doc.data().createdAt,
+          displayName: doc.data().displayName,
+          photoURL: doc.data().photoURL,
+          saved: doc.data().saved,
+        }))
+      );
+    });
+
+
+    // const bookmarkRef = query(
+    //   collection(db, "users", userItem.uid, "bookmarks"),
+    //   orderBy("timeStamp", "desc")
+    // );
+    //     onSnapshot(bookmarkRef, (querySnapshot) => {
+    //       const bookmarkData = querySnapshot.docs.map((doc) => ({
+    //         ...doc.data(),
+    //         id: doc.id,
+    //         uid: doc.data().uid,
+    //         postId: doc.data().postId,
+    //         value: doc.data().value,
+    //         createdAt: doc.data().createdAt,
+    //         displayName: doc.data().displayName,
+    //         photoURL: doc.data().photoURL,
+    //         saved: doc.data().saved,
+    //       }));
+    //       setBookmarkList(bookmarkData)
+    //     });
+
+
 
     // onSnapshot(recordsRef, (querySnapshot) => {
     //   querySnapshot.docs.map((recordDoc) => {
@@ -148,44 +181,43 @@ const RecordList = () => {
     //   }
     // });
 
-    onSnapshot(recordsRef, (querySnapshot) => {
-      // setRecordListで更新し投稿データをrecordListに格納
-      setRecordList(
-        querySnapshot.docs.map((doc) => ({
-          ...doc.data(),
-          id: doc.id,
-          uid: doc.data().uid,
-          postId: doc.data().postId,
-          value: doc.data().value,
-          createdAt: doc.data().createdAt,
-          displayName: doc.data().displayName,
-          photoURL: doc.data().photoURL,
-          saved: doc.data().saved,
-        }))
-      );
-    });
+    // onSnapshot(recordsRef, (querySnapshot) => {
+    //   setRecordList(
+    //     querySnapshot.docs.map((doc) => ({
+    //       ...doc.data(),
+    //       id: doc.id,
+    //       uid: doc.data().uid,
+    //       postId: doc.data().postId,
+    //       value: doc.data().value,
+    //       createdAt: doc.data().createdAt,
+    //       displayName: doc.data().displayName,
+    //       photoURL: doc.data().photoURL,
+    //       saved: doc.data().saved,
+    //     }))
+    //   );
+    // });
   }, []);
 
   //firebaseからブックマークしたデータを取得
-  useEffect(() => {
-  const bookmarkRef = query(
-    collection(db, "users", userItem.uid, "bookmarks"),
-  );
-    onSnapshot(bookmarkRef, (querySnapshot) => {
-      const bookmarkData = querySnapshot.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-        uid: doc.data().uid,
-        postId: doc.data().postId,
-        value: doc.data().value,
-        createdAt: doc.data().createdAt,
-        displayName: doc.data().displayName,
-        photoURL: doc.data().photoURL,
-        saved: doc.data().saved,
-      }));
-      setBookmarkList(bookmarkData)
-    });
-  }, []);
+  // useEffect(() => {
+  // const bookmarkRef = query(
+  //   collection(db, "users", userItem.uid, "bookmarks"),
+  // );
+  //   onSnapshot(bookmarkRef, (querySnapshot) => {
+  //     const bookmarkData = querySnapshot.docs.map((doc) => ({
+  //       ...doc.data(),
+  //       id: doc.id,
+  //       uid: doc.data().uid,
+  //       postId: doc.data().postId,
+  //       value: doc.data().value,
+  //       createdAt: doc.data().createdAt,
+  //       displayName: doc.data().displayName,
+  //       photoURL: doc.data().photoURL,
+  //       saved: doc.data().saved,
+  //     }));
+  //     setBookmarkList(bookmarkData)
+  //   });
+  // }, []);
 
   //Hydrate Error対策
   useEffect(() => {
@@ -255,7 +287,7 @@ const RecordList = () => {
   //Record編集処理
   const handleEditRecord = (id: string, postId: string) => {
     const findEditRecord = recordList.find(
-      (recordList) => recordList.postId === postId
+      (record) => record.postId === postId
     );
     setEditItem({ ...editItem, ...findEditRecord });
     router.push(`/${id}/EditRecord/`);
@@ -269,7 +301,7 @@ const RecordList = () => {
     if (deleteMessage === true) {
       deleteDoc(doc(db, "users", userItem.uid, "records", id));
       const deleteRecord = recordList.filter(
-        (recordList) => recordList.id !== id
+        (record) => record.id !== id
       );
       setRecordList(deleteRecord);
     } else {
