@@ -1,17 +1,15 @@
+import Head from "next/head";
+import Layout from "../../components/Layout";
 import ReplyIcon from "@mui/icons-material/Reply";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import GradingIcon from "@mui/icons-material/Grading";
 import FactCheckIcon from "@mui/icons-material/FactCheck";
 import { IconButton, TextField, Tooltip, Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import Head from "next/head";
-import Layout from "../../components/Layout";
+import { grey } from "@mui/material/colors";
 import { useRouter } from "next/router";
 import { useRecoilState } from "recoil";
-import { editItemState, userItemState } from "../../constants/atom";
+import { editItemState } from "../../constants/atom";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../components/firebase";
-import { grey } from "@mui/material/colors";
 import { useEffect, useState } from "react";
 
 const EditComment = () => {
@@ -69,7 +67,12 @@ const EditComment = () => {
           </Typography>
           <Box>
             <TextField
-              sx={{ minWidth: 400, maxWidth: 500, mx: "auto", bgcolor: "white" }}
+              sx={{
+                minWidth: 400,
+                maxWidth: 500,
+                mx: "auto",
+                bgcolor: "white",
+              }}
               id="outlined-multiline-static"
               multiline
               rows={5}

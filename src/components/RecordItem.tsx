@@ -89,7 +89,6 @@ export const RecordItem = ({
       key={record.postId}
       sx={{
         bgcolor: blue[100],
-
         maxWidth: 500,
         mb: 4,
         borderRadius: 5,

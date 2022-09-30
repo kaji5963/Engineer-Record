@@ -1,24 +1,15 @@
-import {
-  Avatar,
-  Box,
-  Button,
-  IconButton,
-  TextField,
-  Tooltip,
-  Typography,
-} from "@mui/material";
+import Head from "next/head";
+import Layout from "../../components/Layout";
+import { Avatar, Box, IconButton, Tooltip, Typography } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import ReplyIcon from "@mui/icons-material/Reply";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import { grey } from "@mui/material/colors";
-import Head from "next/head";
-import { useRouter } from "next/router";
-import Layout from "../../components/Layout";
 import { useRecoilState } from "recoil";
 import { UserData, userItemState } from "../../constants/atom";
 import { useEffect, useState } from "react";
 import { auth } from "../../components/firebase";
 import { onAuthStateChanged } from "firebase/auth";
+import { useRouter } from "next/router";
 
 const Profile = () => {
   const [userItem, setUserItem] = useRecoilState(userItemState);
@@ -115,16 +106,6 @@ const Profile = () => {
               {userItem.displayName}
             </Typography>
           </Box>
-          {/* <Typography sx={{ textAlign: "center", mt: 3 }} variant="subtitle1">
-            User ID
-          </Typography>
-          <Typography
-            sx={{ textAlign: "center", fontSize: 14 }}
-            variant="subtitle1"
-            gutterBottom
-          >
-            {userItem.uid}
-          </Typography> */}
           <Box
             sx={{
               bgcolor: "white",

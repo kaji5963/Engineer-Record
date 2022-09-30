@@ -1,12 +1,26 @@
+import Head from "next/head";
+import Layout from "../../components/Layout";
+import {
+  Box,
+  Card,
+  CardHeader,
+  Avatar,
+  CardContent,
+  Typography,
+  IconButton,
+  Tooltip,
+  Toolbar,
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import { orange } from "@mui/material/colors";
 import {
   collection,
-  collectionGroup,
   deleteDoc,
   doc,
   onSnapshot,
   orderBy,
   query,
-  where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
@@ -17,39 +31,14 @@ import {
   recordListState,
   userItemState,
 } from "../../constants/atom";
-import {
-  Box,
-  Card,
-  CardHeader,
-  Avatar,
-  CardContent,
-  Typography,
-  CardActions,
-  IconButton,
-  Stack,
-  Pagination,
-  Tooltip,
-  Toolbar,
-} from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
-import BookmarkIcon from "@mui/icons-material/Bookmark";
-import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
-import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
-import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
-import { onAuthStateChanged, updateCurrentUser } from "firebase/auth";
 import { useRouter } from "next/router";
-import { blue, green, orange } from "@mui/material/colors";
-import Layout from "../../components/Layout";
-import Head from "next/head";
 
 const MyRecord = () => {
   const [recordList, setRecordList] = useRecoilState(recordListState);
-  const [bookmarkList, setBookmarkList] = useRecoilState(bookmarkListState);
   const [userItem, setUserItem] = useRecoilState(userItemState);
   const [editItem, setEditItem] = useRecoilState(editItemState);
   const [isClient, setIsClient] = useState(false);
-  const router = useRouter()
+  const router = useRouter();
 
   //firebaseのrecordsからデータを取得（ログインしているユーザーのみ）
   useEffect(() => {
@@ -94,9 +83,7 @@ const MyRecord = () => {
     );
     if (deleteMessage === true) {
       deleteDoc(doc(db, "users", userItem.uid, "records", id));
-      const deleteRecord = recordList.filter(
-        (record) => record.id !== id
-      );
+      const deleteRecord = recordList.filter((record) => record.id !== id);
       setRecordList(deleteRecord);
     } else {
       return;
@@ -143,7 +130,7 @@ const MyRecord = () => {
                   title={record.displayName}
                   subheader={record.createdAt}
                   action={
-                    <Box sx={{mt:1}}>
+                    <Box sx={{ mt: 1 }}>
                       <Tooltip title="Edit" placement="bottom-start" arrow>
                         <span>
                           <IconButton
@@ -181,7 +168,11 @@ const MyRecord = () => {
                   }}
                 >
                   <Typography
-                    sx={{ minHeight: 100, whiteSpace: "pre-line", fontSize: 18 }}
+                    sx={{
+                      minHeight: 100,
+                      whiteSpace: "pre-line",
+                      fontSize: 18,
+                    }}
                     variant="body2"
                     color="text.secondary"
                     component="p"

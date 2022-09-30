@@ -2,11 +2,8 @@ import Layout from "../components/Layout";
 import Head from "next/head";
 import Form from "../components/Form";
 import RecordList from "../components/RecordList";
-import { Avatar, Typography } from "@mui/material";
 import { useRecoilValue } from "recoil";
 import { userItemState } from "../constants/atom";
-import { Box } from "@mui/system";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import { useEffect, useState } from "react";
 
 const Top = () => {
@@ -17,7 +14,7 @@ const Top = () => {
   useEffect(() => {
     if (typeof window !== "undefined") setIsClient(true);
   }, []);
-  
+
   return (
     <Layout>
       <Head>
@@ -25,25 +22,6 @@ const Top = () => {
       </Head>
       {isClient && (
         <>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              mb: 2,
-            }}
-          >
-            <Avatar
-              sx={{ m: 1, mr: 2 }}
-              src={userItem.photoURL}
-              suppressHydrationWarning={true}
-            >
-              <PersonAddIcon />
-            </Avatar>
-            <Typography sx={{ mx: 1 }} component="h1" variant="h5">
-              {userItem.displayName}
-            </Typography>
-          </Box>
           <Form />
           <RecordList />
         </>

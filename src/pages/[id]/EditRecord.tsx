@@ -1,23 +1,20 @@
-import ReplyIcon from "@mui/icons-material/Reply";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import FactCheckIcon from "@mui/icons-material/FactCheck";
-
-import { IconButton, TextField, Tooltip, Typography } from "@mui/material";
-import { Box } from "@mui/system";
 import Head from "next/head";
 import Layout from "../../components/Layout";
-import { useRouter } from "next/router";
+import ReplyIcon from "@mui/icons-material/Reply";
+import FactCheckIcon from "@mui/icons-material/FactCheck";
+import { IconButton, TextField, Tooltip, Typography } from "@mui/material";
+import { grey } from "@mui/material/colors";
+import { Box } from "@mui/system";
 import { useRecoilState } from "recoil";
 import { editItemState, userItemState } from "../../constants/atom";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../components/firebase";
-import { grey } from "@mui/material/colors";
+import { useRouter } from "next/router";
 
 const EditRecord = () => {
   const [editItem, setEditItem] = useRecoilState(editItemState);
   const [userItem, setUserItem] = useRecoilState(userItemState);
   const router = useRouter();
-  // console.log(editItem);
 
   //Record編集完了処理
   const handleEditComplete = (id: string) => {

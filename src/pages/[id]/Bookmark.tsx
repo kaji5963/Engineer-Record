@@ -1,19 +1,5 @@
-import {
-  collection,
-  deleteDoc,
-  doc,
-  onSnapshot,
-  orderBy,
-  query,
-} from "firebase/firestore";
-import { useEffect, useState } from "react";
-import { useRecoilState } from "recoil";
-import { db } from "../../components/firebase";
-import {
-  bookmarkListState,
-  recordListState,
-  userItemState,
-} from "../../constants/atom";
+import Head from "next/head";
+import Layout from "../../components/Layout";
 import {
   Box,
   Card,
@@ -28,11 +14,20 @@ import {
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import { green } from "@mui/material/colors";
-import Layout from "../../components/Layout";
-import Head from "next/head";
+import { useRecoilState } from "recoil";
+import { bookmarkListState, userItemState } from "../../constants/atom";
+import { useEffect, useState } from "react";
+import { db } from "../../components/firebase";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  orderBy,
+  query,
+} from "firebase/firestore";
 
 const Bookmark = () => {
-  const [recordList, setRecordList] = useRecoilState(recordListState);
   const [bookmarkList, setBookmarkList] = useRecoilState(bookmarkListState);
   const [userItem, setUserItem] = useRecoilState(userItemState);
   const [isClient, setIsClient] = useState(false);
@@ -136,7 +131,11 @@ const Bookmark = () => {
                   }}
                 >
                   <Typography
-                    sx={{ minHeight: 100, whiteSpace: "pre-line", fontSize: 18 }}
+                    sx={{
+                      minHeight: 100,
+                      whiteSpace: "pre-line",
+                      fontSize: 18,
+                    }}
                     variant="body2"
                     color="text.secondary"
                     component="p"

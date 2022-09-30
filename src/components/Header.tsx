@@ -27,33 +27,7 @@ import { ListItemIcon } from "@mui/material";
 interface Props {
   window?: () => Window;
 }
-
 const drawerWidth = 240;
-// const navItems = ["Top", "Profile", "Logout"];
-
-// const MENU_LIST = [
-//   {
-//     title: "TOP",
-//     icon: <HomeIcon />,
-//     href: "/Top",
-//   },
-//   {
-//     title: "PROFILE",
-//     icon: <AssignmentIndIcon />,
-//     href: "/Profile",
-//   },
-//   {
-//     title: "LOGOUT",
-//     icon: <LogoutIcon />,
-//     href: "/",
-//   },
-//   {
-//     title: 'BOOKMARK',
-//     icon: <BookmarkIcon />,
-//     href: `${userItem.uid}/Bookmark`,
-//   },
-// ];
-
 const Header = (props: Props) => {
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);

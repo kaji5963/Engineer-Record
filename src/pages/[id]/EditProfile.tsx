@@ -1,33 +1,29 @@
+import Head from "next/head";
+import Layout from "../../components/Layout";
 import {
   Avatar,
   IconButton,
-  Stack,
   TextField,
   Tooltip,
   Typography,
 } from "@mui/material";
 import ReplyIcon from "@mui/icons-material/Reply";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
+import FactCheckIcon from "@mui/icons-material/FactCheck";
 import { grey } from "@mui/material/colors";
 import { Box } from "@mui/system";
-import Head from "next/head";
-import Layout from "../../components/Layout";
 import { useRouter } from "next/router";
 import { useRecoilState } from "recoil";
 import { userItemState } from "../../constants/atom";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import FactCheckIcon from "@mui/icons-material/FactCheck";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import { onAuthStateChanged, updateProfile, User } from "firebase/auth";
+import { updateProfile, User } from "firebase/auth";
 import { auth, db, storage } from "../../components/firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { collection, doc, query, updateDoc, where } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 
 const EditProfile = () => {
   const [userItem, setUserItem] = useRecoilState(userItemState);
   const [isClient, setIsClient] = useState(false);
-
   const router = useRouter();
 
   //Hydrate Error対策
@@ -42,6 +38,7 @@ const EditProfile = () => {
     photoURL: string
   ) => {
     e.preventDefault();
+    if (!userItem.displayName) return;
     //ユーザー情報の更新
     updateProfile(auth.currentUser as User, {
       displayName,
@@ -53,7 +50,7 @@ const EditProfile = () => {
       displayName: userItem.displayName,
       photoURL: userItem.photoURL,
     });
-    setUserItem({ ...userItem, displayName, photoURL });
+    // setUserItem({ ...userItem, displayName, photoURL }); いらない処理かな？確認後削除
     router.push("/Top");
   };
 

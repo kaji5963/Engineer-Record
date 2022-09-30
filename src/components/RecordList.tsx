@@ -12,6 +12,7 @@ import {
 } from "../constants/atom";
 import { useEffect, useMemo, useState } from "react";
 import {
+  collection,
   collectionGroup,
   deleteDoc,
   doc,
@@ -71,16 +72,21 @@ const RecordList = () => {
       }));
       setRecordList(recordsData);
     });
-
-    // const usersRef = query(collection(db, "users"));
-    // onSnapshot(usersRef, (querySnapshot) => {
-    //   const userData = querySnapshot.docs.map((doc) => ({
-    //     ...doc.data(),
-    //     displayName: doc.data().displayName,
-    //     photoURL: doc.data().photoURL,
-    //   }));
-    // });
   }, []);
+
+  //最新のuser情報を取得（Profile更新に対応）
+  useEffect(() => {
+    const usersRef = query(collection(db, "users"));
+    onSnapshot(usersRef, (querySnapshot) => {
+      const userData = querySnapshot.docs.map((doc) => ({
+        ...doc.data(),
+        displayName: doc.data().displayName,
+        photoURL: doc.data().photoURL,
+      }));
+      // console.log(userData);
+      
+    });
+  },[])
 
   //Hydrate Error対策
   useEffect(() => {

@@ -31,16 +31,13 @@ import Layout from "../../components/Layout";
 import { useRecoilState } from "recoil";
 import {
   commentItemState,
-  recordListState,
   userItemState,
   commentListState,
-  CommentList,
   editItemState,
 } from "../../constants/atom";
 import { useEffect, useState } from "react";
 import { changeDateFormat } from "../../components/Form";
 import {
-  addDoc,
   collection,
   deleteDoc,
   doc,
@@ -51,11 +48,10 @@ import {
   setDoc,
   where,
 } from "firebase/firestore";
-import { auth, db } from "../../components/firebase";
+import { db } from "../../components/firebase";
 
 const Comment = () => {
   const { v4: uuidv4 } = require("uuid");
-  // const [recordList, setRecordList] = useRecoilState(recordListState);
   const [userItem, setUserItem] = useRecoilState(userItemState);
   const [commentItem, setCommentItem] = useRecoilState(commentItemState);
   const [commentList, setCommentList] = useRecoilState(commentListState);
@@ -209,7 +205,7 @@ const Comment = () => {
           </Box>
         </Card>
       )}
-      {/* --------------------------------------- */}
+      
       <Box
         sx={{
           mt: 2,
@@ -328,6 +324,5 @@ const Comment = () => {
     </Layout>
   );
 };
-
 
 export default Comment;
