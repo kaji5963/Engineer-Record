@@ -81,7 +81,7 @@ const MyRecord = () => {
   //Record編集処理
   const handleEditMyRecord = (id: string, postId: string) => {
     const findEditRecord = recordList.find(
-      (recordList) => recordList.postId === postId
+      (record) => record.postId === postId
     );
     setEditItem({ ...editItem, ...findEditRecord });
     router.push(`/${id}/EditRecord/`);
@@ -95,7 +95,7 @@ const MyRecord = () => {
     if (deleteMessage === true) {
       deleteDoc(doc(db, "users", userItem.uid, "records", id));
       const deleteRecord = recordList.filter(
-        (recordList) => recordList.id !== id
+        (record) => record.id !== id
       );
       setRecordList(deleteRecord);
     } else {

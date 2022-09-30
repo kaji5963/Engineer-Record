@@ -76,10 +76,10 @@ const Bookmark = () => {
   //ブックマーク外す処理
   const handleRemoveBookmark = (postId: string) => {
     //ブックマークしたもののtrue/falseを反転
-    const removeBookmarkRecord = bookmarkList.map((bookmarkList) =>
-      bookmarkList.postId === postId
-        ? { ...bookmarkList, saved: !bookmarkList.saved }
-        : bookmarkList
+    const removeBookmarkRecord = bookmarkList.map((bookmark) =>
+    bookmark.postId === postId
+        ? { ...bookmark, saved: !bookmark.saved }
+        : bookmark
     );
     setRecordList(removeBookmarkRecord);
 

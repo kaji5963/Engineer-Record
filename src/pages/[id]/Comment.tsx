@@ -136,7 +136,7 @@ const Comment = () => {
   //comment編集処理
   const handleEditRecord = (id: string, postId: string) => {
     const findEditRecord = commentList.find(
-      (commentList) => commentList.postId === postId
+      (comment) => comment.postId === postId
     );
     setEditItem({ ...editItem, ...findEditRecord });
     router.push(`/${id}/EditComment`);
@@ -147,9 +147,7 @@ const Comment = () => {
     const deleteMessage = confirm("削除してもよろしいですか？");
     if (deleteMessage === true) {
       deleteDoc(doc(db, "comments", id));
-      const deleteRecord = commentList.filter(
-        (commentList) => commentList.id !== id
-      );
+      const deleteRecord = commentList.filter((comment) => comment.id !== id);
       setCommentList(deleteRecord);
     } else {
       return;

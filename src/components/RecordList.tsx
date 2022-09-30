@@ -20,6 +20,7 @@ import {
   editItemState,
   bookmarkItemState,
   bookmarkListState,
+  UserData,
 } from "../constants/atom";
 import { MouseEvent, useEffect, useMemo, useState } from "react";
 import {
@@ -53,6 +54,7 @@ import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import { useRouter } from "next/router";
+import { onAuthStateChanged } from "firebase/auth";
 
 const RecordList = () => {
   const [recordList, setRecordList] = useRecoilState(recordListState);
@@ -79,20 +81,58 @@ const RecordList = () => {
     );
 
     onSnapshot(recordsRef, (querySnapshot) => {
-      setRecordList(
-        querySnapshot.docs.map((doc) => ({
-          ...doc.data(),
-          id: doc.id,
-          uid: doc.data().uid,
-          postId: doc.data().postId,
-          value: doc.data().value,
-          createdAt: doc.data().createdAt,
-          displayName: doc.data().displayName,
-          photoURL: doc.data().photoURL,
-          saved: doc.data().saved,
-        }))
-      );
+      const recordsData = querySnapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+        uid: doc.data().uid,
+        postId: doc.data().postId,
+        value: doc.data().value,
+        createdAt: doc.data().createdAt,
+        displayName: doc.data().displayName,
+        photoURL: doc.data().photoURL,
+        saved: doc.data().saved,
+      }));
+      setRecordList(recordsData);
     });
+
+    // const usersRef = query(collection(db, "users"));
+    // onSnapshot(usersRef, (querySnapshot) => {
+    //   const userData = querySnapshot.docs.map((doc) => ({
+    //     ...doc.data(),
+    //     displayName: doc.data().displayName,
+    //     photoURL: doc.data().photoURL,
+    //   }));
+    // });
+
+    // setTodoList((oldTodoList: Array<TodoList>) => [
+    //   ...oldTodoList,
+    //   {
+    //     id: Math.floor(Math.random() * 1000).toString(16),
+    //     title,
+    //     detail,
+    //     status: 0,
+    //     priority,
+    //     createAt: changeDateFormat(new Date()),
+    //     updateAt: changeDateFormat(new Date()),
+    //     category,
+    //   },
+    // ]);setTodoList((oldTodoList: Array<TodoList>) => [
+    //   ...oldTodoList,
+    //   {
+    //     id: Math.floor(Math.random() * 1000).toString(16),
+    //     title,
+    //     detail,
+    //     status: 0,
+    //     priority,
+    //     createAt: changeDateFormat(new Date()),
+    //     updateAt: changeDateFormat(new Date()),
+    //     category,
+    //   },
+    // ]);
+
+
+
+
 
 
     // const bookmarkRef = query(
@@ -113,8 +153,6 @@ const RecordList = () => {
     //       }));
     //       setBookmarkList(bookmarkData)
     //     });
-
-
 
     // onSnapshot(recordsRef, (querySnapshot) => {
     //   querySnapshot.docs.map((recordDoc) => {
@@ -233,9 +271,7 @@ const RecordList = () => {
 
   //特定のコメントボタン押すと、そのデータをコメントページに渡す
   const handleComment = (id: string, postId: string) => {
-    const findComment = recordList.find(
-      (recordList) => recordList.postId === postId
-    );
+    const findComment = recordList.find((record) => record.postId === postId);
     setCommentItem({ ...commentItem, ...findComment });
     router.push(`/${id}/Comment`);
   };
@@ -243,15 +279,13 @@ const RecordList = () => {
   //ブックマークする処理
   const handleSavedBookmark = (postId: string) => {
     //ブックマークしたもののtrue/falseを反転
-    const addBookmarkRecord = recordList.map((recordList) =>
-      recordList.postId === postId
-        ? { ...recordList, saved: !recordList.saved }
-        : recordList
+    const addBookmarkRecord = recordList.map((record) =>
+      record.postId === postId ? { ...record, saved: !record.saved } : record
     );
     setRecordList(addBookmarkRecord);
 
     const findBookmarkRecord = addBookmarkRecord.find(
-      (recordList) => recordList.postId === postId
+      (record) => record.postId === postId
     );
 
     const { uid, value, createdAt, displayName, photoURL, saved } =
@@ -273,10 +307,8 @@ const RecordList = () => {
   //ブックマーク外す処理
   const handleRemoveBookmark = (postId: string) => {
     //ブックマークしたもののtrue/falseを反転
-    const removeBookmarkRecord = recordList.map((recordList) =>
-      recordList.postId === postId
-        ? { ...recordList, saved: !recordList.saved }
-        : recordList
+    const removeBookmarkRecord = recordList.map((record) =>
+      record.postId === postId ? { ...record, saved: !record.saved } : record
     );
     setRecordList(removeBookmarkRecord);
 

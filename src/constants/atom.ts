@@ -119,7 +119,7 @@ export const bookmarkItemState: RecoilState<BookmarkItem> = atom({
   default: {},
   effects_UNSTABLE: [persistAtom],
 });
-
+//ブックマークをリスト保持
 export const bookmarkListState: RecoilState<BookmarkList[]> = atom({
   key: "bookmarkList",
   default: [],
