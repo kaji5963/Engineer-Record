@@ -11,12 +11,22 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
+import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
-import { blue } from "@mui/material/colors";
+import { blue, red } from "@mui/material/colors";
 import React, { useEffect, useState } from "react";
-import { query, collection, onSnapshot } from "firebase/firestore";
+import {
+  query,
+  collection,
+  onSnapshot,
+  doc,
+  updateDoc,
+  setDoc,
+  deleteDoc,
+  collectionGroup,
+} from "firebase/firestore";
 import { db } from "./firebase";
 import {
   goodListState,
@@ -46,39 +56,27 @@ export const RecordItem = ({
   userItem,
 }: Props) => {
   const [saved, setSaved] = useState(false);
-  const [likeCount, setLikeCount] = useState(0);
+  const [goodCount, setGoodCount] = useState(0);
   const [recordList, setRecordList] = useRecoilState(recordListState);
   const [goodList, setGoodList] = useRecoilState(goodListState);
 
-  //いいねのカウントを+1
-  const handleLikeCount = () => {
-    setLikeCount(likeCount + 1);
-  };
-
-  //ブックマークする処理
-  const savePost = (recordData: RecordList) => {
-    const { id, uid, postId, value, createdAt, displayName, photoURL } =
-      recordData;
-    setSaved(true);
-    const savedPosts = {
-      id,
-      uid,
-      postId,
-      value,
-      createdAt,
-      displayName,
-      photoURL,
-      saved: true, //クライアント側のブックマーク状態を維持
-    };
-    // RecordListのhandleSavedBookmark関数へsavedPostsを渡して実行
-    handleSavedBookmark(savedPosts);
-  };
-  //ブックマークを外す処理
-  const removeBookmark = async (postId: string) => {
-    setSaved(false);
-    // RecordListにpostIdを渡して実行
-    handleRemoveBookmark(postId);
-  };
+  // useEffect(() => {
+  //   const goodsRef = query(collection(db, "goods"));
+  //   onSnapshot(goodsRef, (querySnapshot) => {
+  // //     const goodsData = querySnapshot.docs.map((doc) => ({
+  // //       ...doc.data(),
+  // //       id: doc.id,
+  // //       uid: doc.data().uid,
+  // //       postId: doc.data().postId,
+  // //       value: doc.data().value,
+  // //       createdAt: doc.data().createdAt,
+  // //       displayName: doc.data().displayName,
+  // //       photoURL: doc.data().photoURL,
+  // //       goodCount: doc.data().goodCount,
+  // //     }));
+  // //     setRecordList(goodsData);
+  //   });
+  // }, []);
 
   //firebaseからbookmarksのデータを取得(savedを監視)
   useEffect(() => {
@@ -96,6 +94,71 @@ export const RecordItem = ({
       });
     });
   }, [saved]);
+
+  //good（いいね）のカウントを+1及び-1
+  const handleGoodCount = async (good: number, record: RecordList) => {
+    const { uid, postId, value, createdAt, displayName, photoURL } = record
+    if (good === 0) {
+      // const goodUpDoc = collectionGroup(db, "records");
+      // const goodUpDoc = doc(db, "users", userItem.uid, "records", record.id);
+      // await updateDoc(goodUpDoc, {
+      //   goodCount: good + 1,
+      // });
+      const goodUpDoc = doc(db, "goods", postId);
+      await setDoc((goodUpDoc), {
+        uid,
+        postId,
+        value,
+        createdAt,
+        displayName,
+        photoURL,
+        goodCount: good + 1,
+      });
+      setGoodCount(good + 1);
+    } else {
+      const goodDownDoc = doc(db, "goods", postId);
+      // const goodDownDoc = doc(db, "users", userItem.uid, "records", record.id);
+      await updateDoc(goodDownDoc, {
+        goodCount: good - 1,
+      });
+      // await deleteDoc(doc(db, "goods", postId));
+      setGoodCount(good - 1);
+    }
+  };
+
+  //ブックマーク追加処理
+  const savePost = (recordData: RecordList) => {
+    const {
+      id,
+      uid,
+      postId,
+      value,
+      createdAt,
+      displayName,
+      photoURL,
+      goodCount,
+    } = recordData;
+    setSaved(true);
+    const savedPosts = {
+      id,
+      uid,
+      postId,
+      value,
+      createdAt,
+      displayName,
+      photoURL,
+      goodCount,
+      saved: true, //クライアント側のbookmarkページの状態を維持
+    };
+    // RecordListのhandleSavedBookmark関数へsavedPostsを渡して実行
+    handleSavedBookmark(savedPosts);
+  };
+  //ブックマーク削除処理
+  const removeBookmark = async (postId: string) => {
+    setSaved(false);
+    // RecordListにpostIdを渡して実行
+    handleRemoveBookmark(postId);
+  };
 
   return (
     //以下をRecordListでmap展開
@@ -172,12 +235,26 @@ export const RecordItem = ({
           </IconButton>
         </Tooltip>
 
-        <Tooltip title="Good" placement="right-start" arrow>
-          <IconButton onClick={() => handleLikeCount}>
-            <ThumbUpOffAltIcon />
-            <span style={{ fontSize: 20, marginLeft: 3 }}>{likeCount}</span>
-          </IconButton>
-        </Tooltip>
+        {goodCount > 0 ? (
+          <Tooltip title="Good" placement="right-start" arrow>
+            <IconButton
+              sx={{ color: red[300] }}
+              onClick={() => handleGoodCount(goodCount, record)}
+            >
+              <ThumbUpAltIcon />
+
+              <span style={{ marginLeft: 5, fontSize: 18 }}> {goodCount}</span>
+            </IconButton>
+          </Tooltip>
+        ) : (
+          <Tooltip title="Good" placement="right-start" arrow>
+            <IconButton onClick={() => handleGoodCount(goodCount, record)}>
+              <ThumbUpOffAltIcon />
+
+              <span style={{ marginLeft: 5, fontSize: 18 }}>{goodCount}</span>
+            </IconButton>
+          </Tooltip>
+        )}
 
         {saved ? (
           <Tooltip title="Bookmark" placement="right-start" arrow>

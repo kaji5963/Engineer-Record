@@ -95,8 +95,8 @@ const Comment = () => {
     if (comment.value === "") return;
     const { postId, value, createdAt } = comment;
     //firebaseのサブコレクションに追加処理
-    const commentDocRef = collection(db, "comments");
-    setDoc(doc(commentDocRef), {
+    const commentDocRef = doc(db, "comments", postId);
+    setDoc((commentDocRef), {
       uid: userItem.uid,
       postId, //投稿者のpostIdとイコール関係
       value,

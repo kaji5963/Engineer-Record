@@ -6,6 +6,7 @@ import {
   userItemState,
   editItemState,
   RecordList,
+  bookmarkListState,
 } from "../constants/atom";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -39,6 +40,7 @@ const RecordList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [userData, setUserData] = useState<User>();
   const router = useRouter();
+  const [bookmarkList, setBookmarkList] = useRecoilState(bookmarkListState);
 
   //マウント時にfirebaseからusersのデータを取得、userDataに格納（１番目に動く）
   useEffect(() => {
@@ -48,10 +50,10 @@ const RecordList = () => {
         Promise.all(
           querySnapshot.docs.map(async (doc) => ({
             ...doc.data(),
+            uid: doc.id,
             displayName: doc.data().displayName,
             photoURL: doc.data().photoURL,
             timeStamp: doc.data().timestamp,
-            uid: doc.id,
           }))
         ).then((data) => setUserData(data));
       });
@@ -81,6 +83,7 @@ const RecordList = () => {
           createdAt: doc.data().createdAt,
           displayName: userInfo!.displayName,
           photoURL: userInfo!.photoURL,
+          goodCount: doc.data().goodCount
         };
       });
       setRecordList(recordsData);
@@ -145,7 +148,11 @@ const RecordList = () => {
       `${userItem.displayName}の学習記録を削除してもよろしいですか？`
     );
     if (deleteMessage === true) {
+      //Topから削除した際は、recordsに紐づくcomments,bookmarks,goodsも同時に削除
       deleteDoc(doc(db, "users", userItem.uid, "records", id));
+      deleteDoc(doc(db, "comments", id));
+      deleteDoc(doc(db, "users", userItem.uid, "bookmarks", id));
+      deleteDoc(doc(db, "goods", id));
     } else return;
   };
 

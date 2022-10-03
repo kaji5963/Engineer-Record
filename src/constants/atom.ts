@@ -16,6 +16,7 @@ export type RecordList = {
   createdAt: string;
   displayName: string;
   photoURL: string;
+  goodCount: number
 };
 
 export type CommentList = {
@@ -48,7 +49,7 @@ export type EditItem = {
   photoURL: string;
 };
 
-export type LikeList = {
+export type GoodList = {
   uid: string;
   id: string;
   postId: string;
@@ -56,6 +57,7 @@ export type LikeList = {
   createdAt: string;
   displayName: string ;
   photoURL: string;
+  goodCount: number
 };
 
 export type BookmarkList = {
@@ -110,7 +112,7 @@ export const editItemState: RecoilState<EditItem> = atom({
 });
 
 //goodのデータを保持
-export const goodListState: RecoilState<LikeList[]> = atom({
+export const goodListState: RecoilState<GoodList[]> = atom({
   key: "goodList",
   default: [],
   effects_UNSTABLE: [persistAtom],

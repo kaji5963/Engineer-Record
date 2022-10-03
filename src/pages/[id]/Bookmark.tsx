@@ -55,7 +55,7 @@ const Bookmark = () => {
           postId: doc.data().postId,
           value: doc.data().value,
           createdAt: doc.data().createdAt,
-          displayName: bookmarkInfo!.displayName,
+          displayName: bookmarkInfo!.displayName, //bookmarkページが空の状態確認後に投稿してブックマークするとundefinedエラー出る
           photoURL: bookmarkInfo!.photoURL,
           saved: doc.data().saved, //bookmarksにsaved:trueすることでbookmarkチェック状態
         };
@@ -63,7 +63,7 @@ const Bookmark = () => {
       setBookmarkList(bookmarksData);
     });
   }, []);
-
+  
   //Hydrate Error対策
   useEffect(() => {
     if (typeof window !== "undefined") setIsClient(true);

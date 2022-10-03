@@ -32,15 +32,14 @@ const Form = () => {
     createdAt: changeDateFormat(new Date()),
     displayName: userItem.displayName,
     photoURL: userItem.photoURL,
+    goodCount: 0,
   });
 
   //学習記録を投稿する機能
   const handleAddRecord = async () => {
     if (inputValue.value === "") return;
-    const { postId, value, createdAt, displayName, photoURL } =
-      inputValue;
+    const { postId, value, createdAt } = inputValue;
     const user = auth.currentUser!;
-
     //firebaseのrecordsへデータ格納（階層：users-uid-records）
     const formDocRef = doc(db, "users", user.uid, "records", postId);
     await setDoc(formDocRef, {
@@ -48,10 +47,7 @@ const Form = () => {
       postId,
       value,
       createdAt,
-      // displayName,
-      // photoURL,
-      // saved,
-      // likeCount: 0,
+      goodCount: 0,
       timeStamp: serverTimestamp(),
     });
     //textFieldの初期化処理
@@ -61,6 +57,7 @@ const Form = () => {
       createdAt: changeDateFormat(new Date()),
       displayName: userItem.displayName,
       photoURL: userItem.photoURL,
+      goodCount: 0,
     });
   };
 
