@@ -32,7 +32,6 @@ const Form = () => {
     createdAt: changeDateFormat(new Date()),
     displayName: userItem.displayName,
     photoURL: userItem.photoURL,
-    // saved: false,
   });
 
   //学習記録を投稿する機能
@@ -42,7 +41,7 @@ const Form = () => {
       inputValue;
     const user = auth.currentUser!;
 
-    //firebaseへデータ格納（階層：users-uid-records）
+    //firebaseのrecordsへデータ格納（階層：users-uid-records）
     const formDocRef = doc(db, "users", user.uid, "records", postId);
     await setDoc(formDocRef, {
       uid: userItem.uid,
@@ -62,7 +61,6 @@ const Form = () => {
       createdAt: changeDateFormat(new Date()),
       displayName: userItem.displayName,
       photoURL: userItem.photoURL,
-      // saved: false,
     });
   };
 

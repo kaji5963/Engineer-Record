@@ -110,8 +110,8 @@ export const editItemState: RecoilState<EditItem> = atom({
 });
 
 //goodのデータを保持
-export const likeListState: RecoilState<LikeList[]> = atom({
-  key: "likeList",
+export const goodListState: RecoilState<LikeList[]> = atom({
+  key: "goodList",
   default: [],
   effects_UNSTABLE: [persistAtom],
 });

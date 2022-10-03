@@ -19,7 +19,7 @@ import React, { useEffect, useState } from "react";
 import { query, collection, onSnapshot } from "firebase/firestore";
 import { db } from "./firebase";
 import {
-  likeListState,
+  goodListState,
   RecordList,
   recordListState,
   UserData,
@@ -48,7 +48,7 @@ export const RecordItem = ({
   const [saved, setSaved] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [recordList, setRecordList] = useRecoilState(recordListState);
-  const [likeList, setLikeList] = useRecoilState(likeListState);
+  const [goodList, setGoodList] = useRecoilState(goodListState);
 
   //いいねのカウントを+1
   const handleLikeCount = () => {

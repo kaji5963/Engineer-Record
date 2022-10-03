@@ -35,7 +35,7 @@ import {
 import { useRouter } from "next/router";
 
 const MyRecord = () => {
-  const [recordList, setRecordList] = useRecoilState(recordListState);
+  const [myRecordList, setMyRecordList] = useState<RecordList[]>([]);
   const [userItem, setUserItem] = useRecoilState(userItemState);
   const [editItem, setEditItem] = useRecoilState(editItemState);
   const [isClient, setIsClient] = useState(false);
@@ -57,9 +57,8 @@ const MyRecord = () => {
         createdAt: doc.data().createdAt,
         displayName: userItem.displayName,
         photoURL: userItem.photoURL,
-        // saved: doc.data().saved,
       }));
-      setRecordList(myRecordData);
+      setMyRecordList(myRecordData);
     });
   }, []);
 
@@ -70,8 +69,8 @@ const MyRecord = () => {
 
   //Record編集処理
   const handleEditMyRecord = (id: string, postId: string) => {
-    const findEditRecord = recordList.find(
-      (record) => record.postId === postId
+    const findEditRecord = myRecordList.find(
+      (myRecord) => myRecord.postId === postId
     );
     setEditItem({ ...editItem, ...findEditRecord });
     router.push(`/${id}/EditRecord/`);
@@ -84,11 +83,7 @@ const MyRecord = () => {
     );
     if (deleteMessage === true) {
       deleteDoc(doc(db, "users", userItem.uid, "records", id));
-      const deleteRecord = recordList.filter((record) => record.id !== id);
-      setRecordList(deleteRecord);
-    } else {
-      return;
-    }
+    } else return;
   };
 
   return (
@@ -107,11 +102,11 @@ const MyRecord = () => {
             boxShadow: 0,
           }}
         >
-          {recordList &&
-            recordList.map((record) => {
+          {myRecordList &&
+            myRecordList.map((myRecord) => {
               return (
                 <Box
-                  key={record.postId}
+                  key={myRecord.postId}
                   sx={{
                     bgcolor: orange[100],
                     maxWidth: 500,
@@ -123,13 +118,13 @@ const MyRecord = () => {
                     avatar={
                       <Avatar
                         sx={{ bgcolor: orange[200], fontSize: 20 }}
-                        src={record.photoURL}
+                        src={myRecord.photoURL}
                       ></Avatar>
                     }
                     titleTypographyProps={{ fontSize: 16 }}
                     subheaderTypographyProps={{ fontSize: 16 }}
-                    title={record.displayName}
-                    subheader={record.createdAt}
+                    title={myRecord.displayName}
+                    subheader={myRecord.createdAt}
                     action={
                       <Box sx={{ mt: 1 }}>
                         <Tooltip title="Edit" placement="bottom-start" arrow>
@@ -137,10 +132,10 @@ const MyRecord = () => {
                             <IconButton
                               sx={{ mr: 2 }}
                               onClick={() =>
-                                handleEditMyRecord(record.id, record.postId)
+                                handleEditMyRecord(myRecord.id, myRecord.postId)
                               }
                               disabled={
-                                userItem.uid === record.uid ? false : true
+                                userItem.uid === myRecord.uid ? false : true
                               }
                             >
                               <EditIcon />
@@ -151,9 +146,9 @@ const MyRecord = () => {
                           <span>
                             <IconButton
                               sx={{ mr: 2 }}
-                              onClick={() => handleDeleteRecord(record.id)}
+                              onClick={() => handleDeleteRecord(myRecord.id)}
                               disabled={
-                                userItem.uid === record.uid ? false : true
+                                userItem.uid === myRecord.uid ? false : true
                               }
                             >
                               <DeleteIcon />
@@ -178,7 +173,7 @@ const MyRecord = () => {
                       color="text.secondary"
                       component="p"
                     >
-                      {record.value}
+                      {myRecord.value}
                     </Typography>
                   </CardContent>
                   <Toolbar />
