@@ -15,7 +15,11 @@ import BookmarkIcon from "@mui/icons-material/Bookmark";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import { green } from "@mui/material/colors";
 import { useRecoilState } from "recoil";
-import { bookmarkListState, userItemState } from "../../constants/atom";
+import {
+  bookmarkListState,
+  recordListState,
+  userItemState,
+} from "../../constants/atom";
 import { useEffect, useState } from "react";
 import { db } from "../../components/firebase";
 import {
@@ -28,6 +32,7 @@ import {
 } from "firebase/firestore";
 
 const Bookmark = () => {
+  const [recordList, setRecordList] = useRecoilState(recordListState);
   const [bookmarkList, setBookmarkList] = useRecoilState(bookmarkListState);
   const [userItem, setUserItem] = useRecoilState(userItemState);
   const [isClient, setIsClient] = useState(false);
@@ -39,18 +44,23 @@ const Bookmark = () => {
       orderBy("timeStamp", "desc")
     );
     onSnapshot(bookmarkRef, (querySnapshot) => {
-      const bookmarkData = querySnapshot.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-        uid: doc.data().uid,
-        postId: doc.data().postId,
-        value: doc.data().value,
-        createdAt: doc.data().createdAt,
-        displayName: doc.data().displayName,
-        photoURL: doc.data().photoURL,
-        saved: doc.data().saved, //bookmarksにsaved:trueすることでbookmarkチェック状態
-      }));
-      setBookmarkList(bookmarkData);
+      const bookmarksData = querySnapshot.docs.map((doc) => {
+        const bookmarkInfo = recordList.find((record) => {
+          return record.uid === doc.data().uid;
+        });
+        return {
+          ...doc.data(),
+          id: doc.id,
+          uid: doc.data().uid,
+          postId: doc.data().postId,
+          value: doc.data().value,
+          createdAt: doc.data().createdAt,
+          displayName: bookmarkInfo!.displayName,
+          photoURL: bookmarkInfo!.photoURL,
+          saved: doc.data().saved, //bookmarksにsaved:trueすることでbookmarkチェック状態
+        };
+      });
+      setBookmarkList(bookmarksData);
     });
   }, []);
 

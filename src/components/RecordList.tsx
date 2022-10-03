@@ -114,8 +114,13 @@ const RecordList = () => {
       "bookmarks",
       postData.postId
     );
+    const { uid, postId, value, createdAt } = postData;
     setDoc(bookmarksRef, {
-      ...postData,
+      uid,
+      postId,
+      value,
+      createdAt,
+      saved: true,
       timeStamp: serverTimestamp(),
     });
   };

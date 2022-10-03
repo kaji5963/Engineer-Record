@@ -7,12 +7,13 @@ import { Box } from "@mui/system";
 import { grey } from "@mui/material/colors";
 import { useRouter } from "next/router";
 import { useRecoilState } from "recoil";
-import { editItemState } from "../../constants/atom";
+import { editItemState, userItemState } from "../../constants/atom";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../components/firebase";
 import { useEffect, useState } from "react";
 
 const EditComment = () => {
+  const [userItem, setUserItem] = useRecoilState(userItemState);
   const [editItem, setEditItem] = useRecoilState(editItemState);
   const [isClient, setIsClient] = useState(false);
   const router = useRouter();
@@ -88,6 +89,7 @@ const EditComment = () => {
               <IconButton
                 sx={{ mr: 4 }}
                 color="primary"
+                disabled={editItem.value === "" ? true : false}
                 onClick={() => handleEditComplete(editItem.id)}
               >
                 <FactCheckIcon fontSize="large" />

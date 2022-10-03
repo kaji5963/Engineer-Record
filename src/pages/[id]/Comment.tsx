@@ -1,7 +1,6 @@
 import {
   Avatar,
   Box,
-  Button,
   Card,
   CardActions,
   CardContent,
@@ -15,14 +14,6 @@ import {
 } from "@mui/material";
 import { blue, red } from "@mui/material/colors";
 import Head from "next/head";
-import ReplyIcon from "@mui/icons-material/Reply";
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
-import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
-import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
-import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
-import CommentIcon from "@mui/icons-material/Comment";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import NavigationIcon from "@mui/icons-material/Send";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -34,6 +25,7 @@ import {
   userItemState,
   commentListState,
   editItemState,
+  recordListState,
 } from "../../constants/atom";
 import { useEffect, useState } from "react";
 import { changeDateFormat } from "../../components/Form";
@@ -51,15 +43,14 @@ import {
 import { db } from "../../components/firebase";
 
 const Comment = () => {
-  const { v4: uuidv4 } = require("uuid");
   const [userItem, setUserItem] = useRecoilState(userItemState);
+  const [recordList, setRecordList] = useRecoilState(recordListState);
   const [commentItem, setCommentItem] = useRecoilState(commentItemState);
   const [commentList, setCommentList] = useRecoilState(commentListState);
   const [editItem, setEditItem] = useRecoilState(editItemState);
   const [isClient, setIsClient] = useState(false);
   const [comment, setComment] = useState({
-    postId: commentItem.postId,
-    commentId: uuidv4(),
+    postId: commentItem.postId, //投稿者のpostId
     value: "",
     createdAt: changeDateFormat(new Date()),
     displayName: userItem.displayName,
@@ -72,56 +63,49 @@ const Comment = () => {
     if (typeof window !== "undefined") setIsClient(true);
   }, []);
 
-  //commentListの取得、commentListの更新処理
+  //firebaseのcommentsからデータ取得、setCommentListで更新処理
   useEffect(() => {
     const commentRef = query(
       collection(db, "comments"),
       where("postId", "==", commentItem.postId),
       orderBy("timeStamp", "desc")
     );
-    onSnapshot(
-      commentRef,
-      (snapshot) =>
-        setCommentList(
-          snapshot.docs.map((doc) => ({
-            ...doc.data(),
-            id: doc.id,
-            uid: doc.data().uid,
-            postId: doc.data().postId,
-            commentId: doc.data().commentId,
-            value: doc.data().value,
-            createdAt: doc.data().createdAt,
-            displayName: doc.data().displayName,
-            photoURL: doc.data().photoURL,
-          }))
-        ),
-      (error) => {
-        alert(error.message);
-      }
-    );
+    onSnapshot(commentRef, (querySnapshot) => {
+      const commentsData = querySnapshot.docs.map((doc) => {
+        const commentInfo = recordList.find((record) => {
+          return record.uid === doc.data().uid;
+        });
+        return {
+          ...doc.data(),
+          id: doc.id,
+          uid: doc.data().uid,
+          postId: doc.data().postId,
+          value: doc.data().value,
+          createdAt: doc.data().createdAt,
+          displayName: commentInfo!.displayName,
+          photoURL: commentInfo!.photoURL,
+        };
+      });
+      setCommentList(commentsData);
+    });
   }, []);
 
   //comment送信処理
   const handleCommentSubmit = () => {
     if (comment.value === "") return;
-    const { postId, commentId, value, createdAt, displayName, photoURL } =
-      comment;
+    const { postId, value, createdAt } = comment;
     //firebaseのサブコレクションに追加処理
     const commentDocRef = collection(db, "comments");
     setDoc(doc(commentDocRef), {
       uid: userItem.uid,
       postId, //投稿者のpostIdとイコール関係
-      commentId,
       value,
       createdAt,
-      displayName,
-      photoURL,
       timeStamp: serverTimestamp(),
     });
     //comment初期化
     setComment({
       postId: commentItem.postId,
-      commentId: uuidv4(),
       value: "",
       createdAt: changeDateFormat(new Date()),
       displayName: userItem.displayName,
@@ -140,14 +124,12 @@ const Comment = () => {
 
   //comment削除処理
   const handleDeleteComment = (id: string) => {
-    const deleteMessage = confirm("削除してもよろしいですか？");
+    const deleteMessage = confirm(
+      `${userItem.displayName}のコメントを削除してもよろしいですか？`
+    );
     if (deleteMessage === true) {
       deleteDoc(doc(db, "comments", id));
-      const deleteRecord = commentList.filter((comment) => comment.id !== id);
-      setCommentList(deleteRecord);
-    } else {
-      return;
-    }
+    } else return;
   };
 
   return (
@@ -251,7 +233,7 @@ const Comment = () => {
             commentList.map((comment) => {
               return (
                 <Box
-                  key={comment.commentId}
+                  key={comment.id}
                   sx={{
                     bgcolor: red[100],
                     maxWidth: 500,

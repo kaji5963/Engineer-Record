@@ -55,7 +55,6 @@ export const RecordItem = ({
     setLikeCount(likeCount + 1);
   };
 
-
   //ブックマークする処理
   const savePost = (recordData: RecordList) => {
     const { id, uid, postId, value, createdAt, displayName, photoURL } =

@@ -14,7 +14,7 @@ export type RecordList = {
   postId: string;
   value: string;
   createdAt: string;
-  displayName: string ;
+  displayName: string;
   photoURL: string;
 };
 
@@ -22,7 +22,6 @@ export type CommentList = {
   uid: string;
   id: string;
   postId: string;
-  commentId: string;
   value: string;
   createdAt: string;
   displayName: string ;
@@ -96,7 +95,7 @@ export const commentListState: RecoilState<CommentList[]> = atom({
   effects_UNSTABLE: [persistAtom],
 });
 
-//コメント時のデータを保持
+//コメント時の投稿者のデータを保持
 export const commentItemState: RecoilState<CommentItem> = atom({
   key: "commentItem",
   default: {},
@@ -116,6 +115,7 @@ export const likeListState: RecoilState<LikeList[]> = atom({
   default: [],
   effects_UNSTABLE: [persistAtom],
 });
+
 //ブックマークをリスト保持
 export const bookmarkListState: RecoilState<BookmarkList[]> = atom({
   key: "bookmarkList",
