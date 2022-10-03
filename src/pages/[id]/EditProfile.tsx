@@ -50,7 +50,6 @@ const EditProfile = () => {
       displayName: userItem.displayName,
       photoURL: userItem.photoURL,
     });
-    // setUserItem({ ...userItem, displayName, photoURL }); いらない処理かな？確認後削除
     router.push("/Top");
   };
 
@@ -190,14 +189,17 @@ const EditProfile = () => {
           </Box>
           <Box sx={{ textAlign: "center", mt: 4 }}>
             <Tooltip title="Complete" placement="bottom-start" arrow>
-              <IconButton
-                sx={{ mr: 4 }}
-                color="primary"
-                type="submit"
-                onClick={() => router.push("/Top")}
-              >
-                <FactCheckIcon fontSize="large" />
-              </IconButton>
+              <span>
+                <IconButton
+                  sx={{ mr: 4 }}
+                  color="primary"
+                  type="submit"
+                  onClick={() => router.push("/Top")}
+                  disabled={userItem.displayName === "" ? true : false}
+                >
+                  <FactCheckIcon fontSize="large" />
+                </IconButton>
+              </span>
             </Tooltip>
 
             <Tooltip title="Back" placement="bottom-start" arrow>

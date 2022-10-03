@@ -28,6 +28,7 @@ import { db } from "../../components/firebase";
 import {
   bookmarkListState,
   editItemState,
+  RecordList,
   recordListState,
   userItemState,
 } from "../../constants/atom";
@@ -54,9 +55,9 @@ const MyRecord = () => {
         postId: doc.data().postId,
         value: doc.data().value,
         createdAt: doc.data().createdAt,
-        displayName: doc.data().displayName,
-        photoURL: doc.data().photoURL,
-        saved: doc.data().saved,
+        displayName: userItem.displayName,
+        photoURL: userItem.photoURL,
+        // saved: doc.data().saved,
       }));
       setRecordList(myRecordData);
     });
@@ -106,84 +107,84 @@ const MyRecord = () => {
             boxShadow: 0,
           }}
         >
-          {recordList.map((record) => {
-            // if (recordList.postId !== record.postId) return; //条件式以外のものは表示しない
-            return (
-              <Box
-                key={record.postId}
-                sx={{
-                  bgcolor: orange[100],
-                  maxWidth: 500,
-                  mb: 4,
-                  borderRadius: 5,
-                }}
-              >
-                <CardHeader
-                  avatar={
-                    <Avatar
-                      sx={{ bgcolor: orange[200], fontSize: 20 }}
-                      src={record.photoURL}
-                    ></Avatar>
-                  }
-                  titleTypographyProps={{ fontSize: 16 }}
-                  subheaderTypographyProps={{ fontSize: 16 }}
-                  title={record.displayName}
-                  subheader={record.createdAt}
-                  action={
-                    <Box sx={{ mt: 1 }}>
-                      <Tooltip title="Edit" placement="bottom-start" arrow>
-                        <span>
-                          <IconButton
-                            sx={{ mr: 2 }}
-                            onClick={() =>
-                              handleEditMyRecord(record.id, record.postId)
-                            }
-                            disabled={
-                              userItem.uid === record.uid ? false : true
-                            }
-                          >
-                            <EditIcon />
-                          </IconButton>
-                        </span>
-                      </Tooltip>
-                      <Tooltip title="Delete" placement="bottom-start" arrow>
-                        <span>
-                          <IconButton
-                            sx={{ mr: 2 }}
-                            onClick={() => handleDeleteRecord(record.id)}
-                            disabled={
-                              userItem.uid === record.uid ? false : true
-                            }
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                        </span>
-                      </Tooltip>
-                    </Box>
-                  }
-                />
-                <CardContent
+          {recordList &&
+            recordList.map((record) => {
+              return (
+                <Box
+                  key={record.postId}
                   sx={{
-                    bgcolor: orange[50],
+                    bgcolor: orange[100],
+                    maxWidth: 500,
+                    mb: 4,
+                    borderRadius: 5,
                   }}
                 >
-                  <Typography
+                  <CardHeader
+                    avatar={
+                      <Avatar
+                        sx={{ bgcolor: orange[200], fontSize: 20 }}
+                        src={record.photoURL}
+                      ></Avatar>
+                    }
+                    titleTypographyProps={{ fontSize: 16 }}
+                    subheaderTypographyProps={{ fontSize: 16 }}
+                    title={record.displayName}
+                    subheader={record.createdAt}
+                    action={
+                      <Box sx={{ mt: 1 }}>
+                        <Tooltip title="Edit" placement="bottom-start" arrow>
+                          <span>
+                            <IconButton
+                              sx={{ mr: 2 }}
+                              onClick={() =>
+                                handleEditMyRecord(record.id, record.postId)
+                              }
+                              disabled={
+                                userItem.uid === record.uid ? false : true
+                              }
+                            >
+                              <EditIcon />
+                            </IconButton>
+                          </span>
+                        </Tooltip>
+                        <Tooltip title="Delete" placement="bottom-start" arrow>
+                          <span>
+                            <IconButton
+                              sx={{ mr: 2 }}
+                              onClick={() => handleDeleteRecord(record.id)}
+                              disabled={
+                                userItem.uid === record.uid ? false : true
+                              }
+                            >
+                              <DeleteIcon />
+                            </IconButton>
+                          </span>
+                        </Tooltip>
+                      </Box>
+                    }
+                  />
+                  <CardContent
                     sx={{
-                      minHeight: 100,
-                      whiteSpace: "pre-line",
-                      fontSize: 18,
+                      bgcolor: orange[50],
                     }}
-                    variant="body2"
-                    color="text.secondary"
-                    component="p"
                   >
-                    {record.value}
-                  </Typography>
-                </CardContent>
-                <Toolbar />
-              </Box>
-            );
-          })}
+                    <Typography
+                      sx={{
+                        minHeight: 100,
+                        whiteSpace: "pre-line",
+                        fontSize: 18,
+                      }}
+                      variant="body2"
+                      color="text.secondary"
+                      component="p"
+                    >
+                      {record.value}
+                    </Typography>
+                  </CardContent>
+                  <Toolbar />
+                </Box>
+              );
+            })}
         </Card>
       )}
     </Layout>

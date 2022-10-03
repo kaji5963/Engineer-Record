@@ -76,6 +76,7 @@ const EditRecord = () => {
             <IconButton
               sx={{ mr: 4 }}
               color="primary"
+              disabled={editItem.value === "" ? true : false}
               onClick={() => handleEditComplete(editItem.id)}
             >
               <FactCheckIcon fontSize="large" />

@@ -2,12 +2,9 @@ import { Card, Stack, Pagination } from "@mui/material";
 import { useRecoilState } from "recoil";
 import {
   commentItemState,
-  commentListState,
   recordListState,
   userItemState,
   editItemState,
-  bookmarkItemState,
-  bookmarkListState,
   RecordList,
 } from "../constants/atom";
 import { useEffect, useMemo, useState } from "react";
@@ -21,77 +18,75 @@ import {
   query,
   serverTimestamp,
   setDoc,
+  Timestamp,
 } from "firebase/firestore";
 import { db } from "./firebase";
-import { blue } from "@mui/material/colors";
-// import FavoriteIcon from "@mui/icons-material/Favorite";
-// import ShareIcon from "@mui/icons-material/Share";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
-import ThumbUpIcon from "@mui/icons-material/ThumbUp";
-import CommentIcon from "@mui/icons-material/Comment";
-
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
-import BookmarkIcon from "@mui/icons-material/Bookmark";
-import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
-import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
-import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import { useRouter } from "next/router";
 import { RecordItem } from "./RecordItem";
+
+type User = {
+  displayName: string;
+  photoURL: string;
+  timeStamp: Timestamp;
+  uid: string;
+}[];
 
 const RecordList = () => {
   const [recordList, setRecordList] = useRecoilState(recordListState);
   const [userItem, setUserItem] = useRecoilState(userItemState);
-  const [commentList, setCommentList] = useRecoilState(commentListState);
   const [commentItem, setCommentItem] = useRecoilState(commentItemState);
   const [editItem, setEditItem] = useRecoilState(editItemState);
-  const [bookmarkItem, setBookmarkItem] = useRecoilState(bookmarkItemState);
-  const [bookmarkList, setBookmarkList] = useRecoilState(bookmarkListState);
-  const [isClient, setIsClient] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [userData, setUserData] = useState<User>();
   const router = useRouter();
 
-  //firebaseからリアルタイムでデータを取得（firebaseの設定 collectionGroupをfirebase側で手動設定し降順）
+  //マウント時にfirebaseからusersのデータを取得、userDataに格納（１番目に動く）
+  useEffect(() => {
+    (async () => {
+      const usersRef = query(collection(db, "users"));
+      onSnapshot(usersRef, (querySnapshot) => {
+        Promise.all(
+          querySnapshot.docs.map(async (doc) => ({
+            ...doc.data(),
+            displayName: doc.data().displayName,
+            photoURL: doc.data().photoURL,
+            timeStamp: doc.data().timestamp,
+            uid: doc.id,
+          }))
+        ).then((data) => setUserData(data));
+      });
+    })();
+  }, [userItem]);
+
+  //マウント時にfirebaseからrecordsのデータを取得、setRecordListに格納し画面表示（２番目に動く）
+  //（firebaseの設定 collectionGroupをfirebase側で手動設定し降順）
   useEffect(() => {
     const recordsRef = query(
       collectionGroup(db, "records"),
       orderBy("timeStamp", "desc")
     );
+    if (!userData) return;
     onSnapshot(recordsRef, (querySnapshot) => {
-      const recordsData = querySnapshot.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-        uid: doc.data().uid,
-        postId: doc.data().postId,
-        value: doc.data().value,
-        createdAt: doc.data().createdAt,
-        displayName: doc.data().displayName,
-        photoURL: doc.data().photoURL,
-        saved: doc.data().saved,
-      }));
+      const recordsData = querySnapshot.docs.map((doc) => {
+        const userInfo = userData.find((user) => {
+          return user.uid === doc.data().uid
+        });
+        // console.log(userInfo!.displayName, doc.data().displayName);
+        return {
+          ...doc.data(),
+          id: doc.id,
+          uid: doc.data().uid,
+          postId: doc.data().postId,
+          value: doc.data().value,
+          createdAt: doc.data().createdAt,
+          displayName: userInfo!.displayName,
+          photoURL: userInfo!.photoURL,
+        };
+      });
       setRecordList(recordsData);
     });
-  }, []);
-
-  //最新のuser情報を取得（Profile更新に対応）
-  useEffect(() => {
-    const usersRef = query(collection(db, "users"));
-    onSnapshot(usersRef, (querySnapshot) => {
-      const userData = querySnapshot.docs.map((doc) => ({
-        ...doc.data(),
-        displayName: doc.data().displayName,
-        photoURL: doc.data().photoURL,
-      }));
-      // console.log(userData);
-      
-    });
-  },[])
-
-  //Hydrate Error対策
-  useEffect(() => {
-    if (typeof window !== "undefined") setIsClient(true);
-  }, []);
+    // console.log(userItem);
+  }, [userData]);
 
   //ページネーション関数結果をuseMemoでメモ化
   const paginationList = useMemo(() => {
@@ -102,7 +97,9 @@ const RecordList = () => {
 
   //特定のコメントボタン押すと、そのデータをコメントページに渡す
   const handleComment = (id: string, postId: string) => {
-    const findComment = recordList.find((record) => record.postId === postId);
+    const findComment = recordList.find(
+      (record) => record.postId === postId
+    );
     setCommentItem({ ...commentItem, ...findComment });
     router.push(`/${id}/Comment`);
   };
@@ -144,11 +141,7 @@ const RecordList = () => {
     );
     if (deleteMessage === true) {
       deleteDoc(doc(db, "users", userItem.uid, "records", id));
-      const deleteRecord = recordList.filter((record) => record.id !== id);
-      setRecordList(deleteRecord);
-    } else {
-      return;
-    }
+    } else return;
   };
 
   return (
@@ -164,18 +157,17 @@ const RecordList = () => {
           onChange={(e, currentPage: number) => setCurrentPage(currentPage)}
         />
       </Stack>
-
-      {isClient && (
-        <Card
-          sx={{
-            maxWidth: 500,
-            display: "flex",
-            flexDirection: "column",
-            mx: "auto",
-            boxShadow: 0,
-          }}
-        >
-          {paginationList.map((record) => {
+      <Card
+        sx={{
+          maxWidth: 500,
+          display: "flex",
+          flexDirection: "column",
+          mx: "auto",
+          boxShadow: 0,
+        }}
+      >
+        {paginationList &&
+          paginationList.map((record) => {
             return (
               <RecordItem
                 record={record}
@@ -189,8 +181,7 @@ const RecordList = () => {
               />
             );
           })}
-        </Card>
-      )}
+      </Card>
     </>
   );
 };

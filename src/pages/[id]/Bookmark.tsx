@@ -48,7 +48,7 @@ const Bookmark = () => {
         createdAt: doc.data().createdAt,
         displayName: doc.data().displayName,
         photoURL: doc.data().photoURL,
-        saved: !doc.data().saved, //bookmarksのsavedがfalseが入るので反転して表示をtrueに置き換える
+        saved: doc.data().saved, //bookmarksにsaved:trueすることでbookmarkチェック状態
       }));
       setBookmarkList(bookmarkData);
     });
@@ -80,73 +80,81 @@ const Bookmark = () => {
             boxShadow: 0,
           }}
         >
-          {bookmarkList.map((bookmark) => {
-            // if (bookmark.postId !== bookmark.postId) return; //条件式以外のものは表示しない
-            return (
-              <Box
-                key={bookmark.postId}
-                sx={{
-                  bgcolor: green[100],
-                  maxWidth: 500,
-                  mb: 4,
-                  borderRadius: 5,
-                }}
-              >
-                <CardHeader
-                  avatar={
-                    <Avatar
-                      sx={{ bgcolor: green[200], fontSize: 20 }}
-                      src={bookmark.photoURL}
-                    ></Avatar>
-                  }
-                  action={
-                    <Box sx={{ mr: 3, mt: 1 }}>
-                      {bookmark.saved === true ? (
-                        <Tooltip title="Bookmark" placement="right-start" arrow>
-                          <IconButton
-                            onClick={() =>
-                              handleRemoveBookmark(bookmark.postId)
-                            }
-                          >
-                            <BookmarkIcon />
-                          </IconButton>
-                        </Tooltip>
-                      ) : (
-                        <Tooltip title="Bookmark" placement="right-start" arrow>
-                          <IconButton>
-                            <BookmarkBorderIcon />
-                          </IconButton>
-                        </Tooltip>
-                      )}
-                    </Box>
-                  }
-                  titleTypographyProps={{ fontSize: 16 }}
-                  subheaderTypographyProps={{ fontSize: 16 }}
-                  title={bookmark.displayName}
-                  subheader={bookmark.createdAt}
-                />
-                <CardContent
+          {bookmarkList &&
+            bookmarkList.map((bookmark) => {
+              return (
+                <Box
+                  key={bookmark.postId}
                   sx={{
-                    bgcolor: green[50],
+                    bgcolor: green[100],
+                    maxWidth: 500,
+                    mb: 4,
+                    borderRadius: 5,
                   }}
                 >
-                  <Typography
+                  <CardHeader
+                    avatar={
+                      <Avatar
+                        sx={{ bgcolor: green[200], fontSize: 20 }}
+                        src={bookmark.photoURL}
+                      ></Avatar>
+                    }
+                    action={
+                      <Box sx={{ mr: 3, mt: 1 }}>
+                        {bookmark.saved === true ? (
+                          <Tooltip
+                            title="Bookmark"
+                            placement="right-start"
+                            arrow
+                          >
+                            <IconButton
+                              onClick={() =>
+                                handleRemoveBookmark(bookmark.postId)
+                              }
+                            >
+                              <BookmarkIcon />
+                            </IconButton>
+                          </Tooltip>
+                        ) : (
+                          <Tooltip
+                            title="Bookmark"
+                            placement="right-start"
+                            arrow
+                          >
+                            <IconButton>
+                              <BookmarkBorderIcon />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                      </Box>
+                    }
+                    titleTypographyProps={{ fontSize: 16 }}
+                    subheaderTypographyProps={{ fontSize: 16 }}
+                    title={bookmark.displayName}
+                    subheader={bookmark.createdAt}
+                  />
+                  <CardContent
                     sx={{
-                      minHeight: 100,
-                      whiteSpace: "pre-line",
-                      fontSize: 18,
+                      bgcolor: green[50],
                     }}
-                    variant="body2"
-                    color="text.secondary"
-                    component="p"
                   >
-                    {bookmark.value}
-                  </Typography>
-                </CardContent>
-                <Toolbar />
-              </Box>
-            );
-          })}
+                    <Typography
+                      sx={{
+                        minHeight: 100,
+                        whiteSpace: "pre-line",
+                        fontSize: 18,
+                      }}
+                      variant="body2"
+                      color="text.secondary"
+                      component="p"
+                    >
+                      {bookmark.value}
+                    </Typography>
+                  </CardContent>
+                  <Toolbar />
+                </Box>
+              );
+            })}
         </Card>
       )}
     </Layout>

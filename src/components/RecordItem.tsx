@@ -18,7 +18,13 @@ import { blue } from "@mui/material/colors";
 import React, { useEffect, useState } from "react";
 import { query, collection, onSnapshot } from "firebase/firestore";
 import { db } from "./firebase";
-import { RecordList, UserData } from "../constants/atom";
+import {
+  likeListState,
+  RecordList,
+  recordListState,
+  UserData,
+} from "../constants/atom";
+import { useRecoilState } from "recoil";
 
 type Props = {
   record: RecordList;
@@ -40,10 +46,19 @@ export const RecordItem = ({
   userItem,
 }: Props) => {
   const [saved, setSaved] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
+  const [recordList, setRecordList] = useRecoilState(recordListState);
+  const [likeList, setLikeList] = useRecoilState(likeListState);
+
+  //いいねのカウントを+1
+  const handleLikeCount = () => {
+    setLikeCount(likeCount + 1);
+  };
+
 
   //ブックマークする処理
   const savePost = (recordData: RecordList) => {
-    const { id, uid, postId, value, createdAt, displayName, photoURL, saved } =
+    const { id, uid, postId, value, createdAt, displayName, photoURL } =
       recordData;
     setSaved(true);
     const savedPosts = {
@@ -54,7 +69,7 @@ export const RecordItem = ({
       createdAt,
       displayName,
       photoURL,
-      saved,
+      saved: true, //クライアント側のブックマーク状態を維持
     };
     // RecordListのhandleSavedBookmark関数へsavedPostsを渡して実行
     handleSavedBookmark(savedPosts);
@@ -75,7 +90,7 @@ export const RecordItem = ({
       querySnapshot.docs.forEach((doc) => {
         const postId = doc.data().postId;
         //bookmarksに格納されているpostIdとRecordListから渡されたrecordのpostIdを比較
-        //上記がtrueであればsetSavedを反転しブックマークをチェック状態
+        //上記がtrueのものだけsetSavedを反転しブックマークをチェック状態
         if (postId === record.postId) {
           setSaved(true);
         }
@@ -159,8 +174,9 @@ export const RecordItem = ({
         </Tooltip>
 
         <Tooltip title="Good" placement="right-start" arrow>
-          <IconButton>
+          <IconButton onClick={() => handleLikeCount}>
             <ThumbUpOffAltIcon />
+            <span style={{ fontSize: 20, marginLeft: 3 }}>{likeCount}</span>
           </IconButton>
         </Tooltip>
 

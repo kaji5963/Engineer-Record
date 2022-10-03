@@ -32,13 +32,13 @@ const Form = () => {
     createdAt: changeDateFormat(new Date()),
     displayName: userItem.displayName,
     photoURL: userItem.photoURL,
-    saved: false,
+    // saved: false,
   });
 
   //学習記録を投稿する機能
   const handleAddRecord = async () => {
     if (inputValue.value === "") return;
-    const { postId, value, createdAt, displayName, photoURL, saved } =
+    const { postId, value, createdAt, displayName, photoURL } =
       inputValue;
     const user = auth.currentUser!;
 
@@ -49,9 +49,10 @@ const Form = () => {
       postId,
       value,
       createdAt,
-      displayName,
-      photoURL,
-      saved,
+      // displayName,
+      // photoURL,
+      // saved,
+      // likeCount: 0,
       timeStamp: serverTimestamp(),
     });
     //textFieldの初期化処理
@@ -61,7 +62,7 @@ const Form = () => {
       createdAt: changeDateFormat(new Date()),
       displayName: userItem.displayName,
       photoURL: userItem.photoURL,
-      saved: false,
+      // saved: false,
     });
   };
 
@@ -132,6 +133,7 @@ const Form = () => {
             variant="contained"
             endIcon={<SendIcon />}
             onClick={handleAddRecord}
+            disabled={inputValue.value === "" ? true : false}
           >
             Record
           </Button>

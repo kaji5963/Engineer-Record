@@ -4,7 +4,7 @@ import { recoilPersist } from "recoil-persist";
 export type UserData = {
   email: string;
   uid: string;
-  displayName: string | null;
+  displayName: string ;
   photoURL: string;
 };
 
@@ -14,9 +14,8 @@ export type RecordList = {
   postId: string;
   value: string;
   createdAt: string;
-  displayName: string | null;
+  displayName: string ;
   photoURL: string;
-  saved: boolean;
 };
 
 export type CommentList = {
@@ -26,7 +25,7 @@ export type CommentList = {
   commentId: string;
   value: string;
   createdAt: string;
-  displayName: string | null;
+  displayName: string ;
   photoURL: string;
 };
 
@@ -36,9 +35,8 @@ export type CommentItem = {
   postId: string;
   value: string;
   createdAt: string;
-  displayName: string | null;
+  displayName: string ;
   photoURL: string;
-  saved: boolean;
 };
 
 export type EditItem = {
@@ -47,20 +45,18 @@ export type EditItem = {
   postId: string;
   value: string;
   createdAt: string;
-  displayName: string | null;
+  displayName: string ;
   photoURL: string;
-  saved: boolean;
 };
 
-export type BookmarkItem = {
+export type LikeList = {
   uid: string;
   id: string;
   postId: string;
   value: string;
   createdAt: string;
-  displayName: string | null;
+  displayName: string ;
   photoURL: string;
-  saved: boolean;
 };
 
 export type BookmarkList = {
@@ -69,7 +65,7 @@ export type BookmarkList = {
   postId: string;
   value: string;
   createdAt: string;
-  displayName: string | null;
+  displayName: string ;
   photoURL: string;
   saved: boolean;
 };
@@ -114,9 +110,10 @@ export const editItemState: RecoilState<EditItem> = atom({
   effects_UNSTABLE: [persistAtom],
 });
 
-export const bookmarkItemState: RecoilState<BookmarkItem> = atom({
-  key: "bookmarkItem",
-  default: {},
+//goodのデータを保持
+export const likeListState: RecoilState<LikeList[]> = atom({
+  key: "likeList",
+  default: [],
   effects_UNSTABLE: [persistAtom],
 });
 //ブックマークをリスト保持
