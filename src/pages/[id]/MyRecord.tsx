@@ -55,6 +55,7 @@ const MyRecord = () => {
         postId: doc.data().postId,
         value: doc.data().value,
         createdAt: doc.data().createdAt,
+        goodCount: doc.data().goodCount,
         displayName: userItem.displayName,
         photoURL: userItem.photoURL,
       }));

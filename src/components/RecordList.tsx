@@ -7,6 +7,7 @@ import {
   editItemState,
   RecordList,
   bookmarkListState,
+  goodListState,
 } from "../constants/atom";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -40,7 +41,7 @@ const RecordList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [userData, setUserData] = useState<User>();
   const router = useRouter();
-  const [bookmarkList, setBookmarkList] = useRecoilState(bookmarkListState);
+  const [goodList, setGoodList] = useRecoilState(goodListState);
 
   //マウント時にfirebaseからusersのデータを取得、userDataに格納（１番目に動く）
   useEffect(() => {

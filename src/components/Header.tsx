@@ -6,6 +6,7 @@ import { userItemState } from "../constants/atom";
 import HomeIcon from "@mui/icons-material/Home";
 import ComputerIcon from "@mui/icons-material/Computer";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
+import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import IconButton from "@mui/material/IconButton";
@@ -49,6 +50,11 @@ const Header = (props: Props) => {
       title: "MyRecord",
       icon: <AssignmentIcon />,
       href: `/${userItem.uid}/MyRecord`,
+    },
+    {
+      title: "Good",
+      icon: <ThumbUpAltIcon />,
+      href: `/${userItem.uid}/Good`,
     },
     {
       title: 'Bookmark',
@@ -173,6 +179,17 @@ const Header = (props: Props) => {
               onClick={() => router.push(`/${userItem.uid}/MyRecord`)}
             >
               MyRecord
+            </Button>
+            <Button
+              sx={{
+                color: "#fff",
+                fontSize: 18,
+                textTransform: "none",
+                ":hover": { color: grey[400] },
+              }}
+              onClick={() => router.push(`/${userItem.uid}/Good`)}
+            >
+              Good
             </Button>
             <Button
               sx={{
