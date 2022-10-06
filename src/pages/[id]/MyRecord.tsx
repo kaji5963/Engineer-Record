@@ -146,7 +146,7 @@ const MyRecord = () => {
                       subheader={myRecord.createdAt}
                       action={
                         <Box sx={{ mt: 1 }}>
-                          <Tooltip title="Edit" placement="bottom-start" arrow>
+                          <Tooltip title="Edit" placement="top-start" arrow>
                             <span>
                               <IconButton
                                 sx={{ mr: 2 }}
@@ -156,26 +156,16 @@ const MyRecord = () => {
                                     myRecord.postId
                                   )
                                 }
-                                disabled={
-                                  userItem.uid === myRecord.uid ? false : true
-                                }
                               >
                                 <EditIcon />
                               </IconButton>
                             </span>
                           </Tooltip>
-                          <Tooltip
-                            title="Delete"
-                            placement="bottom-start"
-                            arrow
-                          >
+                          <Tooltip title="Delete" placement="top-start" arrow>
                             <span>
                               <IconButton
                                 sx={{ mr: 2 }}
                                 onClick={() => handleDeleteRecord(myRecord.id)}
-                                disabled={
-                                  userItem.uid === myRecord.uid ? false : true
-                                }
                               >
                                 <DeleteIcon />
                               </IconButton>

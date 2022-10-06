@@ -132,12 +132,8 @@ const Bookmark = () => {
                       }
                       action={
                         <Box sx={{ mr: 3, mt: 1 }}>
-                          {bookmark.saved === true ? (
-                            <Tooltip
-                              title="Bookmark"
-                              placement="right-start"
-                              arrow
-                            >
+                          <Tooltip title="Bookmark" placement="top-start" arrow>
+                            <span>
                               <IconButton
                                 onClick={() =>
                                   handleRemoveBookmark(bookmark.postId)
@@ -145,18 +141,8 @@ const Bookmark = () => {
                               >
                                 <BookmarkIcon />
                               </IconButton>
-                            </Tooltip>
-                          ) : (
-                            <Tooltip
-                              title="Bookmark"
-                              placement="right-start"
-                              arrow
-                            >
-                              <IconButton>
-                                <BookmarkBorderIcon />
-                              </IconButton>
-                            </Tooltip>
-                          )}
+                            </span>
+                          </Tooltip>
                         </Box>
                       }
                       titleTypographyProps={{ fontSize: 16 }}

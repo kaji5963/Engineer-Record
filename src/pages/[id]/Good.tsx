@@ -135,30 +135,16 @@ const Good = () => {
                       subheader={good.createdAt}
                       action={
                         <Box sx={{ mr: 3, mt: 1 }}>
-                          {good.goodCount > 0 ? (
-                            <Tooltip
-                              title="Bookmark"
-                              placement="right-start"
-                              arrow
-                            >
+                          <Tooltip title="Good" placement="top-start" arrow>
+                            <span>
                               <IconButton
                                 sx={{ color: red[300] }}
                                 onClick={() => handleRemoveGoods(good.postId)}
                               >
                                 <ThumbUpAltIcon />
                               </IconButton>
-                            </Tooltip>
-                          ) : (
-                            <Tooltip
-                              title="Bookmark"
-                              placement="right-start"
-                              arrow
-                            >
-                              <IconButton>
-                                <ThumbUpOffAltIcon />
-                              </IconButton>
-                            </Tooltip>
-                          )}
+                            </span>
+                          </Tooltip>
                         </Box>
                       }
                     />

@@ -4,7 +4,6 @@ import {
   Avatar,
   Box,
   Card,
-  CardActions,
   CardContent,
   CardHeader,
   IconButton,
@@ -13,10 +12,14 @@ import {
   Tooltip,
   Grid,
   Button,
+  Toolbar,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
+import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
+
 import { blue, grey, red } from "@mui/material/colors";
 import { useRouter } from "next/router";
 import { useRecoilState } from "recoil";
@@ -117,7 +120,7 @@ const Comment = () => {
   };
 
   //comment編集処理
-  const handleEditRecord = (id: string, postId: string) => {
+  const handleEditComment = (id: string, postId: string) => {
     const findEditRecord = commentList.find(
       (comment) => comment.postId === postId
     );
@@ -158,7 +161,7 @@ const Comment = () => {
                   sx={{
                     bgcolor: blue[100],
                     maxWidth: 500,
-                    mb: 3,
+                    mb: 4,
                     borderRadius: 5,
                   }}
                 >
@@ -192,7 +195,7 @@ const Comment = () => {
                       {commentItem.value}
                     </Typography>
                   </CardContent>
-                  <Box sx={{ height: 57 }} />
+                  <Toolbar />
                 </Box>
               </Card>
 
@@ -284,6 +287,51 @@ const Comment = () => {
                           subheaderTypographyProps={{ fontSize: 16 }}
                           title={comment.displayName}
                           subheader={comment.createdAt}
+                          action={
+                            <Box sx={{ mt: 1 }}>
+                              <Tooltip title="Edit" placement="top-start" arrow>
+                                <span>
+                                  <IconButton
+                                    sx={{ mr: 2 }}
+                                    onClick={() =>
+                                      handleEditComment(
+                                        comment.id,
+                                        comment.postId
+                                      )
+                                    }
+                                    disabled={
+                                      userItem.uid === comment.uid
+                                        ? false
+                                        : true
+                                    }
+                                  >
+                                    <EditIcon />
+                                  </IconButton>
+                                </span>
+                              </Tooltip>
+                              <Tooltip
+                                title="Delete"
+                                placement="top-start"
+                                arrow
+                              >
+                                <span>
+                                  <IconButton
+                                    sx={{ mr: 2 }}
+                                    onClick={() =>
+                                      handleDeleteComment(comment.id)
+                                    }
+                                    disabled={
+                                      userItem.uid === comment.uid
+                                        ? false
+                                        : true
+                                    }
+                                  >
+                                    <DeleteIcon />
+                                  </IconButton>
+                                </span>
+                              </Tooltip>
+                            </Box>
+                          }
                         />
                         <CardContent
                           sx={{
@@ -303,40 +351,7 @@ const Comment = () => {
                             {comment.value}
                           </Typography>
                         </CardContent>
-
-                        <CardActions
-                          sx={{
-                            display: "flex",
-                            justifyContent: "space-around",
-                          }}
-                        >
-                          <Tooltip title="Edit" placement="right-start" arrow>
-                            <span>
-                              <IconButton
-                                onClick={() =>
-                                  handleEditRecord(comment.id, comment.postId)
-                                }
-                                disabled={
-                                  userItem.uid === comment.uid ? false : true
-                                }
-                              >
-                                <EditIcon />
-                              </IconButton>
-                            </span>
-                          </Tooltip>
-                          <Tooltip title="Delete" placement="right-start" arrow>
-                            <span>
-                              <IconButton
-                                onClick={() => handleDeleteComment(comment.id)}
-                                disabled={
-                                  userItem.uid === comment.uid ? false : true
-                                }
-                              >
-                                <DeleteIcon />
-                              </IconButton>
-                            </span>
-                          </Tooltip>
-                        </CardActions>
+                        <Toolbar />
                       </Box>
                     );
                   })}
