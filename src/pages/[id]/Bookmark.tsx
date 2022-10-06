@@ -10,6 +10,7 @@ import {
   IconButton,
   Tooltip,
   Toolbar,
+  Alert,
 } from "@mui/material";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
@@ -18,6 +19,7 @@ import { useRecoilState } from "recoil";
 import {
   bookmarkListState,
   recordListState,
+  userDataState,
   userItemState,
 } from "../../constants/atom";
 import { useEffect, useState } from "react";
@@ -32,9 +34,9 @@ import {
 } from "firebase/firestore";
 
 const Bookmark = () => {
-  const [recordList, setRecordList] = useRecoilState(recordListState);
   const [bookmarkList, setBookmarkList] = useRecoilState(bookmarkListState);
   const [userItem, setUserItem] = useRecoilState(userItemState);
+  const [userData, setUserData] = useRecoilState(userDataState);
   const [isClient, setIsClient] = useState(false);
 
   //firebaseのbookmarksからデータ取得
@@ -43,9 +45,10 @@ const Bookmark = () => {
       collection(db, "users", userItem.uid, "bookmarks"),
       orderBy("timeStamp", "desc")
     );
+    if (!userData) return;
     onSnapshot(bookmarkRef, (querySnapshot) => {
       const bookmarksData = querySnapshot.docs.map((doc) => {
-        const bookmarkInfo = recordList.find((record) => {
+        const bookmarkInfo = userData.find((record) => {
           return record.uid === doc.data().uid;
         });
         return {
@@ -55,15 +58,15 @@ const Bookmark = () => {
           postId: doc.data().postId,
           value: doc.data().value,
           createdAt: doc.data().createdAt,
-          displayName: bookmarkInfo!.displayName, //bookmarkページが空の状態確認後に投稿してブックマークするとundefinedエラー出る
+          displayName: bookmarkInfo!.displayName,
           photoURL: bookmarkInfo!.photoURL,
-          saved: doc.data().saved, //bookmarksにsaved:trueすることでbookmarkチェック状態
+          saved: doc.data().saved,
         };
       });
       setBookmarkList(bookmarksData);
     });
   }, []);
-  
+
   //Hydrate Error対策
   useEffect(() => {
     if (typeof window !== "undefined") setIsClient(true);
@@ -81,91 +84,110 @@ const Bookmark = () => {
       </Head>
 
       {isClient && (
-        <Card
-          sx={{
-            maxWidth: 500,
-            display: "flex",
-            flexDirection: "column",
-            mx: "auto",
-            boxShadow: 0,
-          }}
-        >
-          {bookmarkList &&
-            bookmarkList.map((bookmark) => {
-              return (
-                <Box
-                  key={bookmark.postId}
-                  sx={{
-                    bgcolor: green[100],
-                    maxWidth: 500,
-                    mb: 4,
-                    borderRadius: 5,
-                  }}
-                >
-                  <CardHeader
-                    avatar={
-                      <Avatar
-                        sx={{ bgcolor: green[200], fontSize: 20 }}
-                        src={bookmark.photoURL}
-                      ></Avatar>
-                    }
-                    action={
-                      <Box sx={{ mr: 3, mt: 1 }}>
-                        {bookmark.saved === true ? (
-                          <Tooltip
-                            title="Bookmark"
-                            placement="right-start"
-                            arrow
-                          >
-                            <IconButton
-                              onClick={() =>
-                                handleRemoveBookmark(bookmark.postId)
-                              }
-                            >
-                              <BookmarkIcon />
-                            </IconButton>
-                          </Tooltip>
-                        ) : (
-                          <Tooltip
-                            title="Bookmark"
-                            placement="right-start"
-                            arrow
-                          >
-                            <IconButton>
-                              <BookmarkBorderIcon />
-                            </IconButton>
-                          </Tooltip>
-                        )}
-                      </Box>
-                    }
-                    titleTypographyProps={{ fontSize: 16 }}
-                    subheaderTypographyProps={{ fontSize: 16 }}
-                    title={bookmark.displayName}
-                    subheader={bookmark.createdAt}
-                  />
-                  <CardContent
+        <>
+          {bookmarkList.length === 0 && (
+            <Alert
+              sx={{
+                maxWidth: 300,
+                height: 60,
+                mx: "auto",
+                textAlign: "center",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                fontSize: 18,
+              }}
+              severity="info"
+            >
+              Bookmarkした投稿がありません
+            </Alert>
+          )}
+          <Card
+            sx={{
+              maxWidth: 500,
+              display: "flex",
+              flexDirection: "column",
+              mx: "auto",
+              boxShadow: 0,
+            }}
+          >
+            {bookmarkList.length > 0 &&
+              bookmarkList.map((bookmark) => {
+                return (
+                  <Box
+                    key={bookmark.postId}
                     sx={{
-                      bgcolor: green[50],
+                      bgcolor: green[100],
+                      maxWidth: 500,
+                      mb: 4,
+                      borderRadius: 5,
                     }}
                   >
-                    <Typography
+                    <CardHeader
+                      avatar={
+                        <Avatar
+                          sx={{ bgcolor: green[200], fontSize: 20 }}
+                          src={bookmark.photoURL}
+                        ></Avatar>
+                      }
+                      action={
+                        <Box sx={{ mr: 3, mt: 1 }}>
+                          {bookmark.saved === true ? (
+                            <Tooltip
+                              title="Bookmark"
+                              placement="right-start"
+                              arrow
+                            >
+                              <IconButton
+                                onClick={() =>
+                                  handleRemoveBookmark(bookmark.postId)
+                                }
+                              >
+                                <BookmarkIcon />
+                              </IconButton>
+                            </Tooltip>
+                          ) : (
+                            <Tooltip
+                              title="Bookmark"
+                              placement="right-start"
+                              arrow
+                            >
+                              <IconButton>
+                                <BookmarkBorderIcon />
+                              </IconButton>
+                            </Tooltip>
+                          )}
+                        </Box>
+                      }
+                      titleTypographyProps={{ fontSize: 16 }}
+                      subheaderTypographyProps={{ fontSize: 16 }}
+                      title={bookmark.displayName}
+                      subheader={bookmark.createdAt}
+                    />
+                    <CardContent
                       sx={{
-                        minHeight: 100,
-                        whiteSpace: "pre-line",
-                        fontSize: 18,
+                        bgcolor: green[50],
                       }}
-                      variant="body2"
-                      color="text.secondary"
-                      component="p"
                     >
-                      {bookmark.value}
-                    </Typography>
-                  </CardContent>
-                  <Toolbar />
-                </Box>
-              );
-            })}
-        </Card>
+                      <Typography
+                        sx={{
+                          minHeight: 100,
+                          whiteSpace: "pre-line",
+                          fontSize: 18,
+                        }}
+                        variant="body2"
+                        color="text.secondary"
+                        component="p"
+                      >
+                        {bookmark.value}
+                      </Typography>
+                    </CardContent>
+                    <Toolbar />
+                  </Box>
+                );
+              })}
+          </Card>
+        </>
       )}
     </Layout>
   );

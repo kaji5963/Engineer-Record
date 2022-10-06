@@ -27,13 +27,14 @@ import {
   deleteDoc,
   collectionGroup,
   serverTimestamp,
+  where,
 } from "firebase/firestore";
 import { db } from "./firebase";
 import {
   goodListState,
   RecordList,
   recordListState,
-  UserData,
+  User,
 } from "../constants/atom";
 import { useRecoilState } from "recoil";
 
@@ -44,7 +45,7 @@ type Props = {
   handleDeleteRecord: (id: string) => void;
   handleSavedBookmark: (postData: RecordList) => void;
   handleRemoveBookmark: (postId: string) => void;
-  userItem: UserData;
+  userItem: User;
 };
 
 export const RecordItem = ({
@@ -60,8 +61,31 @@ export const RecordItem = ({
   const [goodCount, setGoodCount] = useState(0);
   const [recordList, setRecordList] = useRecoilState(recordListState);
   const [goodList, setGoodList] = useRecoilState(goodListState);
+  const [goodUsers, setGoodUsers] = useState<RecordList[]>([]);
+  // const [ data, setData] = useState<string[]>([])
 
   // useEffect(() => {
+  // const goodUsersRef = query(collectionGroup(db, "goods"),where( "postId", "==", record.postId ));
+  // onSnapshot(goodUsersRef, (querySnapshot) => {
+  //   const goodsData = querySnapshot.docs.map((doc) => {
+  //     const goodInfo = recordList.find((record) => {
+  //       return record.uid === doc.data().uid;
+  //     });
+  //     return {
+  //       ...doc.data(),
+  //       id: doc.id,
+  //       uid: doc.data().uid,
+  //       postId: doc.data().postId,
+  //       value: doc.data().value,
+  //       createdAt: doc.data().createdAt,
+  //       displayName: goodInfo!.displayName,
+  //       photoURL: goodInfo!.photoURL,
+  //       goodCount: doc.data().goodCount,
+  //     };
+  //   });
+  //   console.log(goodsData);
+  //   setGoodUsers(goodsData);
+  // });
   //   const goodUsersRef = query(collectionGroup(db, "goods"));
   //   onSnapshot(goodUsersRef, (querySnapshot) => {
   //     const goodsData = querySnapshot.docs.map((doc) => {
@@ -77,10 +101,10 @@ export const RecordItem = ({
   //         createdAt: doc.data().createdAt,
   //         displayName: goodInfo!.displayName,
   //         photoURL: goodInfo!.photoURL,
-  //         goodCount: goodInfo!.goodCount,
+  //         goodCount: doc.data().goodCount,
   //       };
   //     });
-  //     setGoodList(goodsData);
+  //     setGoodUsers(goodsData);
   //   });
   // }, []);
 
@@ -118,7 +142,7 @@ export const RecordItem = ({
 
   //good（いいね）のカウントを+1及び-1
   const handleGoodCount = async (good: number, record: RecordList) => {
-    const { uid, postId, value, createdAt, displayName, photoURL } = record;
+    const { uid, postId, value, createdAt } = record;
     if (good === 0) {
       //firebase(users サブコレクションにgoodsとして格納)
       const goodUpDoc = doc(db, "users", userItem.uid, "goods", postId);
@@ -127,20 +151,34 @@ export const RecordItem = ({
         postId,
         value,
         createdAt,
-        // displayName,
-        // photoURL,
         goodCount: good + 1,
         timeStamp: serverTimestamp(),
       });
       setGoodCount(good + 1);
+
+      // const goodUserUpRef = doc(db, "goodUsers", postId);
+      // data.push(userItem.uid)
+      // console.log(data);
+      // setDoc(goodUserUpRef, {
+      //   users: data.length,
+      //   postId, //投稿者のpostIdとイコール関係
+      // });
     } else {
+      await deleteDoc(doc(db, "users", userItem.uid, "goods", postId));
+      setGoodCount(good - 1);
       //firebase(users サブコレクションにgoodsを削除)
       // const goodDownDoc = doc(db, "users", userItem.uid, "goods", postId); //updateDoc処理はいらない？
       // await updateDoc(goodDownDoc, {
       //   goodCount: good - 1,
       // });
-      await deleteDoc(doc(db, "users", userItem.uid, "goods", postId));
-      setGoodCount(good - 1);
+
+      // const goodUserDownRef = doc(db, "goodUsers", postId);
+      // const dd = data.splice(0, 1)
+      // console.log(dd);
+      // setDoc(goodUserDownRef, {
+      //   users: dd.length ,
+      //   postId, //投稿者のpostIdとイコール関係
+      // });
     }
   };
 

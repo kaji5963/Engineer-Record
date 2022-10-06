@@ -15,7 +15,7 @@ import { useRouter } from "next/router";
 import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../components/firebase";
 import { useRecoilState } from "recoil";
-import { UserData, userItemState } from "../constants/atom";
+import { User, userItemState } from "../constants/atom";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -31,7 +31,7 @@ const SignIn = () => {
         //ユーザー情報取得処理しuserItemへ格納
         onAuthStateChanged(auth, (user) => {
           if (user) {
-            const { email, uid, displayName, photoURL } = user as UserData;
+            const { email, uid, displayName, photoURL } = user as User;
             setUserItem({ ...userItem, email, uid, displayName, photoURL });
           }
         });
@@ -45,7 +45,7 @@ const SignIn = () => {
   return (
     <>
       <Head>
-        <title>Engineer Record SignUp</title>
+        <title>Engineer Record SignIn</title>
       </Head>
 
       <Container component="main" maxWidth="xs">
@@ -68,11 +68,11 @@ const SignIn = () => {
             component="form"
             noValidate
             onSubmit={(e) => handleSignIn(e)}
-            sx={{ mt: 8 }}
+            sx={{ mt: 6 }}
           >
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                <TextField
+                <TextField sx={{mb: 1}}
                   required
                   fullWidth
                   id="email"
@@ -81,9 +81,11 @@ const SignIn = () => {
                   autoComplete="email"
                   onChange={(e) => setEmail(e.target.value)}
                 />
+                  <Typography>登録しているメールアドレスを入力してください</Typography>
+
               </Grid>
               <Grid item xs={12}>
-                <TextField
+                <TextField sx={{mt: 2,mb: 1}}
                   required
                   fullWidth
                   name="password"
@@ -93,20 +95,26 @@ const SignIn = () => {
                   autoComplete="new-password"
                   onChange={(e) => setPassword(e.target.value)}
                 />
+                  <Typography>登録しているpasswordを入力してください</Typography>
+
               </Grid>
             </Grid>
             <Button
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2, fontSize: 18 }}
+              sx={{ mt: 4, mb: 2, fontSize: 18 }}
+              disabled={email === "" || password.length < 6 && true}
+
             >
               ログイン
             </Button>
-            <Grid sx={{ mt: 2, fontSize: 18}} container justifyContent="flex-end">
-                <Link href="/Signup">
-                  新規登録の方はこちら
-                </Link>
+            <Grid
+              sx={{ mt: 2, fontSize: 18 }}
+              container
+              justifyContent="flex-end"
+            >
+              <Link href="/Signup">新規登録の方はこちら</Link>
             </Grid>
           </Box>
         </Box>

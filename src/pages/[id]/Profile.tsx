@@ -5,7 +5,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import ReplyIcon from "@mui/icons-material/Reply";
 import { grey } from "@mui/material/colors";
 import { useRecoilState } from "recoil";
-import { UserData, userItemState } from "../../constants/atom";
+import { User, userItemState } from "../../constants/atom";
 import { useEffect, useState } from "react";
 import { auth } from "../../components/firebase";
 import { onAuthStateChanged } from "firebase/auth";
@@ -20,7 +20,7 @@ const Profile = () => {
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        const { uid, email, displayName, photoURL } = user as UserData;
+        const { uid, email, displayName, photoURL } = user as User;
         setUserItem({ ...userItem, uid, email, displayName, photoURL });
       }
     });
@@ -115,6 +115,7 @@ const Profile = () => {
               px: 0.5,
               pt: 2,
               mt: 4,
+              mb: 4,
               borderRadius: 5,
             }}
           >
@@ -129,8 +130,9 @@ const Profile = () => {
             </Typography>
           </Box>
 
-          <Box sx={{ textAlign: "center", mt: 3 }}>
-            <Tooltip title="Edit" placement="bottom-start" arrow>
+          <Box sx={{ textAlign: "center" }}>
+            <Tooltip title="Edit" placement="top-start" arrow>
+              <span>
               <IconButton
                 sx={{ mr: 4 }}
                 color="primary"
@@ -138,16 +140,18 @@ const Profile = () => {
               >
                 <EditIcon fontSize="large" />
               </IconButton>
+              </span>
             </Tooltip>
 
-            <Tooltip title="Back" placement="bottom-start" arrow>
+            <Tooltip title="Back" placement="top-start" arrow>
+              <span>
               <IconButton
-                sx={{ ml: 4 }}
                 color="primary"
                 onClick={() => router.push("/Top")}
               >
                 <ReplyIcon fontSize="large" />
               </IconButton>
+              </span>
             </Tooltip>
           </Box>
         </Box>

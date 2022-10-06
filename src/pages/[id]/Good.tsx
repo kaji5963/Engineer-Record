@@ -10,10 +10,11 @@ import {
   IconButton,
   Tooltip,
   Toolbar,
+  Alert,
 } from "@mui/material";
 import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
-import { cyan, red } from "@mui/material/colors";
+import { orange, red } from "@mui/material/colors";
 import {
   collection,
   deleteDoc,
@@ -26,15 +27,14 @@ import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { db } from "../../components/firebase";
 import {
-  editItemState,
   goodListState,
-  recordListState,
+  userDataState,
   userItemState,
 } from "../../constants/atom";
 
 const Good = () => {
-  const [recordList, setRecordList] = useRecoilState(recordListState);
   const [userItem, setUserItem] = useRecoilState(userItemState);
+  const [userData, setUserData] = useRecoilState(userDataState);
   const [goodList, setGoodList] = useRecoilState(goodListState);
   const [isClient, setIsClient] = useState(false);
 
@@ -44,9 +44,10 @@ const Good = () => {
       collection(db, "users", userItem.uid, "goods"),
       orderBy("timeStamp", "desc")
     );
+    if (!userData) return;
     onSnapshot(goodUsersRef, (querySnapshot) => {
       const goodsData = querySnapshot.docs.map((doc) => {
-        const goodInfo = recordList.find((record) => {
+        const goodInfo = userData.find((record) => {
           return record.uid === doc.data().uid;
         });
         return {
@@ -82,90 +83,109 @@ const Good = () => {
       </Head>
 
       {isClient && (
-        <Card
-          sx={{
-            maxWidth: 500,
-            display: "flex",
-            flexDirection: "column",
-            mx: "auto",
-            boxShadow: 0,
-          }}
-        >
-          {goodList &&
-            goodList.map((good) => {
-              return (
-                <Box
-                  key={good.postId}
-                  sx={{
-                    bgcolor: cyan[100],
-                    maxWidth: 500,
-                    mb: 4,
-                    borderRadius: 5,
-                  }}
-                >
-                  <CardHeader
-                    avatar={
-                      <Avatar
-                        sx={{ bgcolor: cyan[200], fontSize: 20 }}
-                        src={good.photoURL}
-                      ></Avatar>
-                    }
-                    titleTypographyProps={{ fontSize: 16 }}
-                    subheaderTypographyProps={{ fontSize: 16 }}
-                    title={good.displayName}
-                    subheader={good.createdAt}
-                    action={
-                      <Box sx={{ mr: 3, mt: 1 }}>
-                        {good.goodCount > 0 ? (
-                          <Tooltip
-                            title="Bookmark"
-                            placement="right-start"
-                            arrow
-                          >
-                            <IconButton
-                              sx={{ color: red[300] }}
-                              onClick={() => handleRemoveGoods(good.postId)}
-                            >
-                              <ThumbUpAltIcon />
-                            </IconButton>
-                          </Tooltip>
-                        ) : (
-                          <Tooltip
-                            title="Bookmark"
-                            placement="right-start"
-                            arrow
-                          >
-                            <IconButton>
-                              <ThumbUpOffAltIcon />
-                            </IconButton>
-                          </Tooltip>
-                        )}
-                      </Box>
-                    }
-                  />
-                  <CardContent
+        <>
+          {goodList.length === 0 && (
+            <Alert
+              sx={{
+                maxWidth: 300,
+                height: 60,
+                mx: "auto",
+                textAlign: "center",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                fontSize: 18,
+              }}
+              severity="info"
+            >
+              Goodした投稿がありません
+            </Alert>
+          )}
+          <Card
+            sx={{
+              maxWidth: 500,
+              display: "flex",
+              flexDirection: "column",
+              mx: "auto",
+              boxShadow: 0,
+            }}
+          >
+            {goodList &&
+              goodList.map((good) => {
+                return (
+                  <Box
+                    key={good.postId}
                     sx={{
-                      bgcolor: cyan[50],
+                      bgcolor: orange[100],
+                      maxWidth: 500,
+                      mb: 4,
+                      borderRadius: 5,
                     }}
                   >
-                    <Typography
+                    <CardHeader
+                      avatar={
+                        <Avatar
+                          sx={{ bgcolor: orange[200], fontSize: 20 }}
+                          src={good.photoURL}
+                        ></Avatar>
+                      }
+                      titleTypographyProps={{ fontSize: 16 }}
+                      subheaderTypographyProps={{ fontSize: 16 }}
+                      title={good.displayName}
+                      subheader={good.createdAt}
+                      action={
+                        <Box sx={{ mr: 3, mt: 1 }}>
+                          {good.goodCount > 0 ? (
+                            <Tooltip
+                              title="Bookmark"
+                              placement="right-start"
+                              arrow
+                            >
+                              <IconButton
+                                sx={{ color: red[300] }}
+                                onClick={() => handleRemoveGoods(good.postId)}
+                              >
+                                <ThumbUpAltIcon />
+                              </IconButton>
+                            </Tooltip>
+                          ) : (
+                            <Tooltip
+                              title="Bookmark"
+                              placement="right-start"
+                              arrow
+                            >
+                              <IconButton>
+                                <ThumbUpOffAltIcon />
+                              </IconButton>
+                            </Tooltip>
+                          )}
+                        </Box>
+                      }
+                    />
+                    <CardContent
                       sx={{
-                        minHeight: 100,
-                        whiteSpace: "pre-line",
-                        fontSize: 18,
+                        bgcolor: orange[50],
                       }}
-                      variant="body2"
-                      color="text.secondary"
-                      component="p"
                     >
-                      {good.value}
-                    </Typography>
-                  </CardContent>
-                  <Toolbar />
-                </Box>
-              );
-            })}
-        </Card>
+                      <Typography
+                        sx={{
+                          minHeight: 100,
+                          whiteSpace: "pre-line",
+                          fontSize: 18,
+                        }}
+                        variant="body2"
+                        color="text.secondary"
+                        component="p"
+                      >
+                        {good.value}
+                      </Typography>
+                    </CardContent>
+                    <Toolbar />
+                  </Box>
+                );
+              })}
+          </Card>
+        </>
       )}
     </Layout>
   );

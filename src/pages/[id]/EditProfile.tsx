@@ -7,9 +7,9 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import ReplyIcon from "@mui/icons-material/Reply";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import FactCheckIcon from "@mui/icons-material/FactCheck";
+import CancelIcon from '@mui/icons-material/Cancel';
 import { grey } from "@mui/material/colors";
 import { Box } from "@mui/system";
 import { useRouter } from "next/router";
@@ -188,10 +188,10 @@ const EditProfile = () => {
             />
           </Box>
           <Box sx={{ textAlign: "center", mt: 4 }}>
-            <Tooltip title="Complete" placement="bottom-start" arrow>
+            <Tooltip title="Complete" placement="top-start" arrow>
               <span>
                 <IconButton
-                  sx={{ mr: 4 }}
+                  sx={{ mr: 3, ml: 1 }}
                   color="primary"
                   type="submit"
                   onClick={() => router.push("/Top")}
@@ -202,14 +202,15 @@ const EditProfile = () => {
               </span>
             </Tooltip>
 
-            <Tooltip title="Back" placement="bottom-start" arrow>
+            <Tooltip title="Cancel" placement="top-start" arrow>
+              <span>
               <IconButton
-                sx={{ ml: 4 }}
                 color="primary"
                 onClick={() => router.push(`/${userItem.uid}/Profile`)}
               >
-                <ReplyIcon fontSize="large" />
+                <CancelIcon fontSize="large" />
               </IconButton>
+              </span>
             </Tooltip>
           </Box>
         </Box>

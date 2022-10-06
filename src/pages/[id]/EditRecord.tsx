@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Layout from "../../components/Layout";
-import ReplyIcon from "@mui/icons-material/Reply";
 import FactCheckIcon from "@mui/icons-material/FactCheck";
+import CancelIcon from '@mui/icons-material/Cancel';
 import { IconButton, TextField, Tooltip, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { Box } from "@mui/system";
@@ -72,24 +72,27 @@ const EditRecord = () => {
           />
         </Box>
         <Box sx={{ textAlign: "center", mt: 5 }}>
-          <Tooltip title="Complete" placement="bottom-start" arrow>
+          <Tooltip title="Complete" placement="top-start" arrow>
+            <span>
             <IconButton
-              sx={{ mr: 4 }}
+              sx={{ mr: 3, ml: 1 }}
               color="primary"
               disabled={editItem.value === "" ? true : false}
               onClick={() => handleEditComplete(editItem.id)}
             >
               <FactCheckIcon fontSize="large" />
             </IconButton>
+            </span>
           </Tooltip>
-          <Tooltip title="Back" placement="bottom-start" arrow>
+          <Tooltip title="Back" placement="top-start" arrow>
+            <span>
             <IconButton
-              sx={{ ml: 4 }}
               color="primary"
               onClick={() => router.back()}
             >
-              <ReplyIcon fontSize="large" />
+              <CancelIcon fontSize="large" />
             </IconButton>
+            </span>
           </Tooltip>
         </Box>
       </Box>

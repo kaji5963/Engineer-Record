@@ -9,6 +9,7 @@ import Box from "@mui/material/Box";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { blue, grey } from "@mui/material/colors";
@@ -20,18 +21,10 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { auth, db, storage } from "../components/firebase";
-import {
-  doc,
-  serverTimestamp,
-  setDoc,
-} from "firebase/firestore";
-import { IconButton, Tooltip } from "@mui/material";
-import {
-  getDownloadURL,
-  ref,
-  uploadBytes,
-} from "firebase/storage";
-import {  UserData, userItemState } from "../constants/atom";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import { Alert, IconButton, Tooltip } from "@mui/material";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { User, userItemState } from "../constants/atom";
 import { useRecoilState } from "recoil";
 
 type Info = {
@@ -75,7 +68,7 @@ const SignUp = () => {
         //ユーザー情報取得処理しuserItemへ格納
         onAuthStateChanged(auth, (user) => {
           if (user) {
-            const { uid, email, displayName, photoURL } = user as UserData;
+            const { uid, email, displayName, photoURL } = user as User;
             setUserItem({ ...userItem, uid, email, displayName, photoURL });
           }
         });
@@ -120,7 +113,7 @@ const SignUp = () => {
         <CssBaseline />
         <Box
           sx={{
-            marginTop: 8,
+            mt: 4,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -130,7 +123,7 @@ const SignUp = () => {
             <LockOutlinedIcon />
           </Avatar>
 
-          <Typography component="h1" variant="h5">
+          <Typography component="h1" variant="h4">
             Sign Up
           </Typography>
           <Box
@@ -146,8 +139,8 @@ const SignUp = () => {
                     <Tooltip title="Avatar Add" placement="top-start" arrow>
                       <IconButton
                         sx={{
-                          bgcolor: grey[300],
-                          mt: 6,
+                          // bgcolor: grey[300],
+                          mt: 3,
                           ml: 10,
                           mb: 2,
                           cursor: "pointer",
@@ -156,11 +149,10 @@ const SignUp = () => {
                         }}
                       >
                         <label>
-                          <PersonAddIcon
+                          <Avatar
                             sx={{
                               cursor: "pointer",
                             }}
-                            fontSize="large"
                           />
                           <input
                             type="file"
@@ -207,7 +199,7 @@ const SignUp = () => {
                 <Grid>
                   <Tooltip title="Avatar Delete" placement="top-start" arrow>
                     <IconButton
-                      sx={{ ml: 3, mt: 4 }}
+                      sx={{ ml: 3, mt: 1 }}
                       onClick={() => setUserInfo({ ...userInfo, photoURL: "" })}
                     >
                       <HighlightOffIcon />
@@ -217,6 +209,7 @@ const SignUp = () => {
               </Grid>
               <Grid item xs={12}>
                 <TextField
+                  sx={{ mb: 1 }}
                   autoComplete="given-name"
                   name="displayName"
                   required
@@ -228,9 +221,24 @@ const SignUp = () => {
                     setUserInfo({ ...userInfo, displayName: e.target.value })
                   }
                 />
+                {userInfo.displayName === "" ? (
+                  <Typography sx={{ mb: 1 }}>
+                    好きな名前を入力してください
+                  </Typography>
+                ) : (
+                  <Alert
+                    sx={{ width: 140 }}
+                    iconMapping={{
+                      success: <CheckCircleOutlineIcon fontSize="inherit" />,
+                    }}
+                  >
+                    Success
+                  </Alert>
+                )}
               </Grid>
               <Grid item xs={12}>
                 <TextField
+                  sx={{ mb: 1 }}
                   required
                   fullWidth
                   id="email"
@@ -241,9 +249,24 @@ const SignUp = () => {
                     setUserInfo({ ...userInfo, email: e.target.value })
                   }
                 />
+                {userInfo.email.length < 5 ? (
+                  <Typography sx={{ mb: 1 }}>
+                    メールアドレスを入力してください
+                  </Typography>
+                ) : (
+                  <Alert
+                    sx={{ width: 140 }}
+                    iconMapping={{
+                      success: <CheckCircleOutlineIcon fontSize="inherit" />,
+                    }}
+                  >
+                    Success
+                  </Alert>
+                )}
               </Grid>
               <Grid item xs={12}>
                 <TextField
+                  sx={{ mb: 1 }}
                   required
                   fullWidth
                   id="password"
@@ -255,20 +278,39 @@ const SignUp = () => {
                     setUserInfo({ ...userInfo, password: e.target.value })
                   }
                 />
+                {userInfo.password.length < 6 ? (
+                  <Typography>半角6文字以上で入力してください</Typography>
+                ) : (
+                  <Alert
+                    sx={{ width: 140 }}
+                    iconMapping={{
+                      success: <CheckCircleOutlineIcon fontSize="inherit" />,
+                    }}
+                  >
+                    Success
+                  </Alert>
+                )}
               </Grid>
             </Grid>
             <Button
               type="submit"
               fullWidth
               variant="contained"
+              disabled={
+                userInfo.displayName === "" ||
+                userInfo.email.length < 5 ||
+                (userInfo.password.length < 6 && true)
+              }
               sx={{ mt: 3, mb: 2, fontSize: 18 }}
             >
               新規登録
             </Button>
-            <Grid sx={{ mt: 2,fontSize: 18 }} container justifyContent="flex-end">
-                <Link href="/Signin">
-                  登録している方はこちら
-                </Link>
+            <Grid
+              sx={{ mt: 2, fontSize: 18 }}
+              container
+              justifyContent="flex-end"
+            >
+              <Link href="/Signin">登録している方はこちら</Link>
             </Grid>
           </Box>
         </Box>

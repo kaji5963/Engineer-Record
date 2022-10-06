@@ -1,12 +1,18 @@
 import { atom, RecoilState } from "recoil";
 import { recoilPersist } from "recoil-persist";
 
-export type UserData = {
+export type User = {
   email: string;
   uid: string;
   displayName: string ;
   photoURL: string;
 };
+
+export type UserData = {
+  displayName: string;
+  photoURL: string;
+  uid: string;
+}[];
 
 export type RecordList = {
   uid: string;
@@ -77,9 +83,16 @@ const { persistAtom } = recoilPersist({
 });
 
 //ユーザー情報を保持
-export const userItemState: RecoilState<UserData> = atom({
+export const userItemState: RecoilState<User> = atom({
   key: "user",
   default: {},
+  effects_UNSTABLE: [persistAtom],
+});
+
+//ユーザー情報をリスト保持
+export const userDataState: RecoilState<UserData> = atom({
+  key: "userData",
+  default: [],
   effects_UNSTABLE: [persistAtom],
 });
 
