@@ -62,7 +62,7 @@ export const RecordItem = ({
   const [recordList, setRecordList] = useRecoilState(recordListState);
   const [goodList, setGoodList] = useRecoilState(goodListState);
   const [goodUsers, setGoodUsers] = useState<RecordList[]>([]);
-  // const [ data, setData] = useState<string[]>([])
+  const [ goodData, setGoodData] = useState<string[]>([])
 
   // useEffect(() => {
   // const goodUsersRef = query(collectionGroup(db, "goods"),where( "postId", "==", record.postId ));
@@ -142,8 +142,8 @@ export const RecordItem = ({
 
   //good（いいね）のカウントを+1及び-1
   const handleGoodCount = async (good: number, record: RecordList) => {
-    const { uid, postId, value, createdAt } = record;
-    if (good === 0) {
+    const { uid, postId, value, createdAt, goodCount } = record;
+    if (goodData.length === 0) {
       //firebase(users サブコレクションにgoodsとして格納)
       const goodUpDoc = doc(db, "users", userItem.uid, "goods", postId);
       await setDoc(goodUpDoc, {
@@ -156,27 +156,22 @@ export const RecordItem = ({
       });
       setGoodCount(good + 1);
 
-      // const goodUserUpRef = doc(db, "goodUsers", postId);
-      // data.push(userItem.uid)
+      const goodUserUpRef = doc(db, "goodUsers", postId);
+      goodData.push(userItem.uid)
       // console.log(data);
-      // setDoc(goodUserUpRef, {
-      //   users: data.length,
-      //   postId, //投稿者のpostIdとイコール関係
-      // });
+      setDoc(goodUserUpRef, {
+        goodCount: goodData.length,
+        postId, //投稿者のpostIdとイコール関係
+      },{ merge: true });
     } else {
       await deleteDoc(doc(db, "users", userItem.uid, "goods", postId));
       setGoodCount(good - 1);
-      //firebase(users サブコレクションにgoodsを削除)
-      // const goodDownDoc = doc(db, "users", userItem.uid, "goods", postId); //updateDoc処理はいらない？
-      // await updateDoc(goodDownDoc, {
-      //   goodCount: good - 1,
-      // });
 
-      // const goodUserDownRef = doc(db, "goodUsers", postId);
+      const goodUserDownRef = doc(db, "goodUsers", postId);
       // const dd = data.splice(0, 1)
       // console.log(dd);
-      // setDoc(goodUserDownRef, {
-      //   users: dd.length ,
+      // updateDoc(goodUserDownRef, {
+      //   goodCount: good + 1,
       //   postId, //投稿者のpostIdとイコール関係
       // });
     }
@@ -236,7 +231,7 @@ export const RecordItem = ({
         }
         action={
           <Box sx={{ mt: 1 }}>
-            <Tooltip title="Edit" placement="bottom-start" arrow>
+            <Tooltip title="Edit" placement="top-start" arrow>
               <span>
                 <IconButton
                   sx={{ mr: 2 }}
@@ -247,7 +242,7 @@ export const RecordItem = ({
                 </IconButton>
               </span>
             </Tooltip>
-            <Tooltip title="Delete" placement="bottom-start" arrow>
+            <Tooltip title="Delete" placement="top-start" arrow>
               <span>
                 <IconButton
                   sx={{ mr: 2 }}
