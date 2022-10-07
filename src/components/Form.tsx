@@ -43,7 +43,7 @@ const Form = () => {
     //firebaseのrecordsへデータ格納（階層：users-uid-records）
     const formDocRef = doc(db, "users", user.uid, "records", postId);
     await setDoc(formDocRef, {
-      uid: userItem.uid,
+      authorId: userItem.uid,
       postId,
       value,
       createdAt,

@@ -77,11 +77,11 @@ export type BookmarkList = {
   saved: boolean;
 };
 
-export type GoodData = {
-  id: string,
-  postId: string,
-  // goodCount: string
-}
+// export type GoodData = {
+//   id: string,
+//   postId: string,
+//   // goodCount: string
+// }
 
 const { persistAtom } = recoilPersist({
   key: "recoil-persist",
@@ -144,8 +144,8 @@ export const bookmarkListState: RecoilState<BookmarkList[]> = atom({
   effects_UNSTABLE: [persistAtom],
 });
 
-export const goodDataListState: RecoilState<GoodData[]> = atom({
-  key: "goodDataList",
-  default: [],
-  effects_UNSTABLE: [persistAtom],
-});
+// export const goodDataListState: RecoilState<GoodData[]> = atom({
+//   key: "goodDataList",
+//   default: [],
+//   effects_UNSTABLE: [persistAtom],
+// });

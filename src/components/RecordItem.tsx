@@ -23,24 +23,16 @@ import {
   collection,
   onSnapshot,
   doc,
-  updateDoc,
   setDoc,
   deleteDoc,
   collectionGroup,
   serverTimestamp,
   where,
-  addDoc,
 } from "firebase/firestore";
 import { db } from "./firebase";
-import {
-  goodDataListState,
-  goodListState,
-  RecordList,
-  recordListState,
-  User,
-} from "../constants/atom";
+import { RecordList, recordListState, User } from "../constants/atom";
 import { useRecoilState } from "recoil";
-import { NextRouter, Router } from "next/router";
+import { NextRouter } from "next/router";
 
 type Props = {
   record: RecordList;
@@ -50,13 +42,14 @@ type Props = {
   handleSavedBookmark: (postData: RecordList) => void;
   handleRemoveBookmark: (postId: string) => void;
   userItem: User;
-  router: NextRouter
+  router: NextRouter;
 };
 
 type Good = {
   id: string;
+  uid: string;
   postId: any;
-}
+};
 
 export const RecordItem = ({
   record,
@@ -66,16 +59,14 @@ export const RecordItem = ({
   handleRemoveBookmark,
   handleSavedBookmark,
   userItem,
-  router
+  router,
 }: Props) => {
   const { v4: uuidv4 } = require("uuid");
   const [saved, setSaved] = useState(false);
-  const [goodCount, setGoodCount] = useState(0);
   const [recordList, setRecordList] = useRecoilState(recordListState);
-  const [goodList, setGoodList] = useRecoilState(goodListState);
   const [goodUsers, setGoodUsers] = useState<Good[]>([]);
-  // const [goodData, setGoodData] = useState<string[]>([]);
 
+  //投稿に対してgoodしたユーザーを取得、取得したデータ（数）をlengthで表示
   useEffect(() => {
     const goodUsersRef = query(
       collectionGroup(db, "goodUsers"),
@@ -86,27 +77,13 @@ export const RecordItem = ({
         return {
           ...doc.data(),
           id: doc.id,
+          uid: doc.data().uid,
           postId: doc.data().postId,
         };
       });
       setGoodUsers(goodUserData);
     });
-
-    //firebaseからgoodsのデータを取得
-    // useEffect(() => {
-    //   const goodsRef = query(collection(db, "users", userItem.uid, "goods"));
-    //   onSnapshot(goodsRef, (querySnapshot) => {
-    //     querySnapshot.docs.forEach((doc) => {
-    //       const postId = doc.data().postId;
-    //       //goodsに格納されているpostIdとRecordListから渡されたrecordのpostIdを比較
-    //       //上記がtrueのものだけgoodCount+1をしてgoodをチェック状態
-    //       if (postId === record.postId) {
-    //         setGoodCount(goodCount + 1);
-    //       }
-    //     });
-    //   });
   }, []);
-  // console.log(goodUsers);
 
   //firebaseからbookmarksのデータを取得(savedを監視)
   useEffect(() => {
@@ -125,22 +102,10 @@ export const RecordItem = ({
     });
   }, [saved]);
 
-  //good（いいね）のカウントを+1及び-1
+  //good（いいね）のカウントを増減処理
   const handleGoodCount = async (record: RecordList) => {
     const { uid, postId, value, createdAt, displayName, photoURL } = record;
-    //firebase(users サブコレクションにgoodsとして格納)
     const goodPostDoc = doc(db, "users", userItem.uid, "goodPosts", postId);
-    await setDoc(goodPostDoc, {
-      uid,
-      postId,
-      value,
-      createdAt,
-      displayName,
-      photoURL,
-      key: uuidv4(),
-      timeStamp: serverTimestamp(),
-    });
-
     const goodUserDoc = doc(
       db,
       "users",
@@ -150,79 +115,66 @@ export const RecordItem = ({
       "goodUsers",
       postId
     );
-    await setDoc(goodUserDoc, {
-      postId,
-      timeStamp: serverTimestamp(),
-    });
 
-    // await deleteDoc(doc(db, "users", userItem.uid, "records", postId, "goodUsers", postId));
-    // await deleteDoc(doc(db, "users", userItem.uid, "goodPosts", postId));
+    if (goodUsers.length === 0) {
+      //goodが0の場合（good+1）
+      await setDoc(goodPostDoc, {
+        uid,
+        postId,
+        value,
+        createdAt,
+        displayName,
+        photoURL,
+        key: uuidv4(),
+        timeStamp: serverTimestamp(),
+      });
 
-    // if (goodData.length === 0) {
-    //   const goodUserUpRef = doc(db, "goodUsers", postId);
-    //   // goodData.push(userItem.uid)
-    //   // console.log(data);
-    //   goodData.push(uid);
-    //   setDoc(
-    //     goodUserUpRef,
-    //     {
-    //       goodData,
-    //       goodCount: goodData.length,
-    //       uid, //投稿者のpostIdとイコール関係
-    //     },
-    //     { merge: true }
-    //   );
-    // } else {
-    //   let goodExistence = false;
-    //   let goodIndex = 0;
-    //   if (goodData) {
-    //     goodData.forEach((good, index) => {
-    //       if (userItem.uid === uid) {
-    //         goodExistence = true;
-    //         goodIndex = index;
-    //       }
-    //     });
-    //   }
-    //   console.log(goodExistence);
+      await setDoc(goodUserDoc, {
+        postId,
+        uid: userItem.uid,
+        timeStamp: serverTimestamp(),
+      });
+    } else {
+      //goodが1以上の場合
+      goodUsers.forEach(async (good) => {
+        if (userItem.uid !== good.uid) {
+          //goodしているのがログインユーザー以外だったら追加（good+1）
+          await setDoc(goodPostDoc, {
+            uid,
+            postId,
+            value,
+            createdAt,
+            displayName,
+            photoURL,
+            key: uuidv4(),
+            timeStamp: serverTimestamp(),
+          });
+          await setDoc(goodUserDoc, {
+            postId,
+            uid: userItem.uid,
+            timeStamp: serverTimestamp(),
+          });
+          console.log(1);
+          
+        } else {
+          //goodしているのがログインユーザーだったら削除（good-1）
+          await deleteDoc(
+            doc(
+              db,
+              "users",
+              userItem.uid,
+              "records",
+              postId,
+              "goodUsers",
+              postId
+            )
+          );
+          await deleteDoc(doc(db, "users", userItem.uid, "goodPosts", postId));
+          console.log(2);
 
-    //   if (goodExistence) {
-    //     goodData.splice(goodIndex, 1);
-    //   } else {
-    //     goodData.push(uid);
-    //   }
-    //   setDoc(
-    //     doc(db, "goodUsers", postId),
-    //     {
-    //       goodData,
-    //       goodCount: goodData.length,
-    //     },
-    //     { merge: true }
-    //   );
-    // }
-    // console.log(goodData);
-    // const goodUserDownRef = doc(db, "goodUsers", postId);
-    // const dd = data.splice(0, 1)
-    // console.log(dd);
-    // updateDoc(goodUserDownRef, {
-    //   goodCount: good + 1,
-    //   postId, //投稿者のpostIdとイコール関係
-    // });
-    // if (good === 0) {
-    //   //firebase(users サブコレクションにgoodsとして格納)
-    //   const goodUpDoc = doc(db, "users", userItem.uid, "goods", postId);
-    //   await setDoc(goodUpDoc, {
-    //     uid,
-    //     postId,
-    //     value,
-    //     createdAt,
-    //     goodCount: good + 1,
-    //     timeStamp: serverTimestamp(),
-    //   });
-    //   setGoodCount(good + 1);
-    // } else {
-    //   await deleteDoc(doc(db, "users", userItem.uid, "goods", postId));
-    //   setGoodCount(good - 1);
-    // }
+        }
+      });
+    }
   };
 
   //ブックマーク追加処理
@@ -235,7 +187,7 @@ export const RecordItem = ({
       createdAt,
       displayName,
       photoURL,
-      // goodCount,
+      goodCount,
     } = recordData;
     setSaved(true);
     const savedPosts = {
@@ -334,7 +286,7 @@ export const RecordItem = ({
           </IconButton>
         </Tooltip>
 
-        {goodUsers.length > 0 ? (
+        {/* {goodUsers.length > 0 ? (
           <Tooltip title="Good" placement="right-start" arrow>
             <IconButton
               sx={{ color: red[300] }}
@@ -342,7 +294,6 @@ export const RecordItem = ({
             >
               <ThumbUpAltIcon />
               <span style={{ marginLeft: 5, fontSize: 18 }}>
-                {" "}
                 {goodUsers.length}
               </span>
             </IconButton>
@@ -352,6 +303,31 @@ export const RecordItem = ({
             <IconButton onClick={() => handleGoodCount(record)}>
               <ThumbUpOffAltIcon />
 
+              <span style={{ marginLeft: 5, fontSize: 18 }}>
+                {goodUsers.length}
+              </span>
+            </IconButton>
+          </Tooltip>
+        )} */}
+
+
+        {goodUsers.length === 0 ? (
+          <Tooltip title="Good" placement="right-start" arrow>
+            <IconButton onClick={() => handleGoodCount(record)}>
+              <ThumbUpOffAltIcon />
+
+              <span style={{ marginLeft: 5, fontSize: 18 }}>
+                {goodUsers.length}
+              </span>
+            </IconButton>
+          </Tooltip>
+        ) : (
+          <Tooltip title="Good" placement="right-start" arrow>
+            <IconButton
+              sx={{ color: red[300] }}
+              onClick={() => handleGoodCount(record)}
+            >
+              <ThumbUpAltIcon />
               <span style={{ marginLeft: 5, fontSize: 18 }}>
                 {goodUsers.length}
               </span>

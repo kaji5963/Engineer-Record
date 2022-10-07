@@ -7,7 +7,6 @@ import {
   editItemState,
   RecordList,
   userDataState,
-  goodDataListState,
 } from "../constants/atom";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -49,6 +48,7 @@ const RecordList = () => {
         ).then((data) => setUserData(data));
       });
     })();
+    // console.log(1);
     
   }, [userItem]);
 
@@ -63,7 +63,7 @@ const RecordList = () => {
     onSnapshot(recordsRef, (querySnapshot) => {
       const recordsData = querySnapshot.docs.map((doc) => {
         const userInfo = userData.find((user) => {
-          return user.uid === doc.data().uid
+          return user.uid === doc.data().authorId
         });
         // console.log(userInfo!.displayName, doc.data().displayName);
         return {
