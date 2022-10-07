@@ -2,7 +2,7 @@ import Head from "next/head";
 import Layout from "../../components/Layout";
 import FactCheckIcon from "@mui/icons-material/FactCheck";
 import CancelIcon from '@mui/icons-material/Cancel';
-
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { IconButton, TextField, Tooltip, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { grey } from "@mui/material/colors";
@@ -94,12 +94,12 @@ const EditComment = () => {
                 disabled={editItem.value === "" ? true : false}
                 onClick={() => handleEditComplete(editItem.id)}
               >
-                <FactCheckIcon fontSize="large" />
+                <CheckCircleIcon fontSize="large" />
               </IconButton>
               </span>
             </Tooltip>
 
-            <Tooltip title="Back" placement="top-start" arrow>
+            <Tooltip title="Cancel" placement="top-start" arrow>
               <span>
               <IconButton
                 color="primary"

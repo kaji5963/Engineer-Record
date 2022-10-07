@@ -45,7 +45,7 @@ const Bookmark = () => {
       collection(db, "users", userItem.uid, "bookmarks"),
       orderBy("timeStamp", "desc")
     );
-    if (!userData) return;
+    if (userData.length === 0) return;
     onSnapshot(bookmarkRef, (querySnapshot) => {
       const bookmarksData = querySnapshot.docs.map((doc) => {
         const bookmarkInfo = userData.find((record) => {

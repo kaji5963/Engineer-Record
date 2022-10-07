@@ -47,8 +47,8 @@ const Form = () => {
       postId,
       value,
       createdAt,
-      goodCount: 0,
       timeStamp: serverTimestamp(),
+      goodCount: 0,
     });
     //textFieldの初期化処理
     setInputValue({

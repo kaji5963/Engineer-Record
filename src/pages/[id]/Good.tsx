@@ -13,7 +13,6 @@ import {
   Alert,
 } from "@mui/material";
 import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
-import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 import { orange, red } from "@mui/material/colors";
 import {
   collection,
@@ -38,13 +37,13 @@ const Good = () => {
   const [goodList, setGoodList] = useRecoilState(goodListState);
   const [isClient, setIsClient] = useState(false);
 
-  //firebaseのgoodsからデータを取得
+  //firebaseのgoodPostsからデータを取得
   useEffect(() => {
     const goodUsersRef = query(
-      collection(db, "users", userItem.uid, "goods"),
+      collection(db, "users", userItem.uid, "goodPosts"),
       orderBy("timeStamp", "desc")
     );
-    if (!userData) return;
+    if (userData.length === 0) return;
     onSnapshot(goodUsersRef, (querySnapshot) => {
       const goodsData = querySnapshot.docs.map((doc) => {
         const goodInfo = userData.find((record) => {
@@ -59,7 +58,7 @@ const Good = () => {
           createdAt: doc.data().createdAt,
           displayName: goodInfo!.displayName,
           photoURL: goodInfo!.photoURL,
-          goodCount: doc.data().goodCount,
+          key: doc.data().key,
         };
       });
       setGoodList(goodsData);
@@ -73,7 +72,7 @@ const Good = () => {
 
   //good削除処理
   const handleRemoveGoods = (postId: string) => {
-    deleteDoc(doc(db, "users", userItem.uid, "goods", postId));
+    deleteDoc(doc(db, "users", userItem.uid, "goodPosts", postId));
   };
 
   return (

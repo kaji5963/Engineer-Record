@@ -15,6 +15,7 @@ import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
+import ListAltIcon from "@mui/icons-material/ListAlt";
 import { blue, red } from "@mui/material/colors";
 import React, { useEffect, useState } from "react";
 import {
@@ -28,15 +29,18 @@ import {
   collectionGroup,
   serverTimestamp,
   where,
+  addDoc,
 } from "firebase/firestore";
 import { db } from "./firebase";
 import {
+  goodDataListState,
   goodListState,
   RecordList,
   recordListState,
   User,
 } from "../constants/atom";
 import { useRecoilState } from "recoil";
+import { NextRouter, Router } from "next/router";
 
 type Props = {
   record: RecordList;
@@ -46,7 +50,13 @@ type Props = {
   handleSavedBookmark: (postData: RecordList) => void;
   handleRemoveBookmark: (postId: string) => void;
   userItem: User;
+  router: NextRouter
 };
+
+type Good = {
+  id: string;
+  postId: any;
+}
 
 export const RecordItem = ({
   record,
@@ -56,72 +66,47 @@ export const RecordItem = ({
   handleRemoveBookmark,
   handleSavedBookmark,
   userItem,
+  router
 }: Props) => {
+  const { v4: uuidv4 } = require("uuid");
   const [saved, setSaved] = useState(false);
   const [goodCount, setGoodCount] = useState(0);
   const [recordList, setRecordList] = useRecoilState(recordListState);
   const [goodList, setGoodList] = useRecoilState(goodListState);
-  const [goodUsers, setGoodUsers] = useState<RecordList[]>([]);
-  const [ goodData, setGoodData] = useState<string[]>([])
+  const [goodUsers, setGoodUsers] = useState<Good[]>([]);
+  // const [goodData, setGoodData] = useState<string[]>([]);
 
-  // useEffect(() => {
-  // const goodUsersRef = query(collectionGroup(db, "goods"),where( "postId", "==", record.postId ));
-  // onSnapshot(goodUsersRef, (querySnapshot) => {
-  //   const goodsData = querySnapshot.docs.map((doc) => {
-  //     const goodInfo = recordList.find((record) => {
-  //       return record.uid === doc.data().uid;
-  //     });
-  //     return {
-  //       ...doc.data(),
-  //       id: doc.id,
-  //       uid: doc.data().uid,
-  //       postId: doc.data().postId,
-  //       value: doc.data().value,
-  //       createdAt: doc.data().createdAt,
-  //       displayName: goodInfo!.displayName,
-  //       photoURL: goodInfo!.photoURL,
-  //       goodCount: doc.data().goodCount,
-  //     };
-  //   });
-  //   console.log(goodsData);
-  //   setGoodUsers(goodsData);
-  // });
-  //   const goodUsersRef = query(collectionGroup(db, "goods"));
-  //   onSnapshot(goodUsersRef, (querySnapshot) => {
-  //     const goodsData = querySnapshot.docs.map((doc) => {
-  //       const goodInfo = recordList.find((record) => {
-  //         return record.uid === doc.data().uid;
-  //       });
-  //       return {
-  //         ...doc.data(),
-  //         id: doc.id,
-  //         uid: doc.data().uid,
-  //         postId: doc.data().postId,
-  //         value: doc.data().value,
-  //         createdAt: doc.data().createdAt,
-  //         displayName: goodInfo!.displayName,
-  //         photoURL: goodInfo!.photoURL,
-  //         goodCount: doc.data().goodCount,
-  //       };
-  //     });
-  //     setGoodUsers(goodsData);
-  //   });
-  // }, []);
-
-  //firebaseからgoodsのデータを取得
   useEffect(() => {
-    const goodsRef = query(collection(db, "users", userItem.uid, "goods"));
-    onSnapshot(goodsRef, (querySnapshot) => {
-      querySnapshot.docs.forEach((doc) => {
-        const postId = doc.data().postId;
-        //goodsに格納されているpostIdとRecordListから渡されたrecordのpostIdを比較
-        //上記がtrueのものだけgoodCount+1をしてgoodをチェック状態
-        if (postId === record.postId) {
-          setGoodCount(goodCount + 1);
-        }
+    const goodUsersRef = query(
+      collectionGroup(db, "goodUsers"),
+      where("postId", "==", record.postId)
+    );
+    onSnapshot(goodUsersRef, (querySnapshot) => {
+      const goodUserData = querySnapshot.docs.map((doc) => {
+        return {
+          ...doc.data(),
+          id: doc.id,
+          postId: doc.data().postId,
+        };
       });
+      setGoodUsers(goodUserData);
     });
+
+    //firebaseからgoodsのデータを取得
+    // useEffect(() => {
+    //   const goodsRef = query(collection(db, "users", userItem.uid, "goods"));
+    //   onSnapshot(goodsRef, (querySnapshot) => {
+    //     querySnapshot.docs.forEach((doc) => {
+    //       const postId = doc.data().postId;
+    //       //goodsに格納されているpostIdとRecordListから渡されたrecordのpostIdを比較
+    //       //上記がtrueのものだけgoodCount+1をしてgoodをチェック状態
+    //       if (postId === record.postId) {
+    //         setGoodCount(goodCount + 1);
+    //       }
+    //     });
+    //   });
   }, []);
+  // console.log(goodUsers);
 
   //firebaseからbookmarksのデータを取得(savedを監視)
   useEffect(() => {
@@ -141,40 +126,103 @@ export const RecordItem = ({
   }, [saved]);
 
   //good（いいね）のカウントを+1及び-1
-  const handleGoodCount = async (good: number, record: RecordList) => {
-    const { uid, postId, value, createdAt, goodCount } = record;
-    if (goodData.length === 0) {
-      //firebase(users サブコレクションにgoodsとして格納)
-      const goodUpDoc = doc(db, "users", userItem.uid, "goods", postId);
-      await setDoc(goodUpDoc, {
-        uid,
-        postId,
-        value,
-        createdAt,
-        goodCount: good + 1,
-        timeStamp: serverTimestamp(),
-      });
-      setGoodCount(good + 1);
+  const handleGoodCount = async (record: RecordList) => {
+    const { uid, postId, value, createdAt, displayName, photoURL } = record;
+    //firebase(users サブコレクションにgoodsとして格納)
+    const goodPostDoc = doc(db, "users", userItem.uid, "goodPosts", postId);
+    await setDoc(goodPostDoc, {
+      uid,
+      postId,
+      value,
+      createdAt,
+      displayName,
+      photoURL,
+      key: uuidv4(),
+      timeStamp: serverTimestamp(),
+    });
 
-      const goodUserUpRef = doc(db, "goodUsers", postId);
-      goodData.push(userItem.uid)
-      // console.log(data);
-      setDoc(goodUserUpRef, {
-        goodCount: goodData.length,
-        postId, //投稿者のpostIdとイコール関係
-      },{ merge: true });
-    } else {
-      await deleteDoc(doc(db, "users", userItem.uid, "goods", postId));
-      setGoodCount(good - 1);
+    const goodUserDoc = doc(
+      db,
+      "users",
+      userItem.uid,
+      "records",
+      postId,
+      "goodUsers",
+      postId
+    );
+    await setDoc(goodUserDoc, {
+      postId,
+      timeStamp: serverTimestamp(),
+    });
 
-      const goodUserDownRef = doc(db, "goodUsers", postId);
-      // const dd = data.splice(0, 1)
-      // console.log(dd);
-      // updateDoc(goodUserDownRef, {
-      //   goodCount: good + 1,
-      //   postId, //投稿者のpostIdとイコール関係
-      // });
-    }
+    // await deleteDoc(doc(db, "users", userItem.uid, "records", postId, "goodUsers", postId));
+    // await deleteDoc(doc(db, "users", userItem.uid, "goodPosts", postId));
+
+    // if (goodData.length === 0) {
+    //   const goodUserUpRef = doc(db, "goodUsers", postId);
+    //   // goodData.push(userItem.uid)
+    //   // console.log(data);
+    //   goodData.push(uid);
+    //   setDoc(
+    //     goodUserUpRef,
+    //     {
+    //       goodData,
+    //       goodCount: goodData.length,
+    //       uid, //投稿者のpostIdとイコール関係
+    //     },
+    //     { merge: true }
+    //   );
+    // } else {
+    //   let goodExistence = false;
+    //   let goodIndex = 0;
+    //   if (goodData) {
+    //     goodData.forEach((good, index) => {
+    //       if (userItem.uid === uid) {
+    //         goodExistence = true;
+    //         goodIndex = index;
+    //       }
+    //     });
+    //   }
+    //   console.log(goodExistence);
+
+    //   if (goodExistence) {
+    //     goodData.splice(goodIndex, 1);
+    //   } else {
+    //     goodData.push(uid);
+    //   }
+    //   setDoc(
+    //     doc(db, "goodUsers", postId),
+    //     {
+    //       goodData,
+    //       goodCount: goodData.length,
+    //     },
+    //     { merge: true }
+    //   );
+    // }
+    // console.log(goodData);
+    // const goodUserDownRef = doc(db, "goodUsers", postId);
+    // const dd = data.splice(0, 1)
+    // console.log(dd);
+    // updateDoc(goodUserDownRef, {
+    //   goodCount: good + 1,
+    //   postId, //投稿者のpostIdとイコール関係
+    // });
+    // if (good === 0) {
+    //   //firebase(users サブコレクションにgoodsとして格納)
+    //   const goodUpDoc = doc(db, "users", userItem.uid, "goods", postId);
+    //   await setDoc(goodUpDoc, {
+    //     uid,
+    //     postId,
+    //     value,
+    //     createdAt,
+    //     goodCount: good + 1,
+    //     timeStamp: serverTimestamp(),
+    //   });
+    //   setGoodCount(good + 1);
+    // } else {
+    //   await deleteDoc(doc(db, "users", userItem.uid, "goods", postId));
+    //   setGoodCount(good - 1);
+    // }
   };
 
   //ブックマーク追加処理
@@ -187,7 +235,7 @@ export const RecordItem = ({
       createdAt,
       displayName,
       photoURL,
-      goodCount,
+      // goodCount,
     } = recordData;
     setSaved(true);
     const savedPosts = {
@@ -286,25 +334,36 @@ export const RecordItem = ({
           </IconButton>
         </Tooltip>
 
-        {goodCount > 0 ? (
+        {goodUsers.length > 0 ? (
           <Tooltip title="Good" placement="right-start" arrow>
             <IconButton
               sx={{ color: red[300] }}
-              onClick={() => handleGoodCount(goodCount, record)}
+              onClick={() => handleGoodCount(record)}
             >
               <ThumbUpAltIcon />
-              <span style={{ marginLeft: 5, fontSize: 18 }}> {goodCount}</span>
+              <span style={{ marginLeft: 5, fontSize: 18 }}>
+                {" "}
+                {goodUsers.length}
+              </span>
             </IconButton>
           </Tooltip>
         ) : (
           <Tooltip title="Good" placement="right-start" arrow>
-            <IconButton onClick={() => handleGoodCount(goodCount, record)}>
+            <IconButton onClick={() => handleGoodCount(record)}>
               <ThumbUpOffAltIcon />
 
-              <span style={{ marginLeft: 5, fontSize: 18 }}>{goodCount}</span>
+              <span style={{ marginLeft: 5, fontSize: 18 }}>
+                {goodUsers.length}
+              </span>
             </IconButton>
           </Tooltip>
         )}
+
+        <Tooltip title="Good List" placement="right-start" arrow>
+          <IconButton onClick={() => router.push(`/${record.id}/GoodList`)}>
+            <ListAltIcon />
+          </IconButton>
+        </Tooltip>
 
         {saved ? (
           <Tooltip title="Bookmark" placement="right-start" arrow>

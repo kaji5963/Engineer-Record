@@ -7,6 +7,7 @@ import {
   editItemState,
   RecordList,
   userDataState,
+  goodDataListState,
 } from "../constants/atom";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -48,6 +49,7 @@ const RecordList = () => {
         ).then((data) => setUserData(data));
       });
     })();
+    
   }, [userItem]);
 
   //マウント時にfirebaseからrecordsのデータを取得、setRecordListに格納し画面表示（２番目に動く）
@@ -57,7 +59,7 @@ const RecordList = () => {
       collectionGroup(db, "records"),
       orderBy("timeStamp", "desc")
     );
-    if (!userData) return;
+    if (userData.length === 0) return;
     onSnapshot(recordsRef, (querySnapshot) => {
       const recordsData = querySnapshot.docs.map((doc) => {
         const userInfo = userData.find((user) => {
@@ -74,11 +76,12 @@ const RecordList = () => {
           displayName: userInfo!.displayName,
           photoURL: userInfo!.photoURL,
           goodCount: doc.data().goodCount
+          // goodCount: doc.data().goodCount
         };
       });
       setRecordList(recordsData);
     });
-    // console.log(userItem);
+    // console.log(2);
   }, [userData]);
 
   //ページネーション関数結果をuseMemoでメモ化
@@ -140,7 +143,7 @@ const RecordList = () => {
     if (deleteMessage === true) {
       //Topから削除した際は、recordsに紐づくcomments,bookmarks,goodsも同時に削除
       deleteDoc(doc(db, "users", userItem.uid, "records", id));
-      deleteDoc(doc(db, "users", userItem.uid,"goods", id));
+      deleteDoc(doc(db, "users", userItem.uid,"goodPosts", id));
       deleteDoc(doc(db, "users", userItem.uid, "bookmarks", id));
       deleteDoc(doc(db, "comments", id));
     } else return;
@@ -180,6 +183,7 @@ const RecordList = () => {
                 handleSavedBookmark={handleSavedBookmark}
                 userItem={userItem}
                 key={record.postId}
+                router={router}
               />
             );
           })}

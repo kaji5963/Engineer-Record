@@ -10,6 +10,7 @@ import {
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import FactCheckIcon from "@mui/icons-material/FactCheck";
 import CancelIcon from '@mui/icons-material/Cancel';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { grey } from "@mui/material/colors";
 import { Box } from "@mui/system";
 import { useRouter } from "next/router";
@@ -197,7 +198,7 @@ const EditProfile = () => {
                   onClick={() => router.push("/Top")}
                   disabled={userItem.displayName === "" ? true : false}
                 >
-                  <FactCheckIcon fontSize="large" />
+                  <CheckCircleIcon fontSize="large" />
                 </IconButton>
               </span>
             </Tooltip>
