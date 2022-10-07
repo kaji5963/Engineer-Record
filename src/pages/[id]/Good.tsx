@@ -22,19 +22,29 @@ import {
   orderBy,
   query,
 } from "firebase/firestore";
-import { useEffect, useState } from "react";
-import { useRecoilState } from "recoil";
+import React,{ useEffect, useState } from "react";
+import { useRecoilValue } from "recoil";
 import { db } from "../../components/firebase";
 import {
-  goodListState,
   userDataState,
   userItemState,
 } from "../../constants/atom";
 
+type GoodList = {
+  goodPostId: string;
+  id: string;
+  postId: string;
+  value: string;
+  createdAt: string;
+  displayName: string ;
+  photoURL: string;
+  key: string
+};
+
 const Good = () => {
-  const [userItem, setUserItem] = useRecoilState(userItemState);
-  const [userData, setUserData] = useRecoilState(userDataState);
-  const [goodList, setGoodList] = useRecoilState(goodListState);
+  const userItem = useRecoilValue(userItemState);
+  const userData = useRecoilValue(userDataState);
+  const [goodList, setGoodList] = useState<GoodList[]>([]);
   const [isClient, setIsClient] = useState(false);
 
   //firebaseのgoodPostsからデータを取得
@@ -46,13 +56,13 @@ const Good = () => {
     if (userData.length === 0) return;
     onSnapshot(goodUsersRef, (querySnapshot) => {
       const goodsData = querySnapshot.docs.map((doc) => {
-        const goodInfo = userData.find((record) => {
-          return record.uid === doc.data().uid;
+        const goodInfo = userData.find((user) => {
+          return user.uid === doc.data().goodPostId;
         });
         return {
           ...doc.data(),
           id: doc.id,
-          uid: doc.data().uid,
+          goodPostId: doc.data().goodPostId,
           postId: doc.data().postId,
           value: doc.data().value,
           createdAt: doc.data().createdAt,

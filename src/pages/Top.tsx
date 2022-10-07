@@ -1,13 +1,10 @@
-import Layout from "../components/Layout";
 import Head from "next/head";
+import Layout from "../components/Layout";
 import Form from "../components/Form";
 import RecordList from "../components/RecordList";
-import { useRecoilValue } from "recoil";
-import { userItemState } from "../constants/atom";
 import { useEffect, useState } from "react";
 
 const Top = () => {
-  const userItem = useRecoilValue(userItemState);
   const [isClient, setIsClient] = useState(false);
 
   //Hydrate Error対策

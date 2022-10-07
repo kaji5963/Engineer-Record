@@ -17,20 +17,16 @@ import {
 import SendIcon from "@mui/icons-material/Send";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
-import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
-
 import { blue, grey, red } from "@mui/material/colors";
 import { useRouter } from "next/router";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import {
   commentItemState,
   userItemState,
-  commentListState,
   editItemState,
-  recordListState,
+  userDataState,
 } from "../../constants/atom";
-import { useEffect, useState } from "react";
+import React,{ useEffect, useState } from "react";
 import { changeDateFormat } from "../../components/Form";
 import {
   collection,
@@ -45,12 +41,22 @@ import {
 } from "firebase/firestore";
 import { db } from "../../components/firebase";
 
+type CommentList = {
+  commentId: string;
+  id: string;
+  postId: string;
+  value: string;
+  createdAt: string;
+  displayName: string ;
+  photoURL: string;
+};
+
 const Comment = () => {
   const { v4: uuidv4 } = require("uuid");
-  const [userItem, setUserItem] = useRecoilState(userItemState);
-  const [recordList, setRecordList] = useRecoilState(recordListState);
-  const [commentItem, setCommentItem] = useRecoilState(commentItemState);
-  const [commentList, setCommentList] = useRecoilState(commentListState);
+  const userData = useRecoilValue(userDataState);
+  const userItem = useRecoilValue(userItemState);
+  const commentItem = useRecoilValue(commentItemState);
+  const [commentList, setCommentList] = useState<CommentList[]>([]);
   const [editItem, setEditItem] = useRecoilState(editItemState);
   const [isClient, setIsClient] = useState(false);
   const [comment, setComment] = useState({
@@ -77,13 +83,13 @@ const Comment = () => {
     );
     onSnapshot(commentRef, (querySnapshot) => {
       const commentsData = querySnapshot.docs.map((doc) => {
-        const commentInfo = recordList.find((record) => {
-          return record.uid === doc.data().uid;
+        const commentInfo = userData.find((user) => {
+          return user.uid === doc.data().commentId;
         });
         return {
           ...doc.data(),
           id: doc.id,
-          uid: doc.data().uid,
+          commentId: doc.data().commentId,
           postId: doc.data().postId,
           value: doc.data().value,
           createdAt: doc.data().createdAt,
@@ -102,7 +108,7 @@ const Comment = () => {
     //firebaseのサブコレクションに追加処理
     const commentDocRef = doc(db, "comments", docId);
     setDoc(commentDocRef, {
-      uid: userItem.uid,
+      commentId: userItem.uid,
       postId, //投稿者のpostIdとイコール関係
       value,
       createdAt,
@@ -300,7 +306,7 @@ const Comment = () => {
                                       )
                                     }
                                     disabled={
-                                      userItem.uid === comment.uid
+                                      userItem.uid === comment.commentId
                                         ? false
                                         : true
                                     }
@@ -321,7 +327,7 @@ const Comment = () => {
                                       handleDeleteComment(comment.id)
                                     }
                                     disabled={
-                                      userItem.uid === comment.uid
+                                      userItem.uid === comment.commentId
                                         ? false
                                         : true
                                     }

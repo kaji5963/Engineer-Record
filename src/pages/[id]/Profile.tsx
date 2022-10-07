@@ -3,7 +3,6 @@ import Layout from "../../components/Layout";
 import { Avatar, Box, IconButton, Tooltip, Typography } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import ReplyIcon from "@mui/icons-material/Reply";
-import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
 import { grey } from "@mui/material/colors";
 import { useRecoilState } from "recoil";
 import { User, userItemState } from "../../constants/atom";

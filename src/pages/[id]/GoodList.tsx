@@ -12,18 +12,15 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "../../components/firebase";
-import { useRecoilState } from "recoil";
-import { goodListState, recordListState, userDataState } from "../../constants/atom";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { recordListState, userDataState } from "../../constants/atom";
 import Layout from "../../components/Layout";
 import Head from "next/head";
 import { Alert } from "@mui/material";
-import { unstable_renderSubtreeIntoContainer } from "react-dom";
-import { useRouter } from "next/router";
-
 
 type GoodUser = {
   id: string;
-  uid: string;
+  authorId: string;
   key: string;
   postId: string;
   value: string;
@@ -32,11 +29,10 @@ type GoodUser = {
   photoURL: string;
 }
 const GoodList = () => {
-  const [recordList, setRecordList] = useRecoilState(recordListState);
-  const [userData, setUserData] = useRecoilState(userDataState);
+  const recordList = useRecoilValue(recordListState);
+  const userData = useRecoilValue(userDataState);
   const [goodList, setGoodList] = useState<GoodUser[]>([]);
   const [isClient, setIsClient] = useState(false);
-
 
   useEffect(() => {
     const hoge = recordList.map((record) => {
@@ -48,8 +44,8 @@ const GoodList = () => {
     if (userData.length === 0) return;
     onSnapshot(goodUsersRef, (querySnapshot) => {
       const goodListData = Promise.all(querySnapshot.docs.map((doc) => {
-        const goodListInfo = userData.find((record) => {
-          return record.uid === doc.data().uid;
+        const goodListInfo = userData.find((user) => {
+          return user.uid === doc.data().uid;
         });
         return {
           ...doc.data(),

@@ -1,5 +1,5 @@
 import { Card, Stack, Pagination } from "@mui/material";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import {
   commentItemState,
   recordListState,
@@ -8,7 +8,7 @@ import {
   RecordList,
   userDataState,
 } from "../constants/atom";
-import { useEffect, useMemo, useState } from "react";
+import React,{ useEffect, useMemo, useState } from "react";
 import {
   collection,
   collectionGroup,
@@ -25,8 +25,8 @@ import { useRouter } from "next/router";
 import { RecordItem } from "./RecordItem";
 
 const RecordList = () => {
+  const userItem = useRecoilValue(userItemState);
   const [recordList, setRecordList] = useRecoilState(recordListState);
-  const [userItem, setUserItem] = useRecoilState(userItemState);
   const [userData, setUserData] = useRecoilState(userDataState);
   const [commentItem, setCommentItem] = useRecoilState(commentItemState);
   const [editItem, setEditItem] = useRecoilState(editItemState);
@@ -48,8 +48,6 @@ const RecordList = () => {
         ).then((data) => setUserData(data));
       });
     })();
-    // console.log(1);
-    
   }, [userItem]);
 
   //マウント時にfirebaseからrecordsのデータを取得、setRecordListに格納し画面表示（２番目に動く）
@@ -65,23 +63,20 @@ const RecordList = () => {
         const userInfo = userData.find((user) => {
           return user.uid === doc.data().authorId
         });
-        // console.log(userInfo!.displayName, doc.data().displayName);
         return {
           ...doc.data(),
           id: doc.id,
-          uid: doc.data().uid,
+          authorId: doc.data().authorId,
           postId: doc.data().postId,
           value: doc.data().value,
           createdAt: doc.data().createdAt,
           displayName: userInfo!.displayName,
           photoURL: userInfo!.photoURL,
           goodCount: doc.data().goodCount
-          // goodCount: doc.data().goodCount
         };
       });
       setRecordList(recordsData);
     });
-    // console.log(2);
   }, [userData]);
 
   //ページネーション関数結果をuseMemoでメモ化
@@ -110,9 +105,9 @@ const RecordList = () => {
       "bookmarks",
       postData.postId
     );
-    const { uid, postId, value, createdAt } = postData;
+    const { authorId, postId, value, createdAt } = postData;
     setDoc(bookmarksRef, {
-      uid,
+      bookmarkId: authorId,
       postId,
       value,
       createdAt,

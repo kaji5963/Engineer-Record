@@ -1,6 +1,5 @@
 import Head from "next/head";
 import Layout from "../../components/Layout";
-import FactCheckIcon from "@mui/icons-material/FactCheck";
 import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { IconButton, TextField, Tooltip, Typography } from "@mui/material";
@@ -8,13 +7,12 @@ import { Box } from "@mui/system";
 import { grey } from "@mui/material/colors";
 import { useRouter } from "next/router";
 import { useRecoilState } from "recoil";
-import { editItemState, userItemState } from "../../constants/atom";
+import { editItemState } from "../../constants/atom";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../components/firebase";
-import { useEffect, useState } from "react";
+import React,{ useEffect, useState } from "react";
 
 const EditComment = () => {
-  const [userItem, setUserItem] = useRecoilState(userItemState);
   const [editItem, setEditItem] = useRecoilState(editItemState);
   const [isClient, setIsClient] = useState(false);
   const router = useRouter();

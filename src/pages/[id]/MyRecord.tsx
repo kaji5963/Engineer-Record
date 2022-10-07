@@ -11,7 +11,6 @@ import {
   Tooltip,
   Toolbar,
   Alert,
-  AlertTitle,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -24,15 +23,15 @@ import {
   orderBy,
   query,
 } from "firebase/firestore";
-import { useEffect, useState } from "react";
-import { useRecoilState } from "recoil";
+import React, { useEffect, useState } from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { db } from "../../components/firebase";
 import { editItemState, RecordList, userItemState } from "../../constants/atom";
 import { useRouter } from "next/router";
 
 const MyRecord = () => {
   const [myRecordList, setMyRecordList] = useState<RecordList[]>([]);
-  const [userItem, setUserItem] = useRecoilState(userItemState);
+  const userItem = useRecoilValue(userItemState);
   const [editItem, setEditItem] = useRecoilState(editItemState);
   const [isClient, setIsClient] = useState(false);
   const router = useRouter();
@@ -47,7 +46,7 @@ const MyRecord = () => {
       const myRecordData = querySnapshot.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
-        uid: doc.data().uid,
+        authorId: doc.data().authorId,
         postId: doc.data().postId,
         value: doc.data().value,
         createdAt: doc.data().createdAt,
@@ -80,7 +79,7 @@ const MyRecord = () => {
     );
     if (deleteMessage === true) {
       deleteDoc(doc(db, "users", userItem.uid, "records", id));
-      deleteDoc(doc(db, "users", userItem.uid,"goods", id));
+      deleteDoc(doc(db, "users", userItem.uid, "goodPosts", id));
       deleteDoc(doc(db, "users", userItem.uid, "bookmarks", id));
       deleteDoc(doc(db, "comments", id));
     } else return;
@@ -91,7 +90,6 @@ const MyRecord = () => {
       <Head>
         <title>Engineer Record MyRecord</title>
       </Head>
-
       {isClient && (
         <>
           {myRecordList.length === 0 && (
@@ -111,7 +109,6 @@ const MyRecord = () => {
               Recordの投稿がありません
             </Alert>
           )}
-
           <Card
             sx={{
               maxWidth: 500,

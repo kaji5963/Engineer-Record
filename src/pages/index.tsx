@@ -1,6 +1,6 @@
-import * as React from "react";
-import type { NextPage } from "next";
+import React from "react";
 import Head from "next/head";
+import type { NextPage } from "next";
 import AppBar from "@mui/material/AppBar";
 import IconButton from "@mui/material/IconButton";
 import { Box } from "@mui/material";
@@ -8,7 +8,6 @@ import { useRouter } from "next/router";
 import HomeIcon from "@mui/icons-material/Home";
 import ComputerIcon from "@mui/icons-material/Computer";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
-import AssignmentIcon from "@mui/icons-material/Assignment";
 import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
@@ -43,11 +42,6 @@ const Home: NextPage = (props: Props) => {
       icon: <AssignmentIndIcon />,
       href: "Signin",
     },
-    // {
-    //   title: "HowTo",
-    //   icon: <AssignmentIcon />,
-    //   href: "123",
-    // },
   ];
 
   const handleDrawerToggle = () => {
@@ -108,20 +102,6 @@ const Home: NextPage = (props: Props) => {
               Engineer Record
             </Typography>
             <Box sx={{ display: { xs: "none", sm: "block" } }}>
-              {/* {MENU_LIST.map((list) => {
-              return(
-                <Button
-              sx={{
-                color: "#fff",
-                fontSize: 16,
-                ":hover": { color: grey[400] },
-              }}
-              onClick={() => router.push(list.href)}
-            >
-              {list.title}
-            </Button>
-              )
-            })} */}
               <Button
                 sx={{
                   color: "#fff",
@@ -144,17 +124,6 @@ const Home: NextPage = (props: Props) => {
               >
                 Login
               </Button>
-              {/* <Button
-                sx={{
-                  color: "#fff",
-                  fontSize: 18,
-                  textTransform: "none",
-                  ":hover": { color: grey[400] },
-                }}
-                onClick={() => router.push("")}
-              >
-                HowTo
-              </Button> */}
             </Box>
           </Toolbar>
         </AppBar>

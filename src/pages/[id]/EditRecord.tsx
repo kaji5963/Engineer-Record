@@ -1,13 +1,11 @@
 import Head from "next/head";
 import Layout from "../../components/Layout";
-import FactCheckIcon from "@mui/icons-material/FactCheck";
 import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-
 import { IconButton, TextField, Tooltip, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { Box } from "@mui/system";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { editItemState, userItemState } from "../../constants/atom";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../components/firebase";
@@ -15,7 +13,7 @@ import { useRouter } from "next/router";
 
 const EditRecord = () => {
   const [editItem, setEditItem] = useRecoilState(editItemState);
-  const [userItem, setUserItem] = useRecoilState(userItemState);
+  const userItem = useRecoilValue(userItemState);
   const router = useRouter();
 
   //Record編集完了処理

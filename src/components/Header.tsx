@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { useRouter } from "next/router";
 import { auth } from "./firebase";
 import { useRecoilState } from "recoil";
@@ -133,20 +133,6 @@ const Header = (props: Props) => {
             Engineer Record
           </Typography>
           <Box sx={{ display: { xs: "none", sm: "none", md: "block" } }}>
-            {/* {MENU_LIST.map((list) => {
-              return(
-                <Button
-              sx={{
-                color: "#fff",
-                fontSize: 16,
-                ":hover": { color: grey[400] },
-              }}
-              onClick={() => router.push(list.href)}
-            >
-              {list.title}
-            </Button>
-              )
-            })} */}
             <Button
               sx={{
                 color: "#fff",

@@ -1,7 +1,7 @@
 import SendIcon from "@mui/icons-material/Send";
 import { Avatar, Box, Button, TextField, Typography } from "@mui/material";
-import { useRecoilState, useSetRecoilState } from "recoil";
-import { recordListState, userItemState } from "../constants/atom";
+import { useRecoilValue } from "recoil";
+import { userItemState } from "../constants/atom";
 import { useState } from "react";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { auth, db } from "./firebase";
@@ -24,8 +24,7 @@ export const changeDateFormat = (date: Date) => {
 
 const Form = () => {
   const { v4: uuidv4 } = require("uuid");
-  const setRecordList = useSetRecoilState(recordListState);
-  const [userItem, setUserItem] = useRecoilState(userItemState);
+  const userItem = useRecoilValue(userItemState);
   const [inputValue, setInputValue] = useState({
     postId: uuidv4(),
     value: "",

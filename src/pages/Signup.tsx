@@ -6,7 +6,6 @@ import TextField from "@mui/material/TextField";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
@@ -27,7 +26,7 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { User, userItemState } from "../constants/atom";
 import { useRecoilState } from "recoil";
 
-type Info = {
+type userInfo = {
   email: string;
   password: string;
   displayName: string | null;
@@ -36,7 +35,7 @@ type Info = {
 
 const SignUp = () => {
   const [userItem, setUserItem] = useRecoilState(userItemState);
-  const [userInfo, setUserInfo] = useState<Info>({
+  const [userInfo, setUserInfo] = useState<userInfo>({
     email: "",
     password: "",
     displayName: "",
@@ -60,6 +59,7 @@ const SignUp = () => {
         //firebaseにusersコレクション作成 setDocでuser.uidを指定してドキュメントID作成
         const userDocRef = doc(db, "users", user.uid);
         await setDoc(userDocRef, {
+          uid: user.uid,
           displayName,
           photoURL,
           timeStamp: serverTimestamp(),

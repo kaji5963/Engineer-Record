@@ -13,16 +13,13 @@ import {
   Alert,
 } from "@mui/material";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
-import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import { green } from "@mui/material/colors";
-import { useRecoilState } from "recoil";
+import { useRecoilValue } from "recoil";
 import {
-  bookmarkListState,
-  recordListState,
   userDataState,
   userItemState,
 } from "../../constants/atom";
-import { useEffect, useState } from "react";
+import React,{ useEffect, useState } from "react";
 import { db } from "../../components/firebase";
 import {
   collection,
@@ -33,10 +30,21 @@ import {
   query,
 } from "firebase/firestore";
 
+type Bookmark = {
+  bookmarkId: string;
+  id: string;
+  postId: string;
+  value: string;
+  createdAt: string;
+  displayName: string ;
+  photoURL: string;
+  saved: boolean;
+};
+
 const Bookmark = () => {
-  const [bookmarkList, setBookmarkList] = useRecoilState(bookmarkListState);
-  const [userItem, setUserItem] = useRecoilState(userItemState);
-  const [userData, setUserData] = useRecoilState(userDataState);
+  const userData = useRecoilValue(userDataState);
+  const userItem= useRecoilValue(userItemState);
+  const [bookmarkList, setBookmarkList] = useState<Bookmark[]>([]);
   const [isClient, setIsClient] = useState(false);
 
   //firebaseのbookmarksからデータ取得
@@ -48,13 +56,13 @@ const Bookmark = () => {
     if (userData.length === 0) return;
     onSnapshot(bookmarkRef, (querySnapshot) => {
       const bookmarksData = querySnapshot.docs.map((doc) => {
-        const bookmarkInfo = userData.find((record) => {
-          return record.uid === doc.data().uid;
+        const bookmarkInfo = userData.find((user) => {
+          return user.uid === doc.data().bookmarkId;
         });
         return {
           ...doc.data(),
           id: doc.id,
-          uid: doc.data().uid,
+          bookmarkId: doc.data().bookmarkId,
           postId: doc.data().postId,
           value: doc.data().value,
           createdAt: doc.data().createdAt,

@@ -8,7 +8,6 @@ import {
   Typography,
 } from "@mui/material";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
-import FactCheckIcon from "@mui/icons-material/FactCheck";
 import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { grey } from "@mui/material/colors";

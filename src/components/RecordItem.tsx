@@ -30,8 +30,7 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "./firebase";
-import { RecordList, recordListState, User } from "../constants/atom";
-import { useRecoilState } from "recoil";
+import { RecordList, User } from "../constants/atom";
 import { NextRouter } from "next/router";
 
 type Props = {
@@ -47,8 +46,8 @@ type Props = {
 
 type Good = {
   id: string;
-  uid: string;
-  postId: any;
+  goodUserId: string;
+  postId: string;
 };
 
 export const RecordItem = ({
@@ -63,7 +62,6 @@ export const RecordItem = ({
 }: Props) => {
   const { v4: uuidv4 } = require("uuid");
   const [saved, setSaved] = useState(false);
-  const [recordList, setRecordList] = useRecoilState(recordListState);
   const [goodUsers, setGoodUsers] = useState<Good[]>([]);
 
   //投稿に対してgoodしたユーザーを取得、取得したデータ（数）をlengthで表示
@@ -77,7 +75,7 @@ export const RecordItem = ({
         return {
           ...doc.data(),
           id: doc.id,
-          uid: doc.data().uid,
+          goodUserId: doc.data().goodUserId,
           postId: doc.data().postId,
         };
       });
@@ -104,7 +102,7 @@ export const RecordItem = ({
 
   //good（いいね）のカウントを増減処理
   const handleGoodCount = async (record: RecordList) => {
-    const { uid, postId, value, createdAt, displayName, photoURL } = record;
+    const { authorId, postId, value, createdAt, displayName, photoURL } = record;
     const goodPostDoc = doc(db, "users", userItem.uid, "goodPosts", postId);
     const goodUserDoc = doc(
       db,
@@ -119,7 +117,7 @@ export const RecordItem = ({
     if (goodUsers.length === 0) {
       //goodが0の場合（good+1）
       await setDoc(goodPostDoc, {
-        uid,
+        goodPostId: authorId,
         postId,
         value,
         createdAt,
@@ -131,16 +129,16 @@ export const RecordItem = ({
 
       await setDoc(goodUserDoc, {
         postId,
-        uid: userItem.uid,
+        goodUserId: userItem.uid,
         timeStamp: serverTimestamp(),
       });
     } else {
       //goodが1以上の場合
       goodUsers.forEach(async (good) => {
-        if (userItem.uid !== good.uid) {
+        if (userItem.uid !== good.goodUserId) {
           //goodしているのがログインユーザー以外だったら追加（good+1）
           await setDoc(goodPostDoc, {
-            uid,
+            goodPostId: authorId,
             postId,
             value,
             createdAt,
@@ -151,7 +149,7 @@ export const RecordItem = ({
           });
           await setDoc(goodUserDoc, {
             postId,
-            uid: userItem.uid,
+            goodUserId: userItem.uid,
             timeStamp: serverTimestamp(),
           });
           console.log(1);
@@ -181,7 +179,7 @@ export const RecordItem = ({
   const savePost = (recordData: RecordList) => {
     const {
       id,
-      uid,
+      authorId,
       postId,
       value,
       createdAt,
@@ -192,7 +190,7 @@ export const RecordItem = ({
     setSaved(true);
     const savedPosts = {
       id,
-      uid,
+      authorId,
       postId,
       value,
       createdAt,
@@ -236,7 +234,7 @@ export const RecordItem = ({
                 <IconButton
                   sx={{ mr: 2 }}
                   onClick={() => handleEditRecord(record.id, record.postId)}
-                  disabled={userItem.uid === record.uid ? false : true}
+                  disabled={userItem.uid === record.authorId ? false : true}
                 >
                   <EditIcon />
                 </IconButton>
@@ -247,7 +245,7 @@ export const RecordItem = ({
                 <IconButton
                   sx={{ mr: 2 }}
                   onClick={() => handleDeleteRecord(record.id)}
-                  disabled={userItem.uid === record.uid ? false : true}
+                  disabled={userItem.uid === record.authorId ? false : true}
                 >
                   <DeleteIcon />
                 </IconButton>
@@ -285,31 +283,6 @@ export const RecordItem = ({
             <ChatBubbleOutlineIcon />
           </IconButton>
         </Tooltip>
-
-        {/* {goodUsers.length > 0 ? (
-          <Tooltip title="Good" placement="right-start" arrow>
-            <IconButton
-              sx={{ color: red[300] }}
-              onClick={() => handleGoodCount(record)}
-            >
-              <ThumbUpAltIcon />
-              <span style={{ marginLeft: 5, fontSize: 18 }}>
-                {goodUsers.length}
-              </span>
-            </IconButton>
-          </Tooltip>
-        ) : (
-          <Tooltip title="Good" placement="right-start" arrow>
-            <IconButton onClick={() => handleGoodCount(record)}>
-              <ThumbUpOffAltIcon />
-
-              <span style={{ marginLeft: 5, fontSize: 18 }}>
-                {goodUsers.length}
-              </span>
-            </IconButton>
-          </Tooltip>
-        )} */}
-
 
         {goodUsers.length === 0 ? (
           <Tooltip title="Good" placement="right-start" arrow>
