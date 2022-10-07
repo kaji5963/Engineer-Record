@@ -26,6 +26,7 @@ import React,{ useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { db } from "../../components/firebase";
 import {
+  recordListState,
   userDataState,
   userItemState,
 } from "../../constants/atom";
@@ -42,10 +43,12 @@ type GoodList = {
 };
 
 const Good = () => {
+  const recordList = useRecoilValue(recordListState);
   const userItem = useRecoilValue(userItemState);
   const userData = useRecoilValue(userDataState);
   const [goodList, setGoodList] = useState<GoodList[]>([]);
   const [isClient, setIsClient] = useState(false);
+
 
   //firebaseのgoodPostsからデータを取得
   useEffect(() => {
@@ -81,8 +84,13 @@ const Good = () => {
   }, []);
 
   //good削除処理
-  const handleRemoveGoods = (postId: string) => {
-    deleteDoc(doc(db, "users", userItem.uid, "goodPosts", postId));
+  const handleRemoveGoods = (goodPostId: string) => {
+    deleteDoc(doc(db, "users", userItem.uid, "goodPosts", goodPostId));
+    recordList.forEach((record) => {
+      deleteDoc(
+        doc(db, "users", userItem.uid, "records", record.postId, "goodUsers", record.postId)
+      );
+    })
   };
 
   return (
@@ -148,7 +156,9 @@ const Good = () => {
                             <span>
                               <IconButton
                                 sx={{ color: red[300] }}
-                                onClick={() => handleRemoveGoods(good.postId)}
+                                onClick={() =>
+                                  handleRemoveGoods(good.goodPostId)
+                                }
                               >
                                 <ThumbUpAltIcon />
                               </IconButton>

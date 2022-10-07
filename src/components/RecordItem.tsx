@@ -37,14 +37,14 @@ type Props = {
   record: RecordList;
   handleComment: (id: string, postId: string) => void;
   handleEditRecord: (id: string, postId: string) => void;
-  handleDeleteRecord: (id: string) => void;
+  handleDeleteRecord: (id: string, authorId: string) => void;
   handleSavedBookmark: (postData: RecordList) => void;
   handleRemoveBookmark: (postId: string) => void;
   userItem: User;
   router: NextRouter;
 };
 
-type Good = {
+type GoodUser = {
   id: string;
   goodUserId: string;
   postId: string;
@@ -62,7 +62,7 @@ export const RecordItem = ({
 }: Props) => {
   const { v4: uuidv4 } = require("uuid");
   const [saved, setSaved] = useState(false);
-  const [goodUsers, setGoodUsers] = useState<Good[]>([]);
+  const [goodUsers, setGoodUsers] = useState<GoodUser[]>([]);
 
   //投稿に対してgoodしたユーザーを取得、取得したデータ（数）をlengthで表示
   useEffect(() => {
@@ -102,8 +102,9 @@ export const RecordItem = ({
 
   //good（いいね）のカウントを増減処理
   const handleGoodCount = async (record: RecordList) => {
-    const { authorId, postId, value, createdAt, displayName, photoURL } = record;
-    const goodPostDoc = doc(db, "users", userItem.uid, "goodPosts", postId);
+    const { authorId, postId, value, createdAt, displayName, photoURL } =
+      record;
+    const goodPostDoc = doc(db, "users", userItem.uid, "goodPosts", authorId);
     const goodUserDoc = doc(
       db,
       "users",
@@ -123,13 +124,13 @@ export const RecordItem = ({
         createdAt,
         displayName,
         photoURL,
-        key: uuidv4(),
+        key: uuidv4(), //GoodListページのmap用のkey
         timeStamp: serverTimestamp(),
       });
 
       await setDoc(goodUserDoc, {
-        postId,
         goodUserId: userItem.uid,
+        postId,
         timeStamp: serverTimestamp(),
       });
     } else {
@@ -148,14 +149,18 @@ export const RecordItem = ({
             timeStamp: serverTimestamp(),
           });
           await setDoc(goodUserDoc, {
-            postId,
             goodUserId: userItem.uid,
+            postId,
             timeStamp: serverTimestamp(),
           });
-          console.log(1);
+          console.log("追加");
+          // console.log(good);
           
         } else {
           //goodしているのがログインユーザーだったら削除（good-1）
+          await deleteDoc(
+            doc(db, "users", userItem.uid, "goodPosts", authorId)
+          );
           await deleteDoc(
             doc(
               db,
@@ -167,8 +172,8 @@ export const RecordItem = ({
               postId
             )
           );
-          await deleteDoc(doc(db, "users", userItem.uid, "goodPosts", postId));
-          console.log(2);
+          console.log("削除");
+          // console.log(good);
 
         }
       });
@@ -244,7 +249,7 @@ export const RecordItem = ({
               <span>
                 <IconButton
                   sx={{ mr: 2 }}
-                  onClick={() => handleDeleteRecord(record.id)}
+                  onClick={() => handleDeleteRecord(record.id, record.authorId)}
                   disabled={userItem.uid === record.authorId ? false : true}
                 >
                   <DeleteIcon />

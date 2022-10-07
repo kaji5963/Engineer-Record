@@ -131,16 +131,17 @@ const RecordList = () => {
   };
 
   //Record削除処理
-  const handleDeleteRecord = (id: string) => {
+  const handleDeleteRecord = (id: string, authorId: string) => {
     const deleteMessage = confirm(
       `${userItem.displayName}の学習記録を削除してもよろしいですか？`
     );
     if (deleteMessage === true) {
-      //Topから削除した際は、recordsに紐づくcomments,bookmarks,goodsも同時に削除
+      //Topから削除した際は、recordsに紐づくcomments,bookmarks,goodPosts,goodUsersも同時に削除
       deleteDoc(doc(db, "users", userItem.uid, "records", id));
-      deleteDoc(doc(db, "users", userItem.uid,"goodPosts", id));
+      deleteDoc(doc(db, "users", userItem.uid,"goodPosts", authorId));
       deleteDoc(doc(db, "users", userItem.uid, "bookmarks", id));
-      deleteDoc(doc(db, "comments", id));
+      deleteDoc(doc(db, "users", userItem.uid, "records", id, "goodUsers", id));
+      // deleteDoc(doc(db, "comments", id));  commentの削除は必要ある？？
     } else return;
   };
 
