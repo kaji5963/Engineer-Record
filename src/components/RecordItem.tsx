@@ -151,13 +151,14 @@ export const RecordItem = ({
         postId,
         value,
         createdAt,
-        key: uuidv4(), //GoodListページのmap用key
         timeStamp: serverTimestamp(),
       });
 
       batch.set(goodUsersDoc, {
         goodUserId: userItem.uid,
+        key: uuidv4(), //GoodListページのmap用key
         postId,
+        createdAt,
         timeStamp: serverTimestamp(),
       });
 
@@ -175,13 +176,14 @@ export const RecordItem = ({
           postId,
           value,
           createdAt,
-          key: uuidv4(), //GoodListページのmap用key
           timeStamp: serverTimestamp(),
         });
 
         batch.set(goodUsersDoc, {
           goodUserId: userItem.uid,
+          key: uuidv4(), //GoodListページのmap用key
           postId,
+          createdAt,
           timeStamp: serverTimestamp(),
         });
 
@@ -348,7 +350,8 @@ export const RecordItem = ({
           </Tooltip>
         )}
         <Tooltip title="Good List" placement="right-start" arrow>
-          <IconButton onClick={() => router.push(`/${record.id}/GoodList`)}>
+          {/* <IconButton onClick={() => router.push(`/${record.id}/GoodList`)}> */}
+          <IconButton onClick={() => router.push({pathname: `/${record.id}/GoodList`, query: {record: record.postId}})}>
             <ListAltIcon />
           </IconButton>
         </Tooltip>

@@ -1,9 +1,12 @@
+import Head from "next/head";
+import Layout from "../../components/Layout";
 import React, { useEffect, useState } from "react";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
+import Avatar from "@mui/material/Avatar";
 import ListItemText from "@mui/material/ListItemText";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
-import Avatar from "@mui/material/Avatar";
+import { Alert } from "@mui/material";
 import {
   collectionGroup,
   onSnapshot,
@@ -12,61 +15,58 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "../../components/firebase";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilValue } from "recoil";
 import { recordListState, userDataState } from "../../constants/atom";
-import Layout from "../../components/Layout";
-import Head from "next/head";
-import { Alert } from "@mui/material";
+import { useRouter } from "next/router";
 
 type GoodUser = {
   id: string;
-  authorId: string;
+  goodUserId: string;
   key: string;
   postId: string;
-  value: string;
   createdAt: string;
   displayName: string;
   photoURL: string;
-}
+};
+
 const GoodList = () => {
   const recordList = useRecoilValue(recordListState);
   const userData = useRecoilValue(userDataState);
   const [goodList, setGoodList] = useState<GoodUser[]>([]);
   const [isClient, setIsClient] = useState(false);
-
+  const router = useRouter();
   useEffect(() => {
-    const hoge = recordList.map((record) => {
-      const goodUsersRef = query(
-        collectionGroup(db, "goodPosts"),
-        orderBy("timeStamp", "desc"),
-        where("postId", "==", record.postId)
-      );
+    if (!router.query.record) return;
+    // recordList.forEach((record) => {
+    const goodPostsRef = query(
+      collectionGroup(db, "goodUsers"),
+      orderBy("timeStamp", "desc"),
+      where("postId", "==", router.query.record)
+      // where("postId", "==", record.postId)
+    );
+
     if (userData.length === 0) return;
-    onSnapshot(goodUsersRef, (querySnapshot) => {
-      const goodListData = Promise.all(querySnapshot.docs.map((doc) => {
-        const goodListInfo = userData.find((user) => {
-          return user.uid === doc.data().uid;
+    onSnapshot(goodPostsRef, (querySnapshot) => {
+      const goodPostsData = querySnapshot.docs.map((doc) => {
+        const userInfo = userData.find((user) => {
+          return user.uid === doc.data().goodUserId;
         });
         return {
           ...doc.data(),
           id: doc.id,
-          uid: doc.data().uid,
           key: doc.data().key,
+          goodUserId: doc.data().goodUserId,
           postId: doc.data().postId,
-          value: doc.data().value,
           createdAt: doc.data().createdAt,
-          displayName: goodListInfo!.displayName,
-          photoURL: goodListInfo!.photoURL,
+          displayName: userInfo!.displayName,
+          photoURL: userInfo!.photoURL,
         };
-      }));
-      return goodListData
+      });
+      setGoodList(goodPostsData);
+      // console.log(goodPostsData);
     });
-    })
-    console.log(hoge)
-  setGoodList([]);
-
-
-  }, []);
+    // });
+  }, [router.query.record]);
 
   //Hydrate Error対策
   useEffect(() => {
@@ -98,7 +98,11 @@ const GoodList = () => {
             </Alert>
           )}
           <List
-            sx={{ mx: "auto", textAlign: "center", bgcolor: "background.paper" }}
+            sx={{
+              mx: "auto",
+              textAlign: "center",
+              bgcolor: "background.paper",
+            }}
           >
             {goodList.map((good) => {
               return (
