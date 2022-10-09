@@ -141,7 +141,7 @@ const RecordList = () => {
       `${userItem.displayName}の学習記録を削除してもよろしいですか？`
     );
     if (deleteMessage === true) {
-      //Topから削除した際は、recordsに紐づくcomments,bookmarks,goodPosts,goodUsersも同時に削除
+      //recordsに紐づくcomments,bookmarks,goodPosts,goodUsersをバッチ処理
       const batch = writeBatch(db);
       batch.delete(doc(db, "users", userItem.uid, "records", id));
       batch.delete(doc(db, "users", userItem.uid, "goodPosts", id));

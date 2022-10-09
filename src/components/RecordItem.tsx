@@ -24,7 +24,6 @@ import {
   collection,
   onSnapshot,
   doc,
-  collectionGroup,
   serverTimestamp,
   where,
   writeBatch,
@@ -67,12 +66,28 @@ export const RecordItem = ({
 }: Props) => {
   const { v4: uuidv4 } = require("uuid");
   const [saved, setSaved] = useState(false);
-  const [userExist, setUserExist] = useState(false);
   const [goodUsers, setGoodUsers] = useState<GoodUser[]>([]);
   const [commentExist, setCommentExist] = useState<{ id: string }[]>([]);
 
+  //commentアイコンの表示切り替え用として取得
   useEffect(() => {
-    //投稿に対してgoodしたユーザーを絞り込んで取得
+    const commentsRef = query(
+      collection(db, "comments"),
+      where("postId", "==", record.postId)
+    );
+    onSnapshot(commentsRef, (querySnapshot) => {
+      const commentsData = querySnapshot.docs.map((doc) => {
+        return {
+          ...doc.data(),
+          id: doc.id,
+        };
+      });
+      setCommentExist(commentsData);
+    });
+  }, []);
+
+  //投稿に対してgoodしたユーザーを絞り込んで取得
+  useEffect(() => {
     const goodUsersRef = query(
       collection(
         db,
@@ -95,22 +110,7 @@ export const RecordItem = ({
       });
       setGoodUsers(goodUserData);
     });
-
-    //commentアイコンの表示切り替え用として取得
-    const commentsRef = query(
-      collection(db, "comments"),
-      where("postId", "==", record.postId)
-    );
-    onSnapshot(commentsRef, (querySnapshot) => {
-      const commentsData = querySnapshot.docs.map((doc) => {
-        return {
-          ...doc.data(),
-          id: doc.id,
-        };
-      });
-      setCommentExist(commentsData);
-    });
-  },[]);
+  }, []);
 
   //firebaseからbookmarksのデータを取得(savedを監視)
   useEffect(() => {
@@ -160,6 +160,7 @@ export const RecordItem = ({
         postId,
         timeStamp: serverTimestamp(),
       });
+
       batch.update(recordsRef, { goodCount: increment(1) });
     } else {
       //ログインuserがgoodしている場合
@@ -168,7 +169,7 @@ export const RecordItem = ({
         batch.delete(goodUsersDoc);
         batch.update(recordsRef, { goodCount: increment(-1) });
       } else {
-      //ログインuserがgoodしていない場合
+        //ログインuserがgoodしていない場合
         batch.set(goodPostsDoc, {
           goodPostId: authorId,
           postId,
@@ -183,6 +184,7 @@ export const RecordItem = ({
           postId,
           timeStamp: serverTimestamp(),
         });
+
         batch.update(recordsRef, { goodCount: increment(1) });
       }
     }
@@ -292,7 +294,7 @@ export const RecordItem = ({
           {record.value}
         </Typography>
       </CardContent>
-      {/* commentアイコンの条件分岐（commntExist.lengthで表示） */}
+      {/* commentアイコンの条件分岐（commentExist.lengthで表示） */}
       <CardActions sx={{ display: "flex", justifyContent: "space-around" }}>
         {commentExist.length === 0 ? (
           <Tooltip title="Comment" placement="right-start" arrow>
@@ -313,12 +315,23 @@ export const RecordItem = ({
             </IconButton>
           </Tooltip>
         )}
-        {/* goodアイコンの条件分岐（record.goodCountで表示） */}
+        {/* goodアイコンの条件分岐（record.goodCount,goodUsers.lengthで表示） */}
         {record.goodCount === 0 ? (
           <Tooltip title="Good" placement="right-start" arrow>
             <IconButton onClick={() => handleGoodCount(record)}>
               <ThumbUpOffAltIcon />
-
+              <span style={{ marginLeft: 5, fontSize: 18 }}>
+                {record.goodCount}
+              </span>
+            </IconButton>
+          </Tooltip>
+        ) : goodUsers.length > 0 ? (
+          <Tooltip title="Good" placement="right-start" arrow>
+            <IconButton
+              sx={{ color: red[300] }}
+              onClick={() => handleGoodCount(record)}
+            >
+              <ThumbUpAltIcon />
               <span style={{ marginLeft: 5, fontSize: 18 }}>
                 {record.goodCount}
               </span>
@@ -326,11 +339,8 @@ export const RecordItem = ({
           </Tooltip>
         ) : (
           <Tooltip title="Good" placement="right-start" arrow>
-            <IconButton
-              sx={{ color: red[300] }}
-              onClick={() => handleGoodCount(record)}
-            >
-              <ThumbUpAltIcon />
+            <IconButton onClick={() => handleGoodCount(record)}>
+              <ThumbUpOffAltIcon />
               <span style={{ marginLeft: 5, fontSize: 18 }}>
                 {record.goodCount}
               </span>
@@ -359,4 +369,4 @@ export const RecordItem = ({
       </CardActions>
     </Box>
   );
-};
+};;;
