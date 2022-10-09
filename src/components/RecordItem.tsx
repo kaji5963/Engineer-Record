@@ -14,6 +14,7 @@ import BookmarkIcon from "@mui/icons-material/Bookmark";
 import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
+import ChatIcon from '@mui/icons-material/Chat';
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import { blue, red } from "@mui/material/colors";
@@ -28,6 +29,8 @@ import {
   collectionGroup,
   serverTimestamp,
   where,
+  writeBatch,
+  increment,
 } from "firebase/firestore";
 import { db } from "./firebase";
 import { RecordList, User } from "../constants/atom";
@@ -37,7 +40,7 @@ type Props = {
   record: RecordList;
   handleComment: (id: string, postId: string) => void;
   handleEditRecord: (id: string, postId: string) => void;
-  handleDeleteRecord: (id: string, authorId: string) => void;
+  handleDeleteRecord: (id: string, authorId: string, commentExist: CommentData[]) => void;
   handleSavedBookmark: (postData: RecordList) => void;
   handleRemoveBookmark: (postId: string) => void;
   userItem: User;
@@ -47,6 +50,12 @@ type Props = {
 type GoodUser = {
   id: string;
   goodUserId: string;
+  postId: string;
+};
+
+export type CommentData = {
+  id: string;
+  commentId: string;
   postId: string;
 };
 
@@ -63,9 +72,10 @@ export const RecordItem = ({
   const { v4: uuidv4 } = require("uuid");
   const [saved, setSaved] = useState(false);
   const [goodUsers, setGoodUsers] = useState<GoodUser[]>([]);
+  const [commentExist, setCommentExist] = useState<CommentData[]>([]);
 
-  //投稿に対してgoodしたユーザーを取得、取得したデータ（数）をlengthで表示
   useEffect(() => {
+    //投稿に対してgoodしたユーザーを取得、取得したデータ（数）をlengthで表示
     const goodUsersRef = query(
       collectionGroup(db, "goodUsers"),
       where("postId", "==", record.postId)
@@ -80,6 +90,23 @@ export const RecordItem = ({
         };
       });
       setGoodUsers(goodUserData);
+    });
+
+  //commentアイコンの表示切り替え用として取得
+    const commentsRef = query(
+      collection(db, "comments"),
+      where("postId", "==", record.postId)
+    );
+    onSnapshot(commentsRef, (querySnapshot) => {
+      const commentsData = querySnapshot.docs.map((doc) => {
+        return {
+          ...doc.data(),
+          id: doc.id,
+          commentId: doc.data().commentId,
+          postId: doc.data().postId,
+        };
+      });
+      setCommentExist(commentsData);
     });
   }, []);
 
@@ -102,8 +129,15 @@ export const RecordItem = ({
 
   //good（いいね）のカウントを増減処理
   const handleGoodCount = async (record: RecordList) => {
-    const { authorId, postId, value, createdAt, displayName, photoURL } =
-      record;
+    const {
+      authorId,
+      postId,
+      value,
+      createdAt,
+      displayName,
+      photoURL,
+      goodCount,
+    } = record;
     const goodPostDoc = doc(db, "users", userItem.uid, "goodPosts", authorId);
     const goodUserDoc = doc(
       db,
@@ -115,69 +149,140 @@ export const RecordItem = ({
       postId
     );
 
-    if (goodUsers.length === 0) {
-      //goodが0の場合（good+1）
-      await setDoc(goodPostDoc, {
-        goodPostId: authorId,
-        postId,
-        value,
-        createdAt,
-        displayName,
-        photoURL,
-        key: uuidv4(), //GoodListページのmap用のkey
-        timeStamp: serverTimestamp(),
-      });
+    setDoc(goodPostDoc, {
+      goodPostId: authorId,
+      postId,
+      value,
+      createdAt,
+      displayName,
+      photoURL,
+      key: uuidv4(), //GoodListページのmap用key
+      timeStamp: serverTimestamp(),
+    });
 
-      await setDoc(goodUserDoc, {
-        goodUserId: userItem.uid,
-        postId,
-        timeStamp: serverTimestamp(),
-      });
-    } else {
-      //goodが1以上の場合
-      goodUsers.forEach(async (good) => {
-        if (userItem.uid !== good.goodUserId) {
-          //goodしているのがログインユーザー以外だったら追加（good+1）
-          await setDoc(goodPostDoc, {
-            goodPostId: authorId,
-            postId,
-            value,
-            createdAt,
-            displayName,
-            photoURL,
-            key: uuidv4(),
-            timeStamp: serverTimestamp(),
-          });
-          await setDoc(goodUserDoc, {
-            goodUserId: userItem.uid,
-            postId,
-            timeStamp: serverTimestamp(),
-          });
-          console.log("追加");
-          // console.log(good);
-          
-        } else {
-          //goodしているのがログインユーザーだったら削除（good-1）
-          await deleteDoc(
-            doc(db, "users", userItem.uid, "goodPosts", authorId)
-          );
-          await deleteDoc(
-            doc(
-              db,
-              "users",
-              userItem.uid,
-              "records",
-              postId,
-              "goodUsers",
-              postId
-            )
-          );
-          console.log("削除");
-          // console.log(good);
+    setDoc(goodUserDoc, {
+      goodUserId: userItem.uid,
+      postId,
+      timeStamp: serverTimestamp(),
+    });
 
-        }
-      });
-    }
+    const batch = writeBatch(db);
+    const recordsRef = doc(db, "users", userItem.uid, "records", postId);
+    batch.update(recordsRef, { goodCount: increment(1) });
+    batch.commit();
+    // console.log(recordsRef);
+
+    // if (goodUsers.length === 0) {
+    //   setDoc(goodPostDoc, {
+    //     goodPostId: authorId,
+    //     postId,
+    //     value,
+    //     createdAt,
+    //     displayName,
+    //     photoURL,
+    //     key: uuidv4(), //GoodListページのmap用key
+    //     timeStamp: serverTimestamp(),
+    //   });
+
+    //   await setDoc(goodUserDoc, {
+    //     goodUserId: userItem.uid,
+    //     postId,
+    //     timeStamp: serverTimestamp(),
+    //   });
+    // } else {
+    //   goodUsers.forEach((good) => {
+    //     if (good.goodUserId === userItem.uid) {
+    //         setUserExist(true);
+    //     } else setUserExist(false);
+    //   });
+    // }
+    // if (userExist) {
+    //   await deleteDoc(doc(db, "users", userItem.uid, "goodPosts", authorId));
+    //   await deleteDoc(
+    //     doc(db, "users", userItem.uid, "records", postId, "goodUsers", postId)
+    //   );
+    // } else {
+    //   setDoc(goodPostDoc, {
+    //     goodPostId: authorId,
+    //     postId,
+    //     value,
+    //     createdAt,
+    //     displayName,
+    //     photoURL,
+    //     key: uuidv4(), //GoodListページのmap用key
+    //     timeStamp: serverTimestamp(),
+    //   });
+
+    //   await setDoc(goodUserDoc, {
+    //     goodUserId: userItem.uid,
+    //     postId,
+    //     timeStamp: serverTimestamp(),
+    //   });
+    // }
+
+    // if (goodUsers.length === 0) {
+    //   //goodが0の場合（good+1）
+    //   await setDoc(goodPostDoc, {
+    //     goodPostId: authorId,
+    //     postId,
+    //     value,
+    //     createdAt,
+    //     displayName,
+    //     photoURL,
+    //     key: uuidv4(), //GoodListページのmap用key
+    //     timeStamp: serverTimestamp(),
+    //   });
+
+    //   await setDoc(goodUserDoc, {
+    //     goodUserId: userItem.uid,
+    //     postId,
+    //     timeStamp: serverTimestamp(),
+    //   });
+    // } else {
+    //   //goodが1以上の場合
+    //   goodUsers.forEach(async (good) => {
+    //     if (userItem.uid !== good.goodUserId) {
+    //       //goodしているのがログインユーザー以外だったら追加（good+1）
+    //       await setDoc(goodPostDoc, {
+    //         goodPostId: authorId,
+    //         postId,
+    //         value,
+    //         createdAt,
+    //         displayName,
+    //         photoURL,
+    //         key: uuidv4(),
+    //         timeStamp: serverTimestamp(),
+    //       });
+    //       await setDoc(goodUserDoc, {
+    //         goodUserId: userItem.uid,
+    //         postId,
+    //         timeStamp: serverTimestamp(),
+    //       });
+    //       console.log("追加");
+    //       // console.log(good);
+
+    //     } else {
+    //       //goodしているのがログインユーザーだったら削除（good-1）
+    //       await deleteDoc(
+    //         doc(db, "users", userItem.uid, "goodPosts", authorId)
+    //       );
+    //       await deleteDoc(
+    //         doc(
+    //           db,
+    //           "users",
+    //           userItem.uid,
+    //           "records",
+    //           postId,
+    //           "goodUsers",
+    //           postId
+    //         )
+    //       );
+    //       console.log("削除");
+    //       // console.log(good);
+
+    //     }
+    //   });
+    // }
   };
 
   //ブックマーク追加処理
@@ -249,7 +354,7 @@ export const RecordItem = ({
               <span>
                 <IconButton
                   sx={{ mr: 2 }}
-                  onClick={() => handleDeleteRecord(record.id, record.authorId)}
+                  onClick={() => handleDeleteRecord(record.id, record.authorId, commentExist)}
                   disabled={userItem.uid === record.authorId ? false : true}
                 >
                   <DeleteIcon />
@@ -281,21 +386,35 @@ export const RecordItem = ({
           {record.value}
         </Typography>
       </CardContent>
-
+      {/* commentアイコンの条件分岐（commntExist.lengthで表示） */}
       <CardActions sx={{ display: "flex", justifyContent: "space-around" }}>
-        <Tooltip title="Comment" placement="right-start" arrow>
-          <IconButton onClick={() => handleComment(record.id, record.postId)}>
-            <ChatBubbleOutlineIcon />
-          </IconButton>
-        </Tooltip>
-
-        {goodUsers.length === 0 ? (
+        {commentExist.length === 0 ? (
+          <Tooltip title="Comment" placement="right-start" arrow>
+            <IconButton onClick={() => handleComment(record.id, record.postId)}>
+              <ChatBubbleOutlineIcon />
+              <span style={{ marginLeft: 5, fontSize: 18 }}>
+                {commentExist.length}
+              </span>
+            </IconButton>
+          </Tooltip>
+        ) : (
+          <Tooltip title="Comment" placement="right-start" arrow>
+            <IconButton onClick={() => handleComment(record.id, record.postId)}>
+              <ChatIcon />
+              <span style={{ marginLeft: 5, fontSize: 18 }}>
+                {commentExist.length}
+              </span>
+            </IconButton>
+          </Tooltip>
+        )}
+      {/* goodアイコンの条件分岐（record.goodCountで表示） */}
+        {record.goodCount === 0 ? (
           <Tooltip title="Good" placement="right-start" arrow>
             <IconButton onClick={() => handleGoodCount(record)}>
               <ThumbUpOffAltIcon />
 
               <span style={{ marginLeft: 5, fontSize: 18 }}>
-                {goodUsers.length}
+                {record.goodCount}
               </span>
             </IconButton>
           </Tooltip>
@@ -307,18 +426,17 @@ export const RecordItem = ({
             >
               <ThumbUpAltIcon />
               <span style={{ marginLeft: 5, fontSize: 18 }}>
-                {goodUsers.length}
+                {record.goodCount}
               </span>
             </IconButton>
           </Tooltip>
         )}
-
         <Tooltip title="Good List" placement="right-start" arrow>
           <IconButton onClick={() => router.push(`/${record.id}/GoodList`)}>
             <ListAltIcon />
           </IconButton>
         </Tooltip>
-
+      {/* bookmarkアイコンの条件分岐（savedのtrue/falseで表示） */}
         {saved ? (
           <Tooltip title="Bookmark" placement="right-start" arrow>
             <IconButton onClick={() => removeBookmark(record.postId)}>

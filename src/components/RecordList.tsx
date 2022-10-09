@@ -22,7 +22,7 @@ import {
 } from "firebase/firestore";
 import { db } from "./firebase";
 import { useRouter } from "next/router";
-import { RecordItem } from "./RecordItem";
+import { CommentData, RecordItem } from "./RecordItem";
 
 const RecordList = () => {
   const userItem = useRecoilValue(userItemState);
@@ -131,7 +131,7 @@ const RecordList = () => {
   };
 
   //Record削除処理
-  const handleDeleteRecord = (id: string, authorId: string) => {
+  const handleDeleteRecord = (id: string, authorId: string, commentExist: CommentData[]) => {
     const deleteMessage = confirm(
       `${userItem.displayName}の学習記録を削除してもよろしいですか？`
     );
@@ -141,7 +141,9 @@ const RecordList = () => {
       deleteDoc(doc(db, "users", userItem.uid,"goodPosts", authorId));
       deleteDoc(doc(db, "users", userItem.uid, "bookmarks", id));
       deleteDoc(doc(db, "users", userItem.uid, "records", id, "goodUsers", id));
-      // deleteDoc(doc(db, "comments", id));  commentの削除は必要ある？？
+      commentExist.forEach((comment) => {
+        deleteDoc(doc(db, "comments", comment.id));
+      })
     } else return;
   };
 
