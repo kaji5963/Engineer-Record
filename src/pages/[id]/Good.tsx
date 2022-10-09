@@ -18,11 +18,13 @@ import {
   collection,
   deleteDoc,
   doc,
+  increment,
   onSnapshot,
   orderBy,
   query,
+  writeBatch,
 } from "firebase/firestore";
-import React,{ useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { db } from "../../components/firebase";
 import {
@@ -37,9 +39,9 @@ type GoodList = {
   postId: string;
   value: string;
   createdAt: string;
-  displayName: string ;
+  displayName: string;
   photoURL: string;
-  key: string
+  key: string;
 };
 
 const Good = () => {
@@ -48,7 +50,6 @@ const Good = () => {
   const userData = useRecoilValue(userDataState);
   const [goodList, setGoodList] = useState<GoodList[]>([]);
   const [isClient, setIsClient] = useState(false);
-
 
   //firebaseのgoodPostsからデータを取得
   useEffect(() => {
@@ -83,14 +84,29 @@ const Good = () => {
     if (typeof window !== "undefined") setIsClient(true);
   }, []);
 
-  //good削除処理
-  const handleRemoveGoods = (goodPostId: string) => {
-    deleteDoc(doc(db, "users", userItem.uid, "goodPosts", goodPostId));
+  //good削除処理(goodPostに紐づいているrecords,goodUsersも処理)
+  const handleRemoveGoods = (postId: string) => {
+    const batch = writeBatch(db);
+    batch.delete(doc(db, "users", userItem.uid, "goodPosts", postId));
     recordList.forEach((record) => {
-      deleteDoc(
-        doc(db, "users", userItem.uid, "records", record.postId, "goodUsers", record.postId)
+      batch.delete(
+        doc(
+          db,
+          "users",
+          userItem.uid,
+          "records",
+          record.postId,
+          "goodUsers",
+          record.authorId
+        )
       );
-    })
+      if (postId !== record.postId) return; //goodを外す対象以外は実行しない
+      batch.update(
+        doc(db, "users", record.authorId, "records", record.postId),
+        { goodCount: increment(-1) }
+      );
+    });
+    batch.commit();
   };
 
   return (
@@ -156,9 +172,7 @@ const Good = () => {
                             <span>
                               <IconButton
                                 sx={{ color: red[300] }}
-                                onClick={() =>
-                                  handleRemoveGoods(good.goodPostId)
-                                }
+                                onClick={() => handleRemoveGoods(good.postId)}
                               >
                                 <ThumbUpAltIcon />
                               </IconButton>

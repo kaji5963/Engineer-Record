@@ -19,10 +19,11 @@ import {
   query,
   serverTimestamp,
   setDoc,
+  writeBatch,
 } from "firebase/firestore";
 import { db } from "./firebase";
 import { useRouter } from "next/router";
-import { CommentData, RecordItem } from "./RecordItem";
+import { RecordItem } from "./RecordItem";
 
 const RecordList = () => {
   const userItem = useRecoilValue(userItemState);
@@ -131,19 +132,27 @@ const RecordList = () => {
   };
 
   //Record削除処理
-  const handleDeleteRecord = (id: string, authorId: string, commentExist: CommentData[]) => {
+  const handleDeleteRecord = (
+    id: string,
+    authorId: string,
+    commentExist: { id: string }[]
+  ) => {
     const deleteMessage = confirm(
       `${userItem.displayName}の学習記録を削除してもよろしいですか？`
     );
     if (deleteMessage === true) {
       //Topから削除した際は、recordsに紐づくcomments,bookmarks,goodPosts,goodUsersも同時に削除
-      deleteDoc(doc(db, "users", userItem.uid, "records", id));
-      deleteDoc(doc(db, "users", userItem.uid,"goodPosts", authorId));
-      deleteDoc(doc(db, "users", userItem.uid, "bookmarks", id));
-      deleteDoc(doc(db, "users", userItem.uid, "records", id, "goodUsers", id));
+      const batch = writeBatch(db);
+      batch.delete(doc(db, "users", userItem.uid, "records", id));
+      batch.delete(doc(db, "users", userItem.uid, "goodPosts", id));
+      batch.delete(doc(db, "users", userItem.uid, "bookmarks", id));
+      batch.delete(
+        doc(db, "users", userItem.uid, "records", id, "goodUsers", authorId)
+      );
       commentExist.forEach((comment) => {
-        deleteDoc(doc(db, "comments", comment.id));
-      })
+        batch.delete(doc(db, "comments", comment.id));
+      });
+      batch.commit();
     } else return;
   };
 

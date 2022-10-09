@@ -24,8 +24,6 @@ import {
   collection,
   onSnapshot,
   doc,
-  setDoc,
-  deleteDoc,
   collectionGroup,
   serverTimestamp,
   where,
@@ -40,7 +38,11 @@ type Props = {
   record: RecordList;
   handleComment: (id: string, postId: string) => void;
   handleEditRecord: (id: string, postId: string) => void;
-  handleDeleteRecord: (id: string, authorId: string, commentExist: CommentData[]) => void;
+  handleDeleteRecord: (
+    id: string,
+    authorId: string,
+    commentExist: { id: string }[]
+  ) => void;
   handleSavedBookmark: (postData: RecordList) => void;
   handleRemoveBookmark: (postId: string) => void;
   userItem: User;
@@ -50,12 +52,6 @@ type Props = {
 type GoodUser = {
   id: string;
   goodUserId: string;
-  postId: string;
-};
-
-export type CommentData = {
-  id: string;
-  commentId: string;
   postId: string;
 };
 
@@ -71,13 +67,21 @@ export const RecordItem = ({
 }: Props) => {
   const { v4: uuidv4 } = require("uuid");
   const [saved, setSaved] = useState(false);
+  const [userExist, setUserExist] = useState(false);
   const [goodUsers, setGoodUsers] = useState<GoodUser[]>([]);
-  const [commentExist, setCommentExist] = useState<CommentData[]>([]);
+  const [commentExist, setCommentExist] = useState<{ id: string }[]>([]);
 
   useEffect(() => {
-    //投稿に対してgoodしたユーザーを取得、取得したデータ（数）をlengthで表示
+    //投稿に対してgoodしたユーザーを絞り込んで取得
     const goodUsersRef = query(
-      collectionGroup(db, "goodUsers"),
+      collection(
+        db,
+        "users",
+        userItem.uid,
+        "records",
+        record.postId,
+        "goodUsers"
+      ),
       where("postId", "==", record.postId)
     );
     onSnapshot(goodUsersRef, (querySnapshot) => {
@@ -92,7 +96,7 @@ export const RecordItem = ({
       setGoodUsers(goodUserData);
     });
 
-  //commentアイコンの表示切り替え用として取得
+    //commentアイコンの表示切り替え用として取得
     const commentsRef = query(
       collection(db, "comments"),
       where("postId", "==", record.postId)
@@ -102,13 +106,11 @@ export const RecordItem = ({
         return {
           ...doc.data(),
           id: doc.id,
-          commentId: doc.data().commentId,
-          postId: doc.data().postId,
         };
       });
       setCommentExist(commentsData);
     });
-  }, []);
+  },[]);
 
   //firebaseからbookmarksのデータを取得(savedを監視)
   useEffect(() => {
@@ -127,162 +129,64 @@ export const RecordItem = ({
     });
   }, [saved]);
 
-  //good（いいね）のカウントを増減処理
+  //good（いいね）のカウントを増減処理(records,goodPosts,goodUsersをバッチ処理)
   const handleGoodCount = async (record: RecordList) => {
-    const {
-      authorId,
-      postId,
-      value,
-      createdAt,
-      displayName,
-      photoURL,
-      goodCount,
-    } = record;
-    const goodPostDoc = doc(db, "users", userItem.uid, "goodPosts", authorId);
-    const goodUserDoc = doc(
+    const { authorId, postId, value, createdAt } = record;
+    const batch = writeBatch(db);
+    const recordsRef = doc(db, "users", record.authorId, "records", postId);
+    const goodPostsDoc = doc(db, "users", userItem.uid, "goodPosts", postId);
+    const goodUsersDoc = doc(
       db,
       "users",
       userItem.uid,
       "records",
       postId,
       "goodUsers",
-      postId
+      authorId
     );
+    //goodが０の場合
+    if (record.goodCount === 0) {
+      batch.set(goodPostsDoc, {
+        goodPostId: authorId,
+        postId,
+        value,
+        createdAt,
+        key: uuidv4(), //GoodListページのmap用key
+        timeStamp: serverTimestamp(),
+      });
 
-    setDoc(goodPostDoc, {
-      goodPostId: authorId,
-      postId,
-      value,
-      createdAt,
-      displayName,
-      photoURL,
-      key: uuidv4(), //GoodListページのmap用key
-      timeStamp: serverTimestamp(),
-    });
+      batch.set(goodUsersDoc, {
+        goodUserId: userItem.uid,
+        postId,
+        timeStamp: serverTimestamp(),
+      });
+      batch.update(recordsRef, { goodCount: increment(1) });
+    } else {
+      //ログインuserがgoodしている場合
+      if (goodUsers.length > 0) {
+        batch.delete(goodPostsDoc);
+        batch.delete(goodUsersDoc);
+        batch.update(recordsRef, { goodCount: increment(-1) });
+      } else {
+      //ログインuserがgoodしていない場合
+        batch.set(goodPostsDoc, {
+          goodPostId: authorId,
+          postId,
+          value,
+          createdAt,
+          key: uuidv4(), //GoodListページのmap用key
+          timeStamp: serverTimestamp(),
+        });
 
-    setDoc(goodUserDoc, {
-      goodUserId: userItem.uid,
-      postId,
-      timeStamp: serverTimestamp(),
-    });
-
-    const batch = writeBatch(db);
-    const recordsRef = doc(db, "users", userItem.uid, "records", postId);
-    batch.update(recordsRef, { goodCount: increment(1) });
+        batch.set(goodUsersDoc, {
+          goodUserId: userItem.uid,
+          postId,
+          timeStamp: serverTimestamp(),
+        });
+        batch.update(recordsRef, { goodCount: increment(1) });
+      }
+    }
     batch.commit();
-    // console.log(recordsRef);
-
-    // if (goodUsers.length === 0) {
-    //   setDoc(goodPostDoc, {
-    //     goodPostId: authorId,
-    //     postId,
-    //     value,
-    //     createdAt,
-    //     displayName,
-    //     photoURL,
-    //     key: uuidv4(), //GoodListページのmap用key
-    //     timeStamp: serverTimestamp(),
-    //   });
-
-    //   await setDoc(goodUserDoc, {
-    //     goodUserId: userItem.uid,
-    //     postId,
-    //     timeStamp: serverTimestamp(),
-    //   });
-    // } else {
-    //   goodUsers.forEach((good) => {
-    //     if (good.goodUserId === userItem.uid) {
-    //         setUserExist(true);
-    //     } else setUserExist(false);
-    //   });
-    // }
-    // if (userExist) {
-    //   await deleteDoc(doc(db, "users", userItem.uid, "goodPosts", authorId));
-    //   await deleteDoc(
-    //     doc(db, "users", userItem.uid, "records", postId, "goodUsers", postId)
-    //   );
-    // } else {
-    //   setDoc(goodPostDoc, {
-    //     goodPostId: authorId,
-    //     postId,
-    //     value,
-    //     createdAt,
-    //     displayName,
-    //     photoURL,
-    //     key: uuidv4(), //GoodListページのmap用key
-    //     timeStamp: serverTimestamp(),
-    //   });
-
-    //   await setDoc(goodUserDoc, {
-    //     goodUserId: userItem.uid,
-    //     postId,
-    //     timeStamp: serverTimestamp(),
-    //   });
-    // }
-
-    // if (goodUsers.length === 0) {
-    //   //goodが0の場合（good+1）
-    //   await setDoc(goodPostDoc, {
-    //     goodPostId: authorId,
-    //     postId,
-    //     value,
-    //     createdAt,
-    //     displayName,
-    //     photoURL,
-    //     key: uuidv4(), //GoodListページのmap用key
-    //     timeStamp: serverTimestamp(),
-    //   });
-
-    //   await setDoc(goodUserDoc, {
-    //     goodUserId: userItem.uid,
-    //     postId,
-    //     timeStamp: serverTimestamp(),
-    //   });
-    // } else {
-    //   //goodが1以上の場合
-    //   goodUsers.forEach(async (good) => {
-    //     if (userItem.uid !== good.goodUserId) {
-    //       //goodしているのがログインユーザー以外だったら追加（good+1）
-    //       await setDoc(goodPostDoc, {
-    //         goodPostId: authorId,
-    //         postId,
-    //         value,
-    //         createdAt,
-    //         displayName,
-    //         photoURL,
-    //         key: uuidv4(),
-    //         timeStamp: serverTimestamp(),
-    //       });
-    //       await setDoc(goodUserDoc, {
-    //         goodUserId: userItem.uid,
-    //         postId,
-    //         timeStamp: serverTimestamp(),
-    //       });
-    //       console.log("追加");
-    //       // console.log(good);
-
-    //     } else {
-    //       //goodしているのがログインユーザーだったら削除（good-1）
-    //       await deleteDoc(
-    //         doc(db, "users", userItem.uid, "goodPosts", authorId)
-    //       );
-    //       await deleteDoc(
-    //         doc(
-    //           db,
-    //           "users",
-    //           userItem.uid,
-    //           "records",
-    //           postId,
-    //           "goodUsers",
-    //           postId
-    //         )
-    //       );
-    //       console.log("削除");
-    //       // console.log(good);
-
-    //     }
-    //   });
-    // }
   };
 
   //ブックマーク追加処理
@@ -354,7 +258,9 @@ export const RecordItem = ({
               <span>
                 <IconButton
                   sx={{ mr: 2 }}
-                  onClick={() => handleDeleteRecord(record.id, record.authorId, commentExist)}
+                  onClick={() =>
+                    handleDeleteRecord(record.id, record.authorId, commentExist)
+                  }
                   disabled={userItem.uid === record.authorId ? false : true}
                 >
                   <DeleteIcon />
@@ -407,7 +313,7 @@ export const RecordItem = ({
             </IconButton>
           </Tooltip>
         )}
-      {/* goodアイコンの条件分岐（record.goodCountで表示） */}
+        {/* goodアイコンの条件分岐（record.goodCountで表示） */}
         {record.goodCount === 0 ? (
           <Tooltip title="Good" placement="right-start" arrow>
             <IconButton onClick={() => handleGoodCount(record)}>
@@ -436,7 +342,7 @@ export const RecordItem = ({
             <ListAltIcon />
           </IconButton>
         </Tooltip>
-      {/* bookmarkアイコンの条件分岐（savedのtrue/falseで表示） */}
+        {/* bookmarkアイコンの条件分岐（savedのtrue/falseで表示） */}
         {saved ? (
           <Tooltip title="Bookmark" placement="right-start" arrow>
             <IconButton onClick={() => removeBookmark(record.postId)}>
