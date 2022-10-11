@@ -94,8 +94,6 @@ const Good = () => {
           db,
           "users",
           userItem.uid,
-          "records",
-          record.postId,
           "goodUsers",
           record.postId
         )

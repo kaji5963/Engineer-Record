@@ -146,7 +146,7 @@ const RecordList = () => {
       batch.delete(doc(db, "users", userItem.uid, "goodPosts", postId));
       batch.delete(doc(db, "users", userItem.uid, "bookmarks", postId));
       batch.delete(
-        doc(db, "users", userItem.uid, "records", postId, "goodUsers", postId)
+        doc(db, "users", userItem.uid, "goodUsers", postId)
       );
       commentExist.forEach((comment) => {
         batch.delete(doc(db, "comments", comment.id));

@@ -103,7 +103,7 @@ const MyRecord = () => {
       batch.delete(doc(db, "users", userItem.uid, "goodPosts", postId));
       batch.delete(doc(db, "users", userItem.uid, "bookmarks", postId));
       batch.delete(
-        doc(db, "users", userItem.uid, "records", postId, "goodUsers", postId)
+        doc(db, "users", userItem.uid, "goodUsers", postId)
       );
       commentExist.forEach((comment) => {
         if(comment.postId !== postId) return

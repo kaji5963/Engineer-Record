@@ -93,8 +93,6 @@ export const RecordItem = ({
         db,
         "users",
         userItem.uid,
-        "records",
-        record.postId,
         "goodUsers"
       ),
       where("postId", "==", record.postId)
@@ -139,8 +137,6 @@ export const RecordItem = ({
       db,
       "users",
       userItem.uid,
-      "records",
-      postId,
       "goodUsers",
       postId
     );
