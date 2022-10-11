@@ -7,7 +7,7 @@ import { grey } from "@mui/material/colors";
 import { Box } from "@mui/system";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { editItemState, userItemState } from "../../constants/atom";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc, writeBatch } from "firebase/firestore";
 import { db } from "../../components/firebase";
 import { useRouter } from "next/router";
 
@@ -16,13 +16,23 @@ const EditRecord = () => {
   const userItem = useRecoilValue(userItemState);
   const router = useRouter();
 
-  //Record編集完了処理
-  const handleEditComplete = (id: string) => {
+  //Record編集完了処理(既にbookmark,goodがされているものもupdate)
+  const handleEditComplete = (postId: string) => {
     if (editItem.value === "") return;
-    const recordUpdateDoc = doc(db, "users", userItem.uid, "records", id);
-    updateDoc(recordUpdateDoc, {
+    const batch = writeBatch(db);
+    const recordUpdateDoc = doc(db, "users", userItem.uid, "records", postId);
+    const bookmarkUpdateDoc = doc(db, "users", userItem.uid, "bookmarks", postId);
+    const goodPostUpdateDoc = doc(db, "users", userItem.uid, "goodPosts", postId);
+    batch.update(recordUpdateDoc, {
       value: editItem.value,
     });
+    batch.update(bookmarkUpdateDoc, {
+      value: editItem.value,
+    });
+    batch.update(goodPostUpdateDoc, {
+      value: editItem.value,
+    });
+    batch.commit();
     router.back();
   };
 
@@ -78,7 +88,7 @@ const EditRecord = () => {
               sx={{ mr: 3, ml: 1 }}
               color="primary"
               disabled={editItem.value === "" ? true : false}
-              onClick={() => handleEditComplete(editItem.id)}
+              onClick={() => handleEditComplete(editItem.postId)}
             >
               <CheckCircleIcon fontSize="large" />
             </IconButton>

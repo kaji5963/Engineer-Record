@@ -124,7 +124,7 @@ const GoodList = () => {
                         borderRadius: 5,
                         mb: 3,
                         minWidth: 280,
-                        maxWidth: 300,
+                        maxWidth: 340,
                         px: 7,
                         display: "flex",
                         justifyContent: "center",

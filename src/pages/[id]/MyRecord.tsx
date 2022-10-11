@@ -32,7 +32,7 @@ import { useRouter } from "next/router";
 const MyRecord = () => {
   const [myRecordList, setMyRecordList] = useState<RecordList[]>([]);
   const userItem = useRecoilValue(userItemState);
-  // const commentExist = useRecoilValue(commentExistState)
+  const [commentExist, setCommentExist] = useState<{ id: string, postId: string }[]>([])
   const [editItem, setEditItem] = useRecoilState(editItemState);
   const [isClient, setIsClient] = useState(false);
   const router = useRouter();
@@ -56,6 +56,24 @@ const MyRecord = () => {
         photoURL: userItem.photoURL,
       }));
       setMyRecordList(myRecordData);
+    });
+  }, []);
+
+  //commentのアイコンの表示切り替え用として取得
+  useEffect(() => {
+    const commentsRef = query(
+      collection(db, "comments"),
+      // where("postId", "==", record.postId)
+    );
+    onSnapshot(commentsRef, (querySnapshot) => {
+      const commentsData = querySnapshot.docs.map((doc) => {
+        return {
+          ...doc.data(),
+          id: doc.id,
+          postId: doc.data().postId,
+        };
+      });
+      setCommentExist(commentsData);
     });
   }, []);
 
@@ -87,9 +105,10 @@ const MyRecord = () => {
       batch.delete(
         doc(db, "users", userItem.uid, "records", postId, "goodUsers", postId)
       );
-      // commentExist.forEach((comment) => {  //commentのid取得どうする？
-      //   batch.delete(doc(db, "comments", comment.id));
-      // })
+      commentExist.forEach((comment) => {
+        if(comment.postId !== postId) return
+        batch.delete(doc(db, "comments", comment.id));
+      })
       batch.commit();
     } else return;
   };

@@ -16,7 +16,6 @@ import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 import { orange, red } from "@mui/material/colors";
 import {
   collection,
-  deleteDoc,
   doc,
   increment,
   onSnapshot,
@@ -89,6 +88,7 @@ const Good = () => {
     const batch = writeBatch(db);
     batch.delete(doc(db, "users", userItem.uid, "goodPosts", postId));
     recordList.forEach((record) => {
+      if (postId !== record.postId) return; //goodを外す対象以外は実行しない
       batch.delete(
         doc(
           db,
@@ -100,7 +100,6 @@ const Good = () => {
           record.postId
         )
       );
-      if (postId !== record.postId) return; //goodを外す対象以外は実行しない
       batch.update(
         doc(db, "users", record.authorId, "records", record.postId),
         { goodCount: increment(-1) }

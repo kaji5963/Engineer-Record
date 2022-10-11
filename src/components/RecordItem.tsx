@@ -30,10 +30,9 @@ import {
   increment,
 } from "firebase/firestore";
 import { db } from "./firebase";
-import { commentExistState, RecordList, User } from "../constants/atom";
+import { RecordList, User } from "../constants/atom";
 import { NextRouter } from "next/router";
 import { changeDateFormat } from "./Form";
-import { useRecoilState } from "recoil";
 
 type Props = {
   record: RecordList;
@@ -68,7 +67,6 @@ export const RecordItem = ({
   const { v4: uuidv4 } = require("uuid");
   const [saved, setSaved] = useState(false);
   const [goodUsers, setGoodUsers] = useState<GoodUser[]>([]);
-  // const [commentExist, setCommentExist] = useRecoilState(commentExistState);
   const [commentExist, setCommentExist] = useState<{ id: string }[]>([])
   
   //commentのアイコンの表示切り替え用として取得

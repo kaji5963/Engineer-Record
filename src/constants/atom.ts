@@ -12,7 +12,7 @@ export type UserData = {
   displayName: string;
   photoURL: string;
   uid: string;
-}[];
+};
 
 export type RecordList = {
   authorId: string;
@@ -58,7 +58,7 @@ export const userItemState: RecoilState<User> = atom({
 });
 
 //ユーザー情報をリスト保持
-export const userDataState: RecoilState<UserData> = atom({
+export const userDataState: RecoilState<UserData[]> = atom({
   key: "userData",
   default: [],
   effects_UNSTABLE: [persistAtom],
@@ -82,12 +82,5 @@ export const commentItemState: RecoilState<CommentItem> = atom({
 export const editItemState: RecoilState<EditItem> = atom({
   key: "editItem",
   default: {},
-  effects_UNSTABLE: [persistAtom],
-});
-
-//学習記録削除時にcommentのidを格納
-export const commentExistState: RecoilState<{ id: string }[]> = atom({
-  key: "commentExistList",
-  default: [],
   effects_UNSTABLE: [persistAtom],
 });
