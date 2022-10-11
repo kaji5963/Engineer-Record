@@ -37,8 +37,8 @@ const EditRecord = () => {
           mt: 10,
           bgcolor: grey[300],
           height: 400,
-          minWidth: 400,
-          maxWidth: 600,
+          minWidth: 360,
+          maxWidth: 500,
           flexDirection: "column",
           justifyContent: "center",
           mx: "auto",
@@ -60,7 +60,7 @@ const EditRecord = () => {
         </Typography>
         <Box>
           <TextField
-            sx={{ minWidth: 400, maxWidth: 500, mx: "auto", bgcolor: "white" }}
+            sx={{ minWidth: 360, maxWidth: 500, mx: "auto", bgcolor: "white" }}
             id="outlined-multiline-static"
             multiline
             rows={5}

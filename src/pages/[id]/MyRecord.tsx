@@ -22,16 +22,18 @@ import {
   onSnapshot,
   orderBy,
   query,
+  writeBatch,
 } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { db } from "../../components/firebase";
-import { editItemState, RecordList, userItemState } from "../../constants/atom";
+import { commentExistState, editItemState, RecordList, userItemState } from "../../constants/atom";
 import { useRouter } from "next/router";
 
 const MyRecord = () => {
   const [myRecordList, setMyRecordList] = useState<RecordList[]>([]);
   const userItem = useRecoilValue(userItemState);
+  const commentExist = useRecoilValue(commentExistState)
   const [editItem, setEditItem] = useRecoilState(editItemState);
   const [isClient, setIsClient] = useState(false);
   const router = useRouter();
@@ -73,15 +75,23 @@ const MyRecord = () => {
   };
 
   //Record削除処理
-  const handleDeleteRecord = (id: string) => {
+  const handleDeleteRecord = (postId: string) => {
     const deleteMessage = confirm(
       `${userItem.displayName}の学習記録を削除してもよろしいですか？`
     );
+    //recordsに紐づくcomments,bookmarks,goodPosts,goodUsersをバッチ処理
     if (deleteMessage === true) {
-      deleteDoc(doc(db, "users", userItem.uid, "records", id));
-      deleteDoc(doc(db, "users", userItem.uid, "goodPosts", id));
-      deleteDoc(doc(db, "users", userItem.uid, "bookmarks", id));
-      deleteDoc(doc(db, "comments", id));
+      const batch = writeBatch(db);
+      batch.delete(doc(db, "users", userItem.uid, "records", postId));
+      batch.delete(doc(db, "users", userItem.uid, "goodPosts", postId));
+      batch.delete(doc(db, "users", userItem.uid, "bookmarks", postId));
+      batch.delete(
+        doc(db, "users", userItem.uid, "records", postId, "goodUsers", postId)
+      );
+      commentExist.forEach((comment) => {
+        batch.delete(doc(db, "comments", comment.id));
+      })
+      batch.commit();
     } else return;
   };
 
@@ -95,7 +105,7 @@ const MyRecord = () => {
           {myRecordList.length === 0 && (
             <Alert
               sx={{
-                maxWidth: 300,
+                maxWidth: 350,
                 height: 60,
                 mx: "auto",
                 textAlign: "center",
@@ -103,10 +113,11 @@ const MyRecord = () => {
                 justifyContent: "center",
                 alignItems: "center",
                 fontSize: 18,
+                borderRadius: 5,
               }}
               severity="info"
             >
-              Recordの投稿がありません
+              学習記録がありません
             </Alert>
           )}
           <Card
@@ -126,6 +137,7 @@ const MyRecord = () => {
                     sx={{
                       bgcolor: deepPurple[100],
                       maxWidth: 500,
+                      minWidth: 360,
                       mb: 4,
                       borderRadius: 5,
                     }}
@@ -162,7 +174,7 @@ const MyRecord = () => {
                             <span>
                               <IconButton
                                 sx={{ mr: 2 }}
-                                onClick={() => handleDeleteRecord(myRecord.id)}
+                                onClick={() => handleDeleteRecord(myRecord.postId)}
                               >
                                 <DeleteIcon />
                               </IconButton>

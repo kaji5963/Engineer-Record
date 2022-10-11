@@ -157,6 +157,7 @@ const Comment = () => {
               <Card
                 sx={{
                   maxWidth: 500,
+                  minWidth: 360,
                   display: "flex",
                   flexDirection: "column",
                   mx: "auto",
@@ -207,29 +208,30 @@ const Comment = () => {
 
               <Box
                 sx={{
-                  bgcolor: grey[200],
+                  bgcolor: grey[300],
                   borderRadius: 5,
                   maxWidth: 500,
+                  height: 200,
                   mx: "auto",
                   mb: 4,
-                  pt: 4,
-                  pb: 3,
+                  pt: 5,
+                  pb: 4,
                 }}
               >
                 <Box
-                  sx={{ display: "flex" }}
+                  sx={{ display: "flex", pt: 1, pb : 1 }}
                   justifyContent="center"
                   component="form"
                   noValidate
                   autoComplete="off"
                 >
                   <TextField
-                    sx={{ width: 400, mx: "auto", bgcolor: "white" }}
+                    sx={{ maxWidth: 350, minWidth: 340, mx: "auto", bgcolor: "white" }}
                     id="outlined-multiline-static"
                     label="コメントを入力してくだい"
                     multiline
                     autoFocus
-                    rows={2}
+                    rows={4}
                     size="medium"
                     type="text"
                     value={comment.value}
@@ -277,6 +279,7 @@ const Comment = () => {
                         key={comment.id}
                         sx={{
                           bgcolor: red[100],
+                          minWidth: 360,
                           maxWidth: 500,
                           mb: 4,
                           borderRadius: 5,

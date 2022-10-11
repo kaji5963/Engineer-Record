@@ -6,7 +6,7 @@ import ListItem from "@mui/material/ListItem";
 import Avatar from "@mui/material/Avatar";
 import ListItemText from "@mui/material/ListItemText";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
-import { Alert } from "@mui/material";
+import { Alert, Box } from "@mui/material";
 import {
   collectionGroup,
   onSnapshot,
@@ -16,8 +16,9 @@ import {
 } from "firebase/firestore";
 import { db } from "../../components/firebase";
 import { useRecoilValue } from "recoil";
-import { recordListState, userDataState } from "../../constants/atom";
+import { userDataState } from "../../constants/atom";
 import { useRouter } from "next/router";
+import { grey } from "@mui/material/colors";
 
 type GoodUser = {
   id: string;
@@ -30,21 +31,19 @@ type GoodUser = {
 };
 
 const GoodList = () => {
-  const recordList = useRecoilValue(recordListState);
   const userData = useRecoilValue(userDataState);
   const [goodList, setGoodList] = useState<GoodUser[]>([]);
   const [isClient, setIsClient] = useState(false);
   const router = useRouter();
+
+  //goodUsersからgoodListのデータ取得
   useEffect(() => {
     if (!router.query.record) return;
-    // recordList.forEach((record) => {
     const goodPostsRef = query(
       collectionGroup(db, "goodUsers"),
       orderBy("timeStamp", "desc"),
       where("postId", "==", router.query.record)
-      // where("postId", "==", record.postId)
     );
-
     if (userData.length === 0) return;
     onSnapshot(goodPostsRef, (querySnapshot) => {
       const goodPostsData = querySnapshot.docs.map((doc) => {
@@ -63,9 +62,7 @@ const GoodList = () => {
         };
       });
       setGoodList(goodPostsData);
-      // console.log(goodPostsData);
     });
-    // });
   }, [router.query.record]);
 
   //Hydrate Error対策
@@ -83,7 +80,7 @@ const GoodList = () => {
           {goodList.length === 0 && (
             <Alert
               sx={{
-                maxWidth: 300,
+                maxWidth: 350,
                 height: 60,
                 mx: "auto",
                 textAlign: "center",
@@ -91,33 +88,71 @@ const GoodList = () => {
                 justifyContent: "center",
                 alignItems: "center",
                 fontSize: 18,
+                borderRadius: 5,
               }}
               severity="info"
             >
               Goodしたユーザーがいません
             </Alert>
           )}
-          <List
-            sx={{
-              mx: "auto",
-              textAlign: "center",
-              bgcolor: "background.paper",
-            }}
-          >
-            {goodList.map((good) => {
-              return (
-                <ListItem key={good.key}>
-                  <ListItemAvatar>
-                    <Avatar src={good.photoURL} />
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={good.displayName}
-                    secondary={good.createdAt}
-                  />
-                </ListItem>
-              );
-            })}
-          </List>
+
+          {goodList.length > 0 && (
+            <List
+              sx={{
+                mx: "auto",
+                textAlign: "center",
+                borderRadius: 5,
+                minWidth: 350,
+                maxWidth: 500,
+                pt: 6,
+                pb: 3,
+                bgcolor: grey[200],
+              }}
+            >
+              {goodList.map((good) => {
+                return (
+                  <Box
+                    key={good.key}
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <ListItem
+                      sx={{
+                        borderRadius: 5,
+                        mb: 3,
+                        minWidth: 280,
+                        maxWidth: 300,
+                        px: 7,
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        bgcolor: "white",
+                      }}
+                    >
+                      <ListItemAvatar>
+                        <Avatar src={good.photoURL} />
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={good.displayName}
+                        secondary={good.createdAt}
+                        primaryTypographyProps={{
+                          fontWeight: "medium",
+                          variant: "subtitle1",
+                        }}
+                        secondaryTypographyProps={{
+                          fontWeight: "medium",
+                          variant: "subtitle2",
+                        }}
+                      />
+                    </ListItem>
+                  </Box>
+                );
+              })}
+            </List>
+          )}
         </>
       )}
     </Layout>

@@ -97,16 +97,16 @@ const RecordList = () => {
   };
 
   //RecordItemからsavedPostsをpostDataとして受け取りブックマークする処理
-  const handleSavedBookmark = (postData: RecordList) => {
+  const handleSavedBookmark = (savedPosts: RecordList) => {
     //ブックマークしたデータをfirebaseのbookmarksへ格納
     const bookmarksRef = doc(
       db,
       "users",
       userItem.uid,
       "bookmarks",
-      postData.postId
+      savedPosts.postId
     );
-    const { authorId, postId, value, createdAt } = postData;
+    const { authorId, postId, value, createdAt } = savedPosts;
     setDoc(bookmarksRef, {
       bookmarkId: authorId,
       postId,
@@ -133,8 +133,7 @@ const RecordList = () => {
 
   //Record削除処理
   const handleDeleteRecord = (
-    id: string,
-    authorId: string,
+    postId: string,
     commentExist: { id: string }[]
   ) => {
     const deleteMessage = confirm(
@@ -143,11 +142,11 @@ const RecordList = () => {
     if (deleteMessage === true) {
       //recordsに紐づくcomments,bookmarks,goodPosts,goodUsersをバッチ処理
       const batch = writeBatch(db);
-      batch.delete(doc(db, "users", userItem.uid, "records", id));
-      batch.delete(doc(db, "users", userItem.uid, "goodPosts", id));
-      batch.delete(doc(db, "users", userItem.uid, "bookmarks", id));
+      batch.delete(doc(db, "users", userItem.uid, "records", postId));
+      batch.delete(doc(db, "users", userItem.uid, "goodPosts", postId));
+      batch.delete(doc(db, "users", userItem.uid, "bookmarks", postId));
       batch.delete(
-        doc(db, "users", userItem.uid, "records", id, "goodUsers", authorId)
+        doc(db, "users", userItem.uid, "records", postId, "goodUsers", postId)
       );
       commentExist.forEach((comment) => {
         batch.delete(doc(db, "comments", comment.id));

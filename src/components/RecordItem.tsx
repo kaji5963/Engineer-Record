@@ -30,16 +30,17 @@ import {
   increment,
 } from "firebase/firestore";
 import { db } from "./firebase";
-import { RecordList, User } from "../constants/atom";
+import { commentExistState, RecordList, User } from "../constants/atom";
 import { NextRouter } from "next/router";
+import { changeDateFormat } from "./Form";
+import { useRecoilState } from "recoil";
 
 type Props = {
   record: RecordList;
   handleComment: (id: string, postId: string) => void;
   handleEditRecord: (id: string, postId: string) => void;
   handleDeleteRecord: (
-    id: string,
-    authorId: string,
+    postId: string,
     commentExist: { id: string }[]
   ) => void;
   handleSavedBookmark: (postData: RecordList) => void;
@@ -67,9 +68,9 @@ export const RecordItem = ({
   const { v4: uuidv4 } = require("uuid");
   const [saved, setSaved] = useState(false);
   const [goodUsers, setGoodUsers] = useState<GoodUser[]>([]);
-  const [commentExist, setCommentExist] = useState<{ id: string }[]>([]);
+  const [commentExist, setCommentExist] = useRecoilState(commentExistState);
 
-  //commentアイコンの表示切り替え用として取得
+  //commentのアイコンの表示切り替え用として取得
   useEffect(() => {
     const commentsRef = query(
       collection(db, "comments"),
@@ -142,7 +143,7 @@ export const RecordItem = ({
       "records",
       postId,
       "goodUsers",
-      authorId
+      postId
     );
     //goodが０の場合
     if (record.goodCount === 0) {
@@ -158,7 +159,7 @@ export const RecordItem = ({
         goodUserId: userItem.uid,
         key: uuidv4(), //GoodListページのmap用key
         postId,
-        createdAt,
+        createdAt: changeDateFormat(new Date()),
         timeStamp: serverTimestamp(),
       });
 
@@ -183,7 +184,7 @@ export const RecordItem = ({
           goodUserId: userItem.uid,
           key: uuidv4(), //GoodListページのmap用key
           postId,
-          createdAt,
+          createdAt: changeDateFormat(new Date()),
           timeStamp: serverTimestamp(),
         });
 
@@ -234,6 +235,7 @@ export const RecordItem = ({
       sx={{
         bgcolor: blue[100],
         maxWidth: 500,
+        minWidth: 360,
         mb: 4,
         borderRadius: 5,
       }}
@@ -263,7 +265,7 @@ export const RecordItem = ({
                 <IconButton
                   sx={{ mr: 2 }}
                   onClick={() =>
-                    handleDeleteRecord(record.id, record.authorId, commentExist)
+                    handleDeleteRecord(record.postId, commentExist)
                   }
                   disabled={userItem.uid === record.authorId ? false : true}
                 >

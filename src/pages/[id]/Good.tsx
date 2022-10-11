@@ -120,7 +120,7 @@ const Good = () => {
           {goodList.length === 0 && (
             <Alert
               sx={{
-                maxWidth: 300,
+                maxWidth: 350,
                 height: 60,
                 mx: "auto",
                 textAlign: "center",
@@ -128,10 +128,11 @@ const Good = () => {
                 justifyContent: "center",
                 alignItems: "center",
                 fontSize: 18,
+                borderRadius: 5,
               }}
               severity="info"
             >
-              Goodした投稿がありません
+              Goodした学習記録がありません
             </Alert>
           )}
           <Card
@@ -151,6 +152,7 @@ const Good = () => {
                     sx={{
                       bgcolor: orange[100],
                       maxWidth: 500,
+                      minWidth: 360,
                       mb: 4,
                       borderRadius: 5,
                     }}

@@ -96,7 +96,7 @@ const Bookmark = () => {
           {bookmarkList.length === 0 && (
             <Alert
               sx={{
-                maxWidth: 300,
+                maxWidth: 350,
                 height: 60,
                 mx: "auto",
                 textAlign: "center",
@@ -104,10 +104,11 @@ const Bookmark = () => {
                 justifyContent: "center",
                 alignItems: "center",
                 fontSize: 18,
+                borderRadius: 5,
               }}
               severity="info"
             >
-              Bookmarkした投稿がありません
+              Bookmarkした学習記録がありません
             </Alert>
           )}
           <Card
@@ -127,6 +128,7 @@ const Bookmark = () => {
                     sx={{
                       bgcolor: green[100],
                       maxWidth: 500,
+                      minWidth: 360,
                       mb: 4,
                       borderRadius: 5,
                     }}

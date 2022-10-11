@@ -44,8 +44,8 @@ const EditComment = () => {
             mt: 10,
             bgcolor: grey[300],
             height: 400,
-            minWidth: 400,
-            maxWidth: 600,
+            minWidth: 360,
+            maxWidth: 500,
             flexDirection: "column",
             justifyContent: "center",
             mx: "auto",
@@ -68,7 +68,7 @@ const EditComment = () => {
           <Box>
             <TextField
               sx={{
-                minWidth: 400,
+                minWidth: 360,
                 maxWidth: 500,
                 mx: "auto",
                 bgcolor: "white",

@@ -84,3 +84,10 @@ export const editItemState: RecoilState<EditItem> = atom({
   default: {},
   effects_UNSTABLE: [persistAtom],
 });
+
+//学習記録削除時にcommentのidを格納
+export const commentExistState: RecoilState<{ id: string }[]> = atom({
+  key: "commentExistList",
+  default: [],
+  effects_UNSTABLE: [persistAtom],
+});

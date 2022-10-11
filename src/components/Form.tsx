@@ -64,7 +64,7 @@ const Form = () => {
     <>
       <Box
         sx={{
-          bgcolor: grey[200],
+          bgcolor: grey[300],
           borderRadius: 5,
           maxWidth: 500,
           mx: "auto",
@@ -99,9 +99,9 @@ const Form = () => {
           autoComplete="off"
         >
           <TextField
-            sx={{ width: 400, mx: "auto", bgcolor: "white" }}
+            sx={{ minWidth: 350, maxWidth: 400, mx: "auto", bgcolor: "white" }}
             id="outlined-multiline-static"
-            label="学習記録を入力してくだい"
+            label="学習記録を積み上げますか？"
             multiline
             autoFocus
             rows={5}

@@ -80,7 +80,7 @@ const EditProfile = () => {
         <Box
           sx={{
             bgcolor: grey[300],
-            minWidth: 400,
+            minWidth: 360,
             maxWidth: 600,
             minHeight: 280,
             mx: "auto",
