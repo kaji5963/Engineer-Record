@@ -126,12 +126,12 @@ const Comment = () => {
   };
 
   //comment編集処理
-  const handleEditComment = (id: string, postId: string) => {
+  const handleEditComment = (postId: string, value: string) => {
     const findEditRecord = commentList.find(
-      (comment) => comment.postId === postId
+      (comment) => comment.value === value
     );
     setEditItem({ ...editItem, ...findEditRecord });
-    router.push(`/${id}/EditComment`);
+    router.push(`/${postId}/EditComment`);
   };
 
   //comment削除処理
@@ -304,8 +304,8 @@ const Comment = () => {
                                     sx={{ mr: 2 }}
                                     onClick={() =>
                                       handleEditComment(
-                                        comment.id,
-                                        comment.postId
+                                        comment.postId,
+                                        comment.value
                                       )
                                     }
                                     disabled={

@@ -17,7 +17,6 @@ import EditIcon from "@mui/icons-material/Edit";
 import { deepPurple } from "@mui/material/colors";
 import {
   collection,
-  deleteDoc,
   doc,
   onSnapshot,
   orderBy,
@@ -27,13 +26,13 @@ import {
 import React, { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { db } from "../../components/firebase";
-import { commentExistState, editItemState, RecordList, userItemState } from "../../constants/atom";
+import { editItemState, RecordList, userItemState } from "../../constants/atom";
 import { useRouter } from "next/router";
 
 const MyRecord = () => {
   const [myRecordList, setMyRecordList] = useState<RecordList[]>([]);
   const userItem = useRecoilValue(userItemState);
-  const commentExist = useRecoilValue(commentExistState)
+  // const commentExist = useRecoilValue(commentExistState)
   const [editItem, setEditItem] = useRecoilState(editItemState);
   const [isClient, setIsClient] = useState(false);
   const router = useRouter();
@@ -88,9 +87,9 @@ const MyRecord = () => {
       batch.delete(
         doc(db, "users", userItem.uid, "records", postId, "goodUsers", postId)
       );
-      commentExist.forEach((comment) => {
-        batch.delete(doc(db, "comments", comment.id));
-      })
+      // commentExist.forEach((comment) => {  //commentのid取得どうする？
+      //   batch.delete(doc(db, "comments", comment.id));
+      // })
       batch.commit();
     } else return;
   };

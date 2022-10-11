@@ -87,16 +87,16 @@ const RecordList = () => {
     return recordList.slice(startNumber, endNumber);
   }, [currentPage, recordList]);
 
-  //特定のコメントボタン押すと、そのデータをコメントページに渡す
-  const handleComment = (id: string, postId: string) => {
+  //recordのデータを格納、commentページへ遷移
+  const handleComment = (postId: string) => {
     const findComment = recordList.find(
       (record) => record.postId === postId
     );
     setCommentItem({ ...commentItem, ...findComment });
-    router.push(`/${id}/Comment`);
+    router.push(`/${postId}/Comment`);
   };
 
-  //RecordItemからsavedPostsをpostDataとして受け取りブックマークする処理
+  //recordItemからsavedPostsをpostDataとして受け取りブックマークする処理
   const handleSavedBookmark = (savedPosts: RecordList) => {
     //ブックマークしたデータをfirebaseのbookmarksへ格納
     const bookmarksRef = doc(
@@ -117,21 +117,21 @@ const RecordList = () => {
     });
   };
 
-  //RecordItemからpostIdを受け取りブックマークを外す処理（firebaseのブックマークされたデータを削除）
+  //recordItemからpostIdを受け取りブックマークを外す処理（firebaseのブックマークされたデータを削除）
   const handleRemoveBookmark = (postId: string) => {
     deleteDoc(doc(db, "users", userItem.uid, "bookmarks", postId));
   };
 
-  //Record編集処理
-  const handleEditRecord = (id: string, postId: string) => {
+  //record編集処理
+  const handleEditRecord = (postId: string) => {
     const findEditRecord = recordList.find(
       (record) => record.postId === postId
     );
     setEditItem({ ...editItem, ...findEditRecord });
-    router.push(`/${id}/EditRecord/`);
+    router.push(`/${postId}/EditRecord/`);
   };
 
-  //Record削除処理
+  //record削除処理
   const handleDeleteRecord = (
     postId: string,
     commentExist: { id: string }[]

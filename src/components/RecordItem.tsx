@@ -37,8 +37,8 @@ import { useRecoilState } from "recoil";
 
 type Props = {
   record: RecordList;
-  handleComment: (id: string, postId: string) => void;
-  handleEditRecord: (id: string, postId: string) => void;
+  handleComment: (postId: string) => void;
+  handleEditRecord: (postId: string) => void;
   handleDeleteRecord: (
     postId: string,
     commentExist: { id: string }[]
@@ -68,8 +68,9 @@ export const RecordItem = ({
   const { v4: uuidv4 } = require("uuid");
   const [saved, setSaved] = useState(false);
   const [goodUsers, setGoodUsers] = useState<GoodUser[]>([]);
-  const [commentExist, setCommentExist] = useRecoilState(commentExistState);
-
+  // const [commentExist, setCommentExist] = useRecoilState(commentExistState);
+  const [commentExist, setCommentExist] = useState<{ id: string }[]>([])
+  
   //commentのアイコンの表示切り替え用として取得
   useEffect(() => {
     const commentsRef = query(
@@ -253,7 +254,7 @@ export const RecordItem = ({
               <span>
                 <IconButton
                   sx={{ mr: 2 }}
-                  onClick={() => handleEditRecord(record.id, record.postId)}
+                  onClick={() => handleEditRecord(record.postId)}
                   disabled={userItem.uid === record.authorId ? false : true}
                 >
                   <EditIcon />
@@ -302,7 +303,7 @@ export const RecordItem = ({
       <CardActions sx={{ display: "flex", justifyContent: "space-around" }}>
         {commentExist.length === 0 ? (
           <Tooltip title="Comment" placement="right-start" arrow>
-            <IconButton onClick={() => handleComment(record.id, record.postId)}>
+            <IconButton onClick={() => handleComment(record.postId)}>
               <ChatBubbleOutlineIcon />
               <span style={{ marginLeft: 5, fontSize: 18 }}>
                 {commentExist.length}
@@ -311,7 +312,7 @@ export const RecordItem = ({
           </Tooltip>
         ) : (
           <Tooltip title="Comment" placement="right-start" arrow>
-            <IconButton onClick={() => handleComment(record.id, record.postId)}>
+            <IconButton onClick={() => handleComment(record.postId)}>
               <ChatIcon />
               <span style={{ marginLeft: 5, fontSize: 18 }}>
                 {commentExist.length}

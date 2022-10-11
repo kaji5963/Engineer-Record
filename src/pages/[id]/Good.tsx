@@ -97,7 +97,7 @@ const Good = () => {
           "records",
           record.postId,
           "goodUsers",
-          record.authorId
+          record.postId
         )
       );
       if (postId !== record.postId) return; //goodを外す対象以外は実行しない

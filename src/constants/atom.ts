@@ -78,7 +78,7 @@ export const commentItemState: RecoilState<CommentItem> = atom({
   effects_UNSTABLE: [persistAtom],
 });
 
-//編集時のデータを保持
+//編集時のデータを保持(record,comment編集時に使用)
 export const editItemState: RecoilState<EditItem> = atom({
   key: "editItem",
   default: {},
