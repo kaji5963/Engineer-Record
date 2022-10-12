@@ -35,7 +35,7 @@ const Home: NextPage = () => {
           type="submit"
           variant="contained"
           sx={{ mt: 3, mb: 2, width: 200, mx: "auto", fontSize: 18 }}
-          onClick={() => router.push("/SignUp")}
+          onClick={() => router.push("/Signup")}
         >
           Get Started
         </Button>

@@ -36,12 +36,12 @@ const AuthHeader: NextPage = (props: Props) => {
     {
       title: "SignUp",
       icon: <LockOutlinedIcon />,
-      href: "/SignUp",
+      href: "/Signup",
     },
     {
       title: "SignIn",
       icon: <LockOpenIcon />,
-      href: "SignIn",
+      href: "Signin",
     },
   ];
 
@@ -110,7 +110,7 @@ const AuthHeader: NextPage = (props: Props) => {
                   textTransform: "none",
                   ":hover": { color: grey[400] },
                 }}
-                onClick={() => router.push("/SignUp")}
+                onClick={() => router.push("/Signup")}
               >
                 SignUp
               </Button>
@@ -121,7 +121,7 @@ const AuthHeader: NextPage = (props: Props) => {
                   textTransform: "none",
                   ":hover": { color: grey[400] },
                 }}
-                onClick={() => router.push("SignIn")}
+                onClick={() => router.push("Signin")}
               >
                 SignIn
               </Button>

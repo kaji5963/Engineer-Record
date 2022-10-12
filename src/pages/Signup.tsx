@@ -308,7 +308,7 @@ const SignUp = () => {
                 新規登録
               </Button>
               <Grid sx={{ fontSize: 18 }} container justifyContent="flex-end">
-                <Link href="/SignIn">登録している方はこちら</Link>
+                <Link href="/Signin">登録している方はこちら</Link>
               </Grid>
             </Box>
           </Box>
