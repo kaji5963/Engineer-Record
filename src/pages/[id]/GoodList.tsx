@@ -1,5 +1,5 @@
 import Head from "next/head";
-import Layout from "../../components/Layout";
+import TopLayout from "../../components/Layout/TopLayout";
 import React, { useEffect, useState } from "react";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -71,7 +71,7 @@ const GoodList = () => {
   }, []);
 
   return (
-    <Layout>
+    <TopLayout>
       <Head>
         <title>Engineer Record GoodList</title>
       </Head>
@@ -155,7 +155,7 @@ const GoodList = () => {
           )}
         </>
       )}
-    </Layout>
+    </TopLayout>
   );
 };
 export default GoodList;

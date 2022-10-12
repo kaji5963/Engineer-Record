@@ -1,5 +1,5 @@
 import Head from "next/head";
-import Layout from "../../components/Layout";
+import TopLayout from "../../components/Layout/TopLayout";
 import {
   Avatar,
   IconButton,
@@ -72,7 +72,7 @@ const EditProfile = () => {
   };
 
   return (
-    <Layout>
+    <TopLayout>
       <Head>
         <title>Engineer Record EditProfile</title>
       </Head>
@@ -215,7 +215,7 @@ const EditProfile = () => {
           </Box>
         </Box>
       )}
-    </Layout>
+    </TopLayout>
   );
 };
 

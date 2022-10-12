@@ -1,5 +1,5 @@
 import Head from "next/head";
-import Layout from "../../components/Layout";
+import TopLayout from "../../components/Layout/TopLayout";
 import {
   Avatar,
   Box,
@@ -145,7 +145,7 @@ const Comment = () => {
   };
 
   return (
-    <Layout>
+    <TopLayout>
       <Head>
         <title>Engineer Record Comment</title>
       </Head>
@@ -369,7 +369,7 @@ const Comment = () => {
           </Grid>
         </>
       )}
-    </Layout>
+    </TopLayout>
   );
 };
 

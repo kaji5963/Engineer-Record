@@ -1,5 +1,5 @@
 import Head from "next/head";
-import Layout from "../../components/Layout";
+import TopLayout from "../../components/Layout/TopLayout";
 import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { IconButton, TextField, Tooltip, Typography } from "@mui/material";
@@ -33,7 +33,7 @@ const EditComment = () => {
   }, []);
 
   return (
-    <Layout>
+    <TopLayout>
       <Head>
         <title>Engineer Record EditComment</title>
       </Head>
@@ -110,7 +110,7 @@ const EditComment = () => {
           </Box>
         </Box>
       )}
-    </Layout>
+    </TopLayout>
   );
 };
 

@@ -1,5 +1,5 @@
 import Head from "next/head";
-import Layout from "../../components/Layout";
+import TopLayout from "../../components/Layout/TopLayout";
 import { Avatar, Box, IconButton, Tooltip, Typography } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import ReplyIcon from "@mui/icons-material/Reply";
@@ -32,7 +32,7 @@ const Profile = () => {
   }, []);
 
   return (
-    <Layout>
+    <TopLayout>
       <Head>
         <title>Engineer Record Profile</title>
       </Head>
@@ -156,7 +156,7 @@ const Profile = () => {
           </Box>
         </Box>
       )}
-    </Layout>
+    </TopLayout>
   );
 };
 

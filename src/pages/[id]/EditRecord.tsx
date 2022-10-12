@@ -1,5 +1,5 @@
 import Head from "next/head";
-import Layout from "../../components/Layout";
+import TopLayout from "../../components/Layout/TopLayout";
 import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { IconButton, TextField, Tooltip, Typography } from "@mui/material";
@@ -29,7 +29,7 @@ const EditRecord = () => {
   };
 
   return (
-    <Layout>
+    <TopLayout>
       <Head>
         <title>Engineer Record EditRecord</title>
       </Head>
@@ -98,7 +98,7 @@ const EditRecord = () => {
           </Tooltip>
         </Box>
       </Box>
-    </Layout>
+    </TopLayout>
   );
 };
 

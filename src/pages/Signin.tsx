@@ -1,4 +1,5 @@
 import Head from "next/head";
+import AuthLayout from "../components/Layout/AuthLayout";
 import Link from "next/link";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
@@ -44,6 +45,7 @@ const SignIn = () => {
 
   return (
     <>
+    <AuthLayout>
       <Head>
         <title>Engineer Record SignIn</title>
       </Head>
@@ -52,17 +54,16 @@ const SignIn = () => {
         <CssBaseline />
         <Box
           sx={{
-            mt: 18,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: blue[300] }}>
+          <Avatar sx={{ bgcolor: blue[300] }}>
             <LockOpenIcon />
           </Avatar>
-          <Typography sx={{ mt: 2 }} component="h1" variant="h5">
-            Login
+          <Typography sx={{ mt: 1 }} component="h1" variant="h5">
+            Sign In
           </Typography>
           <Box
             component="form"
@@ -81,7 +82,7 @@ const SignIn = () => {
                   autoComplete="email"
                   onChange={(e) => setEmail(e.target.value)}
                 />
-                  <Typography>登録しているメールアドレスを入力してください</Typography>
+                  <Typography>メールアドレスを入力してください</Typography>
 
               </Grid>
               <Grid item xs={12}>
@@ -95,7 +96,7 @@ const SignIn = () => {
                   autoComplete="new-password"
                   onChange={(e) => setPassword(e.target.value)}
                 />
-                  <Typography>登録しているpasswordを入力してください</Typography>
+                  <Typography>passwordを入力してください</Typography>
 
               </Grid>
             </Grid>
@@ -119,6 +120,7 @@ const SignIn = () => {
           </Box>
         </Box>
       </Container>
+      </AuthLayout>
     </>
   );
 };

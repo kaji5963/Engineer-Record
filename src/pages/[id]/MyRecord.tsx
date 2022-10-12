@@ -1,5 +1,5 @@
 import Head from "next/head";
-import Layout from "../../components/Layout";
+import TopLayout from "../../components/Layout/TopLayout";
 import {
   Box,
   Card,
@@ -114,7 +114,7 @@ const MyRecord = () => {
   };
 
   return (
-    <Layout>
+    <TopLayout>
       <Head>
         <title>Engineer Record MyRecord</title>
       </Head>
@@ -226,7 +226,7 @@ const MyRecord = () => {
           </Card>
         </>
       )}
-    </Layout>
+    </TopLayout>
   );
 };
 

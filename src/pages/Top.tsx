@@ -1,8 +1,8 @@
 import Head from "next/head";
-import Layout from "../components/Layout";
+import TopLayout from "../components/Layout/TopLayout";
 import Form from "../components/Form";
 import RecordList from "../components/RecordList";
-import { useEffect, useState } from "react";
+import React,{ useEffect, useState } from "react";
 
 const Top = () => {
   const [isClient, setIsClient] = useState(false);
@@ -13,7 +13,7 @@ const Top = () => {
   }, []);
 
   return (
-    <Layout>
+    <TopLayout>
       <Head>
         <title>Engineer Record Top</title>
       </Head>
@@ -23,7 +23,7 @@ const Top = () => {
           <RecordList />
         </>
       )}
-    </Layout>
+    </TopLayout>
   );
 };
 

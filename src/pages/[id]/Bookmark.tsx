@@ -1,5 +1,5 @@
 import Head from "next/head";
-import Layout from "../../components/Layout";
+import TopLayout from "../../components/Layout/TopLayout";
 import {
   Box,
   Card,
@@ -86,7 +86,7 @@ const Bookmark = () => {
   };
 
   return (
-    <Layout>
+    <TopLayout>
       <Head>
         <title>Engineer Record Bookmark</title>
       </Head>
@@ -97,6 +97,7 @@ const Bookmark = () => {
             <Alert
               sx={{
                 maxWidth: 350,
+                minWidth: 350,
                 height: 60,
                 mx: "auto",
                 textAlign: "center",
@@ -185,7 +186,7 @@ const Bookmark = () => {
           </Card>
         </>
       )}
-    </Layout>
+    </TopLayout>
   );
 };
 

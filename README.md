@@ -33,10 +33,15 @@
 <br>
 <br>
 
-![picture 1](images/cb76dbeca09b025bc19eaa313c314ed2174038b6d4af6bcc703d6663a394bbb9.png)  
+![picture 6](images/3a8f1c2922cd3bd4985cb6be42743c37e4cc8788192450ffd23d794ab7943095.png)  
+
+
 <br>
 
-![picture 2](images/9b3895f00e8426ebdd005de61fb8b07b3a5f877fd26c10fdba4b85925d000af1.png)  
+![picture 8](images/e98f607fa7f9958ee9e86d33fe969b444606e7bb990f2770c1c277f09c4eb03e.png) 
+
+
+
 <br>
 <br>
 
