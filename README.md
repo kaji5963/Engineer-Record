@@ -1,34 +1,86 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# アプリケーション名
+## Engineer Record 
+<br>
 
-## Getting Started
+# 概要
+#### プログラミング学習における学習記録を積み上げるSNSアプリケーションです。プログラミング学習者とのコミュニケーションを図ることができ、自分の積み上げてきた経緯を見ることができるため、自身の学習のモチベーション維持に役立てることができます。
+<br>
 
-First, run the development server:
+# 開発背景
+#### プログラミングを学ぶ上で大事なことは学習を継続することだと考えております。自身が完全未経験から学習を開始し、その際にSNSで学習の積み上げをしてきた経験から、自分の学習成果を残すこと、他の方の学習の成果を見ることは学習を続けていくことへのモチベーションとなりました。この経験を踏まえ、今後プログラミング学習を開始する方や、現在も学習を継続している方に学習の積み上げをしてほしいとい想いからアプリケーションを開発しました。
+<br>
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+# GitHub URL
+ここにデプロイしたURLを貼る
+<br>
+<br>
+# アプリケーション利用方法
+<br>
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### サインアップ/ サインイン
+<br>
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+- サインアップ<br>Avator、displayName、メールアドレス、パスワードを設定し新規登録します。(Avatorについては任意設定)
+<br>
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+- サインイン<br>登録済みのアカウントでログインします。
+<br>
+<br>
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+#### テスト用アカウント(テストユーザーとしてサインイン可能)
+- メールアドレス : test1@test1.com
+- パスワード : test111
+<br>
+<br>
 
-## Learn More
+### 利用画像及び動画などを以下に貼る
+<br>
+<br>
 
-To learn more about Next.js, take a look at the following resources:
+# アプリケーション機能
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- 認証（サインアップ/サインイン/ログアウト）
+- ユーザー編集（Abator/displayName編集可能）
+- 学習記録投稿/リスト表示/編集/削除
+- コメント投稿/編集/削除
+- good（いいね）追加/リスト表示/削除
+- good（いいね）しているユーザーのリスト閲覧
+- Bookmark追加/リスト表示/削除
+<br><br>
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+# 開発技術
+### フロントエンド
+- HTML
+- CSS
+- TypeScript
+- React
+- Next.js
+- Recoil
+- material-ui
+<br>
 
-## Deploy on Vercel
+### バックエンド
+- firebase
+<br>
+<br>
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# 実装予定機能
+- フォロー/フォロワー機能
+- プロフィール内容追加（自己紹介文など）
+- 他のユーザーのプロフィール閲覧機能
+<br>
+<br>
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+# 工夫した点
+- プロフィール編集機能を実装しているため、プロフィールの編集時に自身が投稿した過去の投稿の内容も修正されるようにfirebaseのデータ構造を工夫し実装しました。
+<br>
+
+- 自身の学習の積み上げ、どの投稿に対しgood（いいね）やBookmarkをしたかがわかるようにリスト表示するページを実装したことで、ユーザーの情報を管理しやすくしました。
+<br>
+<br>
+
+# 苦労した点
+- firebaseからのデータ取得のタイミングや、取得後の表示に苦労しました。特にgood(いいね)機能の実装は、firebaseのデータ構造をよく考えデータの管理をしました。データ取得後の画面表示は条件分岐を工夫しユーザーのgoodの有無や、他のユーザーが押しているかなどを考え実装しました。
+<br>
+
+- プロフィール編集後のユーザーの名前や画像の表示に苦労しました。過去の投稿に対してどのように表示を変えたらいいのか悩み苦慮しましたが、firebaseのデータ構造を考え、データ取得後に名前や画像を変数に格納し管理することで実現しました。
