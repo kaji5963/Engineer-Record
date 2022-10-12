@@ -79,7 +79,7 @@ const Comment = () => {
     const commentRef = query(
       collection(db, "comments"),
       where("postId", "==", commentItem.postId),
-      orderBy("timeStamp", "desc")
+      orderBy("timeStamp", "asc")
     );
     onSnapshot(commentRef, (querySnapshot) => {
       const commentsData = querySnapshot.docs.map((doc) => {

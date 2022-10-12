@@ -17,13 +17,13 @@
 # アプリケーション利用方法
 <br>
 
-### サインアップ/ サインイン
+### １　サインアップ（新規登録）/ サインイン（ログイン）
 <br>
 
-- サインアップ<br>Avator、displayName、メールアドレス、パスワードを設定し新規登録します。(Avatorについては任意設定)
+- サインアップ（新規登録）<br>Avator、displayName、メールアドレス、パスワードを設定し新規登録します。(Avatorについては任意設定)
 <br>
 
-- サインイン<br>登録済みのアカウントでログインします。
+- サインイン（ログイン）<br>登録済みのアカウントでログインします。
 <br>
 <br>
 
@@ -33,7 +33,32 @@
 <br>
 <br>
 
-### 利用画像及び動画などを以下に貼る
+![picture 1](images/cb76dbeca09b025bc19eaa313c314ed2174038b6d4af6bcc703d6663a394bbb9.png)  
+<br>
+
+![picture 2](images/9b3895f00e8426ebdd005de61fb8b07b3a5f877fd26c10fdba4b85925d000af1.png)  
+<br>
+<br>
+
+### ２　Topページのフォーム欄から学習の積み上げを投稿
+<br>
+
+#### ヘッダーから自身の積み上げ投稿、goodした投稿、Bookmarkした投稿を確認することができます。<br>投稿には、Edit/Delete/Comment/Good/Good List/Bookmarkボタンがあります。(Edit/Deleteは、投稿者のみが使用可能)
+<br>
+<br>
+
+![picture 3](images/7931ae78369b5af755daeb6d6f164c151002f041789596d2b75e95f7ed66961c.png)  
+<br>
+<br>
+
+### ３　投稿に対しコメント
+<br>
+
+#### commentボタンよりcommentページに遷移し、投稿に対しコメントができます。
+<br>
+<br>
+
+![picture 5](images/f683f31c2844fc00d8471fc3d1bac1926be51fd2e73d4100ad8d1ebaf6522e65.png)  
 <br>
 <br>
 

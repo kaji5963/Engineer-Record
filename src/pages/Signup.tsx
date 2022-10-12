@@ -310,7 +310,7 @@ const SignUp = () => {
               container
               justifyContent="flex-end"
             >
-              <Link href="/Signin">登録している方はこちら</Link>
+              <Link href="/SignIn">登録している方はこちら</Link>
             </Grid>
           </Box>
         </Box>

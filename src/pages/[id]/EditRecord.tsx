@@ -16,20 +16,12 @@ const EditRecord = () => {
   const userItem = useRecoilValue(userItemState);
   const router = useRouter();
 
-  //Record編集完了処理(既にbookmark,goodがされているものもupdate)
+  //Record編集完了処理
   const handleEditComplete = (postId: string) => {
     if (editItem.value === "") return;
     const batch = writeBatch(db);
     const recordUpdateDoc = doc(db, "users", userItem.uid, "records", postId);
-    const bookmarkUpdateDoc = doc(db, "users", userItem.uid, "bookmarks", postId);
-    const goodPostUpdateDoc = doc(db, "users", userItem.uid, "goodPosts", postId);
     batch.update(recordUpdateDoc, {
-      value: editItem.value,
-    });
-    batch.update(bookmarkUpdateDoc, {
-      value: editItem.value,
-    });
-    batch.update(goodPostUpdateDoc, {
       value: editItem.value,
     });
     batch.commit();

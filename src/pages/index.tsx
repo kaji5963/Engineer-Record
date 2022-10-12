@@ -35,12 +35,12 @@ const Home: NextPage = (props: Props) => {
     {
       title: "SignUp",
       icon: <HomeIcon />,
-      href: "/Signup",
+      href: "/SignUp",
     },
     {
       title: "Login",
       icon: <AssignmentIndIcon />,
-      href: "Signin",
+      href: "SignIn",
     },
   ];
 
@@ -109,7 +109,7 @@ const Home: NextPage = (props: Props) => {
                   textTransform: "none",
                   ":hover": { color: grey[400] },
                 }}
-                onClick={() => router.push("/Signup")}
+                onClick={() => router.push("/SignUp")}
               >
                 SignUp
               </Button>
@@ -120,7 +120,7 @@ const Home: NextPage = (props: Props) => {
                   textTransform: "none",
                   ":hover": { color: grey[400] },
                 }}
-                onClick={() => router.push("Signin")}
+                onClick={() => router.push("SignIn")}
               >
                 Login
               </Button>
@@ -171,7 +171,7 @@ const Home: NextPage = (props: Props) => {
           type="submit"
           variant="contained"
           sx={{ mt: 3, mb: 2, width: 200, mx: "auto", fontSize: 18 }}
-          onClick={() => router.push("/Signup")}
+          onClick={() => router.push("/SignUp")}
         >
           Get Started
         </Button>
