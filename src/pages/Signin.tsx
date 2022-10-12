@@ -96,7 +96,7 @@ const SignIn = () => {
                   autoComplete="new-password"
                   onChange={(e) => setPassword(e.target.value)}
                 />
-                  <Typography>passwordを入力してください</Typography>
+                  <Typography>パスワードを入力してください</Typography>
 
               </Grid>
             </Grid>
