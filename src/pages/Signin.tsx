@@ -10,7 +10,7 @@ import Box from "@mui/material/Box";
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { blue } from "@mui/material/colors";
+import { blue, grey } from "@mui/material/colors";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
@@ -45,81 +45,95 @@ const SignIn = () => {
 
   return (
     <>
-    <AuthLayout>
-      <Head>
-        <title>Engineer Record SignIn</title>
-      </Head>
+      <AuthLayout>
+        <Head>
+          <title>Engineer Record SignIn</title>
+        </Head>
 
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <Avatar sx={{ bgcolor: blue[300] }}>
-            <LockOpenIcon />
-          </Avatar>
-          <Typography sx={{ mt: 1 }} component="h1" variant="h5">
-            Sign In
-          </Typography>
+        <Container component="main" maxWidth="xs">
+          <CssBaseline />
           <Box
-            component="form"
-            noValidate
-            onSubmit={(e) => handleSignIn(e)}
-            sx={{ mt: 6 }}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
           >
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <TextField sx={{mb: 1}}
-                  required
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
-                  onChange={(e) => setEmail(e.target.value)}
-                />
+            <Avatar sx={{ bgcolor: blue[300] }}>
+              <LockOpenIcon />
+            </Avatar>
+            <Typography sx={{ mt: 1 }} component="h1" variant="h5">
+              Sign In
+            </Typography>
+            <Box
+              component="form"
+              noValidate
+              onSubmit={(e) => handleSignIn(e)}
+              sx={{ mt: 6 }}
+            >
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <TextField
+                    sx={{ mb: 1 }}
+                    required
+                    fullWidth
+                    id="email"
+                    label="Email Address"
+                    name="email"
+                    autoComplete="email"
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
                   <Typography>メールアドレスを入力してください</Typography>
-
-              </Grid>
-              <Grid item xs={12}>
-                <TextField sx={{mt: 2,mb: 1}}
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="new-password"
-                  onChange={(e) => setPassword(e.target.value)}
-                />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    sx={{ mt: 2, mb: 1 }}
+                    required
+                    fullWidth
+                    name="password"
+                    label="Password"
+                    type="password"
+                    id="password"
+                    autoComplete="new-password"
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
                   <Typography>パスワードを入力してください</Typography>
-
+                </Grid>
               </Grid>
-            </Grid>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 4, mb: 2, fontSize: 18 }}
-              disabled={email === "" || password.length < 6 && true}
-
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ mt: 4, mb: 2, fontSize: 18 }}
+                disabled={email === "" || (password.length < 6 && true)}
+              >
+                ログイン
+              </Button>
+              <Grid
+                sx={{ mt: 2, fontSize: 18 }}
+                container
+                justifyContent="flex-end"
+              >
+                <Link href="/Signup">新規登録の方はこちら</Link>
+              </Grid>
+            </Box>
+            <Box
+              sx={{
+                mt: 4,
+                p: 3,
+                bgcolor: grey[200],
+                borderRadius: 5,
+                fontSize: 18,
+              }}
             >
-              ログイン
-            </Button>
-            <Grid
-              sx={{ mt: 2, fontSize: 18 }}
-              container
-              justifyContent="flex-end"
-            >
-              <Link href="/Signup">新規登録の方はこちら</Link>
-            </Grid>
+              デモユーザー
+              <Typography sx={{ my: 1 }} variant="subtitle1">
+                メールアドレス： test1@test1.com
+              </Typography>
+              <Typography variant="subtitle1">パスワード： test111</Typography>
+            </Box>
           </Box>
-        </Box>
-      </Container>
+        </Container>
       </AuthLayout>
     </>
   );

@@ -15,7 +15,6 @@ https://engineer-record-4wspiu3qr-kaji5963.vercel.app/
 <br>
 <br>
 # アプリケーション利用方法
-<br>
 
 ### １　サインアップ（新規登録）/ サインイン（ログイン）
 <br>
@@ -27,7 +26,7 @@ https://engineer-record-4wspiu3qr-kaji5963.vercel.app/
 <br>
 <br>
 
-#### テスト用アカウント(テストユーザーとしてサインイン可能)
+#### テスト用アカウント(デモユーザーとしてサインイン可能)
 - メールアドレス : test1@test1.com
 - パスワード : test111
 <br>
@@ -38,7 +37,8 @@ https://engineer-record-4wspiu3qr-kaji5963.vercel.app/
 
 <br>
 
-![picture 8](images/e98f607fa7f9958ee9e86d33fe969b444606e7bb990f2770c1c277f09c4eb03e.png) 
+![picture 1](images/4e386634a9001ae1d2b459adcded05adb1a3052d76e9358eb4a9826c0fae1385.png)  
+
 
 
 
@@ -48,7 +48,7 @@ https://engineer-record-4wspiu3qr-kaji5963.vercel.app/
 ### ２　Topページのフォーム欄から学習の積み上げを投稿
 <br>
 
-#### ヘッダーから自身の積み上げ投稿、goodした投稿、Bookmarkした投稿を確認することができます。<br>投稿には、Edit/Delete/Comment/Good/Good List/Bookmarkボタンがあります。(Edit/Deleteは、投稿者のみが使用可能)
+#### ヘッダーから自身の積み上げ投稿、Goodした投稿、Bookmarkした投稿を確認することができます。<br>投稿には、Edit/Delete/Comment/Good/Good List/Bookmarkボタンがあります。(Edit/Deleteは、投稿者のみが使用可能)
 <br>
 <br>
 
@@ -59,7 +59,7 @@ https://engineer-record-4wspiu3qr-kaji5963.vercel.app/
 ### ３　投稿に対しコメント
 <br>
 
-#### commentボタンよりcommentページに遷移し、投稿に対しコメントができます。
+#### CommentボタンよりCommentページに遷移し、投稿に対しコメントができます。
 <br>
 <br>
 
@@ -73,8 +73,8 @@ https://engineer-record-4wspiu3qr-kaji5963.vercel.app/
 - ユーザー編集（Abator/displayName編集可能）
 - 学習記録投稿/リスト表示/編集/削除
 - コメント投稿/編集/削除
-- good（いいね）追加/リスト表示/削除
-- good（いいね）しているユーザーのリスト閲覧
+- Good（いいね）追加/リスト表示/削除
+- Good（いいね）しているユーザーのリスト閲覧
 - Bookmark追加/リスト表示/削除
 <br><br>
 
@@ -94,23 +94,16 @@ https://engineer-record-4wspiu3qr-kaji5963.vercel.app/
 <br>
 <br>
 
-# 実装予定機能
-- フォロー/フォロワー機能
-- プロフィール内容追加（自己紹介文など）
-- 他のユーザーのプロフィール閲覧機能
-<br>
-<br>
-
 # 工夫した点
-- プロフィール編集機能を実装しているため、プロフィールの編集時に自身が投稿した過去の投稿の内容も修正されるようにfirebaseのデータ構造を工夫し実装しました。
+- プロフィール編集機能を実装しており、プロフィールの編集時に自身が投稿した過去の投稿の内容も修正されるようにfirebaseのデータ構造を工夫し実装しました。
 <br>
 
-- 自身の学習の積み上げ、どの投稿に対しgood（いいね）やBookmarkをしたかがわかるようにリスト表示するページを実装したことで、ユーザーの情報を管理しやすくしました。
+- 自身の学習の積み上げ、どの投稿に対しGood（いいね）やBookmarkをしたかがわかるようにリスト表示するページを実装したことで、ユーザーの情報を管理しやすくしました。
 <br>
 <br>
 
 # 苦労した点
-- firebaseからのデータ取得のタイミングや、取得後の表示に苦労しました。特にgood(いいね)機能の実装は、firebaseのデータ構造をよく考えデータの管理をしました。データ取得後の画面表示は条件分岐を工夫しユーザーのgoodの有無や、他のユーザーが押しているかなどを考え実装しました。
+- firebaseからのデータ取得のタイミングや、取得後の表示に苦労しました。特にGood(いいね)機能の実装は、firebaseのデータ構造をよく考えデータの管理をしました。データ取得後の画面表示は条件分岐を工夫しユーザーのGoodの有無や、他のユーザーが押しているかなどを考え実装しました。
 <br>
 
 - プロフィール編集後のユーザーの名前や画像の表示に苦労しました。過去の投稿に対してどのように表示を変えたらいいのか悩み苦慮しましたが、firebaseのデータ構造を考え、データ取得後に名前や画像を変数に格納し管理することで実現しました。
