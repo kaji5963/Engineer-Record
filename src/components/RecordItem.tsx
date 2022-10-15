@@ -347,7 +347,6 @@ export const RecordItem = ({
           </Tooltip>
         )}
         <Tooltip title="Good List" placement="right-start" arrow>
-          {/* <IconButton onClick={() => router.push(`/${record.id}/GoodList`)}> */}
           <IconButton onClick={() => router.push({pathname: `/${record.id}/GoodList`, query: {record: record.postId}})}>
             <ListAltIcon />
           </IconButton>

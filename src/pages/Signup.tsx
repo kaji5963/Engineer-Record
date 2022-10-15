@@ -30,7 +30,7 @@ import { useRecoilState } from "recoil";
 type userInfo = {
   email: string;
   password: string;
-  displayName: string | null;
+  displayName: string;
   photoURL: string;
 };
 

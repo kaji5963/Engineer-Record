@@ -99,7 +99,7 @@ const Form = () => {
           autoComplete="off"
         >
           <TextField
-            sx={{ minWidth: 330, maxWidth: 400, mx: "auto", bgcolor: "white" }}
+            sx={{ minWidth: 320, maxWidth: 400, mx: "auto", bgcolor: "white" }}
             id="outlined-multiline-static"
             label="学習記録を積み上げますか？"
             multiline
