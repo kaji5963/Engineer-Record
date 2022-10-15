@@ -7,11 +7,11 @@
 <br>
 
 # 開発背景
-#### プログラミングを学ぶ上で大事なことは学習を継続することだと考えております。自身が完全未経験から学習を開始し、その際にSNSで学習の積み上げをしてきた経験から、自分の学習成果を残すこと、他の方の学習の成果を見ることは学習を続けていくことへのモチベーションとなりました。この経験を踏まえ、今後プログラミング学習を開始する方や、現在も学習を継続している方に学習の積み上げをしてほしいとい想いからアプリケーションを開発しました。
+#### プログラミングを学ぶ上で大事なことは学習を継続することだと考えております。自身が完全未経験から学習を開始し、その際にSNSで学習の積み上げをしてきた経験から、自分の学習成果を残すこと、他の方の学習の成果を見ることは学習を続けていくことへのモチベーションとなりました。この経験を踏まえ、今後プログラミング学習を開始する方や、現在も学習を継続している方に学習の積み上げをしてほしいという想いからアプリケーションを開発しました。
 <br>
 
 # URL
-https://engineer-record-4wspiu3qr-kaji5963.vercel.app/
+https://engineer-record.vercel.app/
 <br>
 <br>
 # アプリケーション利用方法
@@ -32,16 +32,10 @@ https://engineer-record-4wspiu3qr-kaji5963.vercel.app/
 <br>
 <br>
 
-![picture 6](images/3a8f1c2922cd3bd4985cb6be42743c37e4cc8788192450ffd23d794ab7943095.png)  
-
-
+![picture 6](images/3a8f1c2922cd3bd4985cb6be42743c37e4cc8788192450ffd23d794ab7943095.png) 
 <br>
 
 ![picture 1](images/4e386634a9001ae1d2b459adcded05adb1a3052d76e9358eb4a9826c0fae1385.png)  
-
-
-
-
 <br>
 <br>
 
@@ -85,7 +79,7 @@ https://engineer-record-4wspiu3qr-kaji5963.vercel.app/
 - TypeScript
 - React
 - Next.js
-- Recoil
+- recoil
 - material-ui
 <br>
 
