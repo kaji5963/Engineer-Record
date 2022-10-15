@@ -103,7 +103,6 @@ const Form = () => {
             id="outlined-multiline-static"
             label="学習記録を積み上げますか？"
             multiline
-            autoFocus
             rows={5}
             size="medium"
             type="text"

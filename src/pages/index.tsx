@@ -25,10 +25,10 @@ const Home: NextPage = () => {
           mt: 6,
         }}
       >
-        <Typography sx={{ mx: "auto", mb: 3 }} variant="h4">
+        <Typography sx={{ mx: "auto", mb: 3 }} variant="h5">
           Engineer Recordへようこそ
         </Typography>
-        <Typography sx={{ mx: "auto", mb: 2 }} variant="h5">
+        <Typography sx={{ mx: "auto", mb: 2 }} variant="h6">
           学習記録を積み上げませんか？
         </Typography>
         <Button

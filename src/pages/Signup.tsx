@@ -218,7 +218,6 @@ const SignUp = () => {
                     fullWidth
                     id="displayName"
                     label="Display Name"
-                    autoFocus
                     onChange={(e) =>
                       setUserInfo({ ...userInfo, displayName: e.target.value })
                     }

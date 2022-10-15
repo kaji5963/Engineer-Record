@@ -226,11 +226,10 @@ const Comment = () => {
                   autoComplete="off"
                 >
                   <TextField
-                    sx={{ maxWidth: 350, minWidth: 340, mx: "auto", bgcolor: "white" }}
+                    sx={{ maxWidth: 350, minWidth: 330, mx: "auto", bgcolor: "white" }}
                     id="outlined-multiline-static"
                     label="コメントを入力してくだい"
                     multiline
-                    autoFocus
                     rows={4}
                     size="medium"
                     type="text"

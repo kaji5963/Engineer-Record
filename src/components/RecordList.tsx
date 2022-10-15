@@ -171,6 +171,7 @@ const RecordList = () => {
       <Card
         sx={{
           maxWidth: 500,
+          minWidth: 360,
           display: "flex",
           flexDirection: "column",
           mx: "auto",
