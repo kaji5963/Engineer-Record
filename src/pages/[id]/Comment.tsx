@@ -64,8 +64,6 @@ const Comment = () => {
     postId: commentItem.postId, //投稿者のpostId
     value: "",
     createdAt: changeDateFormat(new Date()),
-    displayName: userItem.displayName,
-    photoURL: userItem.photoURL,
   });
   const router = useRouter();
 
@@ -120,8 +118,6 @@ const Comment = () => {
       postId: commentItem.postId,
       value: "",
       createdAt: changeDateFormat(new Date()),
-      displayName: userItem.displayName,
-      photoURL: userItem.photoURL,
     });
   };
 

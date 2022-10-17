@@ -96,7 +96,7 @@ const RecordList = () => {
     router.push(`/${postId}/Comment`);
   };
 
-  //recordItemからsavedPostsをpostDataとして受け取りブックマークする処理
+  //recordItemからsavedPostsを受け取りブックマークする処理
   const handleSavedBookmark = (savedPosts: RecordList) => {
     //ブックマークしたデータをfirebaseのbookmarksへ格納
     const bookmarksRef = doc(

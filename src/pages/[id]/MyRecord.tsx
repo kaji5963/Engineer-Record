@@ -59,11 +59,10 @@ const MyRecord = () => {
     });
   }, []);
 
-  //commentのアイコンの表示切り替え用として取得
+  //学習記録削除時、紐づいているcomment削除のため取得
   useEffect(() => {
     const commentsRef = query(
       collection(db, "comments"),
-      // where("postId", "==", record.postId)
     );
     onSnapshot(commentsRef, (querySnapshot) => {
       const commentsData = querySnapshot.docs.map((doc) => {

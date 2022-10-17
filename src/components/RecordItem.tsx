@@ -128,7 +128,7 @@ export const RecordItem = ({
   }, [saved]);
 
   //good（いいね）のカウントを増減処理(records,goodPosts,goodUsersをバッチ処理)
-  const handleGoodCount = async (record: RecordList) => {
+  const handleGoodCount = (record: RecordList) => {
     const { authorId, postId, value, createdAt } = record;
     const batch = writeBatch(db);
     const recordsRef = doc(db, "users", record.authorId, "records", postId);
@@ -217,7 +217,7 @@ export const RecordItem = ({
     handleSavedBookmark(savedPosts);
   };
   //ブックマーク削除処理
-  const removeBookmark = async (postId: string) => {
+  const removeBookmark = (postId: string) => {
     setSaved(false);
     // RecordListにpostIdを渡して実行
     handleRemoveBookmark(postId);

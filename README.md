@@ -72,21 +72,33 @@ https://engineer-record.vercel.app/
 - Bookmark追加/リスト表示/削除
 <br><br>
 
+# 実装予定機能
+- フォロー/フォロワー機能
+- ユーザーprofile閲覧機能
+<br><br>
+
 # 開発技術
 ### フロントエンド
 - HTML
 - CSS
 - TypeScript
-- React
-- Next.js
+- React(v18.2.0)
+- Next.js(v12.3.0)
 - recoil
 - material-ui
 <br>
 
 ### バックエンド
-- firebase
+- firebase(v9.9.4)
 <br>
 <br>
+
+# ローカル環境下での動作方法
+### １　git clone https://github.com/kaji5963/Engineer-Record.git
+### ２　cd Engineer-Record
+### ３　yarn
+### ４　yarn dev
+<br><br>
 
 # 工夫した点
 - プロフィール編集機能を実装しており、プロフィールの編集時に自身が投稿した過去の投稿の内容も修正されるようにfirebaseのデータ構造を工夫し実装しました。

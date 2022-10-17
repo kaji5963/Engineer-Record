@@ -4,7 +4,7 @@ import { useRecoilValue } from "recoil";
 import { userItemState } from "../constants/atom";
 import { useState } from "react";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
-import { auth, db } from "./firebase";
+import { db } from "./firebase";
 import { grey } from "@mui/material/colors";
 
 // Dateをyyyy-mm-dd hh:mm形式にフォーマット
@@ -29,8 +29,6 @@ const Form = () => {
     postId: uuidv4(),
     value: "",
     createdAt: changeDateFormat(new Date()),
-    displayName: userItem.displayName,
-    photoURL: userItem.photoURL,
     goodCount: 0,
   });
 
@@ -38,9 +36,8 @@ const Form = () => {
   const handleAddRecord = async () => {
     if (inputValue.value === "") return;
     const { postId, value, createdAt } = inputValue;
-    const user = auth.currentUser!;
-    //firebaseのrecordsへデータ格納（階層：users-uid-records）
-    const formDocRef = doc(db, "users", user.uid, "records", postId);
+    //firebaseのrecordsへデータ格納
+    const formDocRef = doc(db, "users", userItem.uid, "records", postId);
     await setDoc(formDocRef, {
       authorId: userItem.uid,
       postId,
@@ -54,8 +51,6 @@ const Form = () => {
       postId: uuidv4(),
       value: "",
       createdAt: changeDateFormat(new Date()),
-      displayName: userItem.displayName,
-      photoURL: userItem.photoURL,
       goodCount: 0,
     });
   };

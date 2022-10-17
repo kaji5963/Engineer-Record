@@ -7,7 +7,7 @@ import { grey } from "@mui/material/colors";
 import { Box } from "@mui/system";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { editItemState, userItemState } from "../../constants/atom";
-import { doc, updateDoc, writeBatch } from "firebase/firestore";
+import { doc, writeBatch } from "firebase/firestore";
 import { db } from "../../components/firebase";
 import { useRouter } from "next/router";
 
