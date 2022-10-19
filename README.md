@@ -1,8 +1,8 @@
-# アプリケーション名
-## Engineer Record 
+![ezgif com-gif-maker (2)](https://user-images.githubusercontent.com/109277443/196735790-c0f381c5-6a6e-40dd-8336-4809b31f03d9.gif)
 <br>
 
-!https://user-images.githubusercontent.com/109277443/196732548-8f664bd0-6435-417a-bd5f-5d2f9588db4f.mov
+# アプリケーション名
+## Engineer Record 
 <br>
 
 # 概要
