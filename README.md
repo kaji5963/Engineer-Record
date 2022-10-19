@@ -1,4 +1,7 @@
-![ezgif com-gif-maker (2)](https://user-images.githubusercontent.com/109277443/196735790-c0f381c5-6a6e-40dd-8336-4809b31f03d9.gif)
+![ezgif com-gif-maker (3)](https://user-images.githubusercontent.com/109277443/196737522-b04bec4b-ffee-4dd2-8ed8-77a1eea3c103.gif)
+<br>
+
+![ezgif com-gif-maker (6)](https://user-images.githubusercontent.com/109277443/196737550-b35cc472-f9c7-4292-ae4a-17f255ccce73.gif)
 <br>
 
 # アプリケーション名
