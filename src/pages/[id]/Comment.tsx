@@ -7,17 +7,14 @@ import {
   CardContent,
   CardHeader,
   IconButton,
-  TextField,
   Typography,
   Tooltip,
   Grid,
-  Button,
   Toolbar,
 } from "@mui/material";
-import SendIcon from "@mui/icons-material/Send";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { blue, grey, red } from "@mui/material/colors";
+import { red } from "@mui/material/colors";
 import { useRouter } from "next/router";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
@@ -40,6 +37,7 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "../../components/firebase";
+import CommentForm from "../../components/CommentForm";
 
 type CommentList = {
   commentId: string;
@@ -47,8 +45,15 @@ type CommentList = {
   postId: string;
   value: string;
   createdAt: string;
-  displayName: string ;
+  displayName: string;
   photoURL: string;
+};
+
+export type CommentInfo = {
+  docId: string;
+  postId: string;
+  value: string;
+  createdAt: string;
 };
 
 const Comment = () => {
@@ -59,7 +64,7 @@ const Comment = () => {
   const [commentList, setCommentList] = useState<CommentList[]>([]);
   const [editItem, setEditItem] = useRecoilState(editItemState);
   const [isClient, setIsClient] = useState(false);
-  const [comment, setComment] = useState({
+  const [comment, setComment] = useState<CommentInfo>({
     docId: uuidv4(),
     postId: commentItem.postId, //投稿者のpostId
     value: "",
@@ -149,113 +154,12 @@ const Comment = () => {
       {isClient && (
         <>
           <Grid container spacing={{ xs: 3 }} columns={{ xs: 8, md: 16 }}>
-            <Grid item xs={8}>
-              <Card
-                sx={{
-                  maxWidth: 500,
-                  minWidth: 360,
-                  display: "flex",
-                  flexDirection: "column",
-                  mx: "auto",
-                  boxShadow: 0,
-                }}
-              >
-                <Box
-                  sx={{
-                    bgcolor: blue[100],
-                    maxWidth: 500,
-                    mb: 4,
-                    borderRadius: 5,
-                  }}
-                >
-                  <CardHeader
-                    avatar={
-                      <Avatar
-                        sx={{ bgcolor: blue[200] }}
-                        src={commentItem.photoURL}
-                      ></Avatar>
-                    }
-                    titleTypographyProps={{ fontSize: 16 }}
-                    subheaderTypographyProps={{ fontSize: 16 }}
-                    title={commentItem.displayName}
-                    subheader={commentItem.createdAt}
-                  />
-                  <CardContent
-                    sx={{
-                      bgcolor: blue[50],
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        minHeight: 100,
-                        whiteSpace: "pre-line",
-                        fontSize: 18,
-                      }}
-                      variant="body2"
-                      color="text.secondary"
-                      component="p"
-                    >
-                      {commentItem.value}
-                    </Typography>
-                  </CardContent>
-                  <Toolbar />
-                </Box>
-              </Card>
-
-              <Box
-                sx={{
-                  bgcolor: grey[300],
-                  borderRadius: 5,
-                  maxWidth: 500,
-                  height: 200,
-                  mx: "auto",
-                  mb: 4,
-                  pt: 5,
-                  pb: 4,
-                }}
-              >
-                <Box
-                  sx={{ display: "flex", pt: 1, pb : 1 }}
-                  justifyContent="center"
-                  component="form"
-                  noValidate
-                  autoComplete="off"
-                >
-                  <TextField
-                    sx={{ maxWidth: 350, minWidth: 330, mx: "auto", bgcolor: "white" }}
-                    id="outlined-multiline-static"
-                    label="コメントを入力してくだい"
-                    multiline
-                    rows={4}
-                    size="medium"
-                    type="text"
-                    value={comment.value}
-                    onChange={(e) =>
-                      setComment({ ...comment, value: e.target.value })
-                    }
-                  />
-                </Box>
-
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    mt: 3,
-                  }}
-                >
-                  <Button
-                    sx={{ textTransform: "none", fontSize: 18, height: 40 }}
-                    variant="contained"
-                    endIcon={<SendIcon />}
-                    onClick={handleCommentSubmit}
-                    disabled={comment.value === "" ? true : false}
-                  >
-                    Comment
-                  </Button>
-                </Box>
-              </Box>
-            </Grid>
+            <CommentForm
+              commentItem={commentItem}
+              comment={comment}
+              setComment={setComment}
+              handleCommentSubmit={handleCommentSubmit}
+            />
 
             <Grid item xs={8}>
               <Card
