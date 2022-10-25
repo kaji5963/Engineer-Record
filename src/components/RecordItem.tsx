@@ -30,9 +30,9 @@ import {
   increment,
 } from "firebase/firestore";
 import { db } from "./firebase";
-import { RecordList, User } from "../constants/atom";
 import { NextRouter } from "next/router";
 import { changeDateFormat } from "./Form";
+import type { RecordList, User } from "../constants/atom";
 
 type Props = {
   record: RecordList;

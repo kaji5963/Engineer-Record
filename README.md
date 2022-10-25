@@ -25,7 +25,7 @@ https://engineer-record.vercel.app/
 ### １　サインアップ（新規登録）/ サインイン（ログイン）
 <br>
 
-- サインアップ（新規登録）<br>Avator、displayName、メールアドレス、パスワードを設定し新規登録します。(Avatorについては任意設定)
+- サインアップ（新規登録）<br>Avatar、displayName、メールアドレス、パスワードを設定し新規登録します。(Avatarについては任意設定)
 <br>
 
 - サインイン（ログイン）<br>登録済みのアカウントでログインします。
@@ -70,7 +70,7 @@ https://engineer-record.vercel.app/
 # アプリケーション機能
 
 - 認証（サインアップ/サインイン/ログアウト）
-- ユーザー編集（Abator/displayName編集可能）
+- ユーザー編集（Avatar/displayName編集可能）
 - 学習記録投稿/リスト表示/編集/削除
 - コメント投稿/編集/削除
 - Good（いいね）追加/リスト表示/削除

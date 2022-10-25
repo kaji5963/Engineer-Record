@@ -31,10 +31,10 @@ const EditProfile = () => {
     if (typeof window !== "undefined") setIsClient(true);
   }, []);
 
-  //全てのdisplayName,photoURLのアップロード処理
+  //全てのdisplayName,photoURLのアップデート処理
   const handleUpload = (
     e: FormEvent<HTMLFormElement>,
-    displayName: string | null,
+    displayName: string ,
     photoURL: string
   ) => {
     e.preventDefault();

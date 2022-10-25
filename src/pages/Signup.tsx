@@ -56,7 +56,6 @@ const SignUp = () => {
           displayName,
           photoURL,
         });
-
         //firebaseにusersコレクション作成 setDocでuser.uidを指定してドキュメントID作成
         const userDocRef = doc(db, "users", user.uid);
         await setDoc(userDocRef, {
@@ -65,7 +64,6 @@ const SignUp = () => {
           photoURL,
           timeStamp: serverTimestamp(),
         });
-
         //ユーザー情報取得処理しuserItemへ格納
         onAuthStateChanged(auth, (user) => {
           if (user) {
